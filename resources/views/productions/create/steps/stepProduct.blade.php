@@ -25,67 +25,71 @@
     </div>
     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-3 row-cols-xl-3" id="productList">
         @foreach($products as $product)
+            @php
+                $infoProduit = App/Model/Product::where('codeproduit', $product->codeproduit)->first();
+            @endphp
+        
             <div class="col product-item">
                 <div class="card">
                     <div class="card-header"> 
-                        <h6 class="text-center text-capitalize">  {{ strtoupper($product->MonLibelle ?? 'N/A') }} </h6>
+                        <h6 class="text-center text-capitalize">  {{ strtoupper($product->libelleproduit ?? 'N/A') }} </h6>
                     </div>
                     <div class="card-body py-1">
                         <p class="card-text">
                             <dl class="row">
                                 <dt class="col-xs-12 col-sm-6 col-md-6 col-lg-6">Code Produit</dt>
-                                <dd class="col-xs-12 col-sm-6 col-md-6 col-lg-6">{{ $product->CodeProduit?? 'N/A' }}</dd>
+                                <dd class="col-xs-12 col-sm-6 col-md-6 col-lg-6">{{ $product->codeproduit ?? 'N/A' }}</dd>
                                 <dt class="col-xs-12 col-sm-6 col-md-6 col-lg-6">Age min</dt>
-                                <dd class="col-xs-12 col-sm-6 col-md-6 col-lg-6">{{ $product->AgeMiniAdh?? 'N/A' }}</dd>
+                                <dd class="col-xs-12 col-sm-6 col-md-6 col-lg-6">{{ $infoProduit->AgeMiniAdh?? 'N/A' }}</dd>
                                 <dt class="col-xs-12 col-sm-6 col-md-6 col-lg-6">Age max</dt>
-                                <dd class="col-xs-12 col-sm-6 col-md-6 col-lg-6">{{ $product->AgeMaxiAdh?? 'N/A' }}</dd>
+                                <dd class="col-xs-12 col-sm-6 col-md-6 col-lg-6">{{ $infoProduit->AgeMaxiAdh?? 'N/A' }}</dd>
                             </dl>
                         </p>	
                     </div>
-                    @if ($product->CodeProduit == 'YKE_2018')
+                    @if ($product->codeproduit == 'YKE_2018')
                         @can('Demarrer une souscription')
                         <div class="card-footer text-center">
-                            <a href="{{ route('prod.createYke', $product->CodeProduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
+                            <a href="{{ route('prod.createYke', $product->codeproduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
                         </div>
                         @else
                         <div class="card-footer text-center">
                             <a href="#" class="btn-prime btn-prime-two d-block text-danger">Vous n'etes pas autorisé</a>
                         </div>
                         @endcan
-                    @elseif ($product->CodeProduit == 'YKE_2008')
+                    @elseif ($product->codeproduit == 'YKE_2008')
                         @can('Demarrer une souscription')
                         <div class="card-footer text-center">
-                            <a href="{{ route('prod.createYke_2008', $product->CodeProduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
+                            <a href="{{ route('prod.createYke_2008', $product->codeproduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
                         </div>
                         @else
                         <div class="card-footer text-center">
                             <a href="#" class="btn-prime btn-prime-two d-block text-danger">Vous n'etes pas autorisé</a>
                         </div>
                         @endcan
-                    @elseif (in_array($product->CodeProduit, ['CADENCE']))
+                    @elseif (in_array($product->codeproduit, ['CADENCE']))
                         @can('Demarrer une souscription')
                         <div class="card-footer text-center">
-                            <a href="{{ route('prod.createKds', $product->CodeProduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
+                            <a href="{{ route('prod.createKds', $product->codeproduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
                         </div>
                         @else
                         <div class="card-footer text-center">
                             <a href="#" class="btn-prime btn-prime-two d-block text-danger">Vous n'etes pas autorisé</a>
                         </div>
                         @endcan
-                    @elseif (in_array($product->CodeProduit, ['CAD_EDUCPLUS']))
+                    @elseif (in_array($product->codeproduit, ['CAD_EDUCPLUS']))
                         @can('Demarrer une souscription')
                         <div class="card-footer text-center">
-                            <a href="{{ route('prod.createCAD', $product->CodeProduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
+                            <a href="{{ route('prod.createCAD', $product->codeproduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
                         </div>
                         @else
                         <div class="card-footer text-center">
                             <a href="#" class="btn-prime btn-prime-two d-block text-danger">Vous n'etes pas autorisé</a>
                         </div>
                         @endcan
-                    @elseif ($product->CodeProduit == 'DOIHOO')
+                    @elseif ($product->codeproduit == 'DOIHOO')
                         @can('Demarrer une souscription')
                         <div class="card-footer text-center">
-                            <a href="{{ route('prod.createdoihoo', $product->CodeProduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
+                            <a href="{{ route('prod.createdoihoo', $product->codeproduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
                         </div>
                         @else
                         <div class="card-footer text-center">
@@ -95,7 +99,7 @@
                     @else
                         @can('Demarrer une souscription')
                         <div class="card-footer text-center">
-                            <a href="{{ route('prod.create', $product->CodeProduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
+                            <a href="{{ route('prod.create', $product->codeproduit) }}" class="btn-prime btn-prime-two d-block">Souscrire</a>
                         </div>
                         @else
                         <div class="card-footer text-center">

@@ -2,68 +2,63 @@
 
 namespace App\Http\Controllers\Admin;
 
-use PDF;
-
-use Throwable;
-
+use App\Http\Controllers\Controller;
+use App\Mail\CustomerMail;
+use App\Models\Adherent;
+use App\Models\AssureGarantie;
+use App\Models\Assurer;
+use App\Models\Banqueagence;
+use App\Models\Beneficiaire;
+use App\Models\Contact;
+use App\Models\Contrat;
+use App\Models\DeclarationSante;
+use App\Models\Document;
+use App\Models\Filliation;
+use App\Models\Membre;
+use App\Models\Product;
+use App\Models\ProduitGarantie;
+use App\Models\Profession;
+use App\Models\Prospect;
+use App\Models\Reseau;
+use App\Models\ReseauProduct;
+use App\Models\Signature;
+use App\Models\TblAgence;
+use App\Models\TblBanqueAgence;
+use App\Models\TblDocument;
+use App\Models\Tblotp;
+use App\Models\TblProfession;
+use App\Models\TblSecteurActivite;
+use App\Models\TblSociete;
+use App\Models\TblVille;
+use App\Models\User;
+use App\Notifications\SystemeNotify;
+use BaconQrCode\Encoder\QrCode;
+use BaconQrCode\Renderer\Image\ImagickImageBackEnd; // Utilisez Imagick si disponible
+use BaconQrCode\Renderer\Image\SvgImageBackEnd; // Alternative SVG
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use App\Models\User;
-use App\Models\Membre;
-use App\Models\Tblotp;
-use App\Models\Assurer;
-use App\Models\Contact;
-use App\Models\Contrat;
-use App\Models\Product;
-use BaconQrCode\Writer;
-use setasign\Fpdi\Fpdi;
-use App\Models\Adherent;
-use App\Models\Document;
-use App\Models\Prospect;
-use App\Models\TblVille;
-use App\Models\Signature;
-use App\Models\TblAgence;
-use App\Mail\CustomerMail;
-use App\Models\Filliation;
-use App\Models\Profession;
-use App\Models\TblSociete;
-use App\Models\TblDocument;
-use Illuminate\Support\Str;
-use App\Models\Banqueagence;
-use App\Models\Beneficiaire;
-use Illuminate\Http\Request;
-use App\Models\ReseauProduct;
-use App\Models\TblProfession;
-use Endroid\QrCode\Logo\Logo;
-
-use App\Models\AssureGarantie;
-
-use App\Models\ProduitGarantie;
-use App\Models\TblBanqueAgence;
-use BaconQrCode\Encoder\QrCode;
-use Endroid\QrCode\Label\Label;
-use App\Models\DeclarationSante;
-use App\Models\TblSecteurActivite;
-use Illuminate\Support\Facades\DB;
-
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
-
-use App\Notifications\SystemeNotify;
-use Endroid\QrCode\Writer\PngWriter;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 use Endroid\QrCode\Encoding\Encoding;
-use BaconQrCode\Renderer\ImageRenderer;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Notification;
+use Endroid\QrCode\Label\Label;
+use Endroid\QrCode\Logo\Logo;
+use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\ValidationException;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Renderer\Image\SvgImageBackEnd; // Alternative SVG
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+use PDF;
+use setasign\Fpdi\Fpdi;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use BaconQrCode\Renderer\Image\ImagickImageBackEnd; // Utilisez Imagick si disponible
+use Throwable;
 
 class ProductionController extends Controller
 {
@@ -233,15 +228,13 @@ class ProductionController extends Controller
 
     public function stepProduct()
     {
-        $productByReseau = ReseauProduct::select('CodeProduit')->where('codereseau', Auth::user()->membre->codereseau)->get();
 
-        $codeProduits = $productByReseau->pluck('CodeProduit')->toArray();
+        $reseauId = Reseau::where('codepartenaire', Auth::user()->membre->codereseau)->first();
+        $productByReseau = ReseauProduct::where('codereseau', $reseauId->id)->get();
 
-        if (Auth::user()->membre->codepartenaire === "LLV") {
-            $products = Product::whereIn('CodeProduit', $codeProduits)->get();
-        } else {
-            $products = Product::whereIn('CodeProduit', $codeProduits)->get();
-        }
+        // dd($productByReseau);
+
+        $products = $productByReseau;
 
         // dd($products);
         return view('productions.create.steps.stepProduct', compact('products'));

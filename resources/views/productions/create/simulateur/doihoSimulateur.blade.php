@@ -83,6 +83,7 @@
                                     <option value="1000000">1 000 000 FCFA</option>
                                     <option value="2000000">2 000 000 FCFA</option>
                                     <option value="3000000">3 000 000 FCFA</option>
+                                    <option value="5000000">5 000 000 FCFA</option>
                                 </select>
                             </div>
                             <div class="col-sm-12 col-md-6 mb-3">
