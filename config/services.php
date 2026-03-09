@@ -14,6 +14,8 @@ return [
     |
     */
 
+    'enov_api_token' => env('ENOV_API_TOKEN'), // 'api_token'
+
     'sign_api' => env('SIGN_API'),
     'otp_api' => env('OTP_API'),
     'base_url_api' => env('BASE_URL_API'),

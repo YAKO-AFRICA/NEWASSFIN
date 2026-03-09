@@ -145,6 +145,7 @@ Route::prefix('production')->name('prod.')->group(function(){
         Route::get('/createKds/add/{codeproduit}', [ProductionController::class, 'createKds'])->name('createKds');
         Route::get('/createdoihoo/add/{codeproduit}', [ProductionController::class, 'createdoihoo'])->name('createdoihoo');
         Route::get('/createCAD/add/{codeproduit}', [ProductionController::class, 'createCAD'])->name('createCAD');
+        Route::get('/createLPREVO/add/{codeproduitformule}', [ProductionController::class, 'createLPREVO'])->name('createLPREVO');
         Route::post('/store', [ProductionController::class, 'store'])->name('store');
         Route::get('/gestionEquip/index', [ProductionController::class, 'gestionEquip'])->name('gestionEquip');
         Route::post('/upload-documents', [ProductionController::class, 'upload'])->name('upload.documents');

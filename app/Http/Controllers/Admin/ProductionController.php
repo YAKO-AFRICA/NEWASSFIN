@@ -32,6 +32,7 @@ use App\Models\TblSociete;
 use App\Models\TblVille;
 use App\Models\User;
 use App\Notifications\SystemeNotify;
+use App\Services\ProduitService;
 use BaconQrCode\Encoder\QrCode;
 use BaconQrCode\Renderer\Image\ImagickImageBackEnd; // Utilisez Imagick si disponible
 use BaconQrCode\Renderer\Image\SvgImageBackEnd; // Alternative SVG
@@ -151,7 +152,7 @@ class ProductionController extends Controller
         $codeAgence = Membre::where('idmembre', Auth::user()->idmembre)->value('codeequipe');
         $userOnEquipe = Membre::where('codeequipe', $codeAgence)->get();
         $equipeIdMembre =  $userOnEquipe->pluck('idmembre')->toArray();
-        
+
         $saisiePerEquipe = Contrat::whereIn('saisiepar', $equipeIdMembre)->where('etape','1');
 
         $defaultColumns = ['#', 'Produit','Souscripteur','Age Souscripteur', 'Date Effet', 'Prime', 'Capital', 'Montant Rente', 'Saisir Par', 'Status'];
@@ -246,14 +247,14 @@ class ProductionController extends Controller
             'methodeRecherche' => 'required|in:numerocompte,numPiece',
             'query' => 'required|string'
         ]);
-    
+
         $query = $request->input('query');
         $methodeRecherche = $request->input('methodeRecherche');
-    
+
         $apiData = [
             $methodeRecherche => $query
         ];
-    
+
         try {
             $client = new \GuzzleHttp\Client();
             $response = $client->post('https://api.yakoafricassur.com/enov/search-personne-web', [
@@ -263,12 +264,12 @@ class ProductionController extends Controller
                     'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjExODcyLCJlbWFpbCI6ImZvcm1hdGlvbi5ibmlAYm5pLmNvbSIsIm5vbSI6IkJOSSIsImNvZGVhZ2VudCI6IkIwNDAiLCJ0eXBlbWVicmUiOm51bGwsInByZW5vbSI6IkZvcm1hdGlvbiJ9.gwxwy43VeMDcfaTpgpFbuWkxjirIBqvuXq3UZOuw_nA',
                 ]
             ]);
-    
+
             $apiResponse = json_decode($response->getBody(), true);
-    
+
             if (!empty($apiResponse['dataPersonne'])) {
                 $clientData = $apiResponse['dataPersonne'];
-                
+
                 // Formater les données pour correspondre à vos champs de formulaire
                 $formattedData = [
                     'civilite' => $clientData['civilite'] ?? '',
@@ -287,12 +288,12 @@ class ProductionController extends Controller
                     'telephone' => $clientData['telephone'] ?? '',
                     'numerocompte' => $clientData['numerocompte'] ?? ''
                 ];
-                
+
                 session()->put('adherent', $formattedData);
-                
+
                 return response()->json([
                     'type' => 'success',
-                    'message' => 'Client trouvé avec succès', 
+                    'message' => 'Client trouvé avec succès',
                     'code' => 200,
                     'data' => $formattedData
                 ]);
@@ -309,7 +310,7 @@ class ProductionController extends Controller
                 $response = json_decode($e->getResponse()->getBody(), true);
                 $errorMessage = $response['message'] ?? $errorMessage;
             }
-            
+
             return response()->json([
                 'type' => 'error',
                 'message' => $errorMessage,
@@ -357,9 +358,9 @@ class ProductionController extends Controller
         $societes = Banqueagence::all();
         $agences = TblAgence::select('NOM_LONG')->get();
         $filliations = Filliation::select('MonLibelle')->get();
-       
+
         $resultData = session()->get('adherent', []);
-     
+
         $detailCountries = []; // Valeur par défaut
 
         // $banqueAgence = TblBanqueAgence::all();
@@ -389,7 +390,7 @@ class ProductionController extends Controller
         return view('productions.create.create', compact('product', 'villes', 'secteurActivites', 'professions', 'productGarantie', 'societes', 'agences', 'filliations', 'resultData', 'detailCountries'));
     }
 
- 
+
     public function createdoihoo($codeProduit)
     {
         $product = Product::where('CodeProduit', $codeProduit)->first();
@@ -429,6 +430,24 @@ class ProductionController extends Controller
         return view('productions.create.simulateur.kdsSimulateur', compact('product', 'productGarantie'));
     }
 
+    public function createLPREVO($codeproduitformule, ProduitService $produitService)
+    {
+        $codeProduit = 'LPREVO';
+        $formule = $produitService->getSingleFormulesByCode($codeProduit, $codeproduitformule);
+        $product = Product::where('CodeProduit', $codeProduit)->first();
+
+        // dd($formule);
+
+        $productGarantie = ProduitGarantie::where(['codeproduit' => $codeProduit, 'branche' => 'COL'])->get();
+        $garantieObli = ProduitGarantie::where(['codeproduit' => $codeProduit, 'branche' => 'COL', 'estobligatoire' => 1])->get();
+
+        // dd($garantieObli);
+
+        return view('productions.create.simulateur.lprevoSimulateur', compact('formule', 'productGarantie', 'product','garantieObli'));
+    }
+
+
+
 
 
     public function storeSimulationPrime(Request $request)
@@ -442,6 +461,9 @@ class ProductionController extends Controller
 
         // Stocker dans la session Laravel
         Session::put('simulation_primes', $garanties);
+        Session::put('simulationData', $garanties);
+
+        Log::info("garanties", $garanties);
 
         return response()->json(['message' => 'Données enregistrées en session avec succès.', 'data' => $garanties], 200);
     }
@@ -497,8 +519,8 @@ class ProductionController extends Controller
         Log::info($contactsBrut);
         Log::info("conttttt fin");
 
-        
-        
+
+
 
         DB::beginTransaction();
         try {
@@ -534,7 +556,7 @@ class ProductionController extends Controller
 
             $age = Carbon::parse($datenaissance)->diffInYears(Carbon::now());
 
-            // creation id 
+            // creation id
             $idAdherent = Adherent::max('id') + 1;
             $idAssure = Assurer::max('id') + 1;
             $idBenef = Beneficiaire::max('id') + 1;
@@ -581,7 +603,7 @@ class ProductionController extends Controller
 
             log::info("okay pour l'adherent : " . $Adherent->id);
 
-            
+
 
             Log::info("Champs contacts trouvées : ");
             Log::info($contacts);
@@ -596,7 +618,7 @@ class ProductionController extends Controller
                     'type' => $contact['type'] ?? "Tel",
                     'valeur' => $contact['valeur'],
                     'etat' => 'Actif'
-                    
+
                 ]);
             }
             // creation de l'assuré souscripteur
@@ -763,13 +785,13 @@ class ProductionController extends Controller
                     //         'estmigre' => 0,
                     //     ])->save();
 
-                        
+
                     // }
-                    
+
                 }
             }
 
-            
+
 
             $santeData = DeclarationSante::create([
                 'taille' => $request->taille,
@@ -800,7 +822,7 @@ class ProductionController extends Controller
 
             // Récupérer et enregistrer les bénéficiaires
             $beneficiaires = json_decode($request->input('beneficiaires'), true);
-        
+
 
             if ($request->addBeneficiary === "adherent") {
                 $benefauterm = "adherent";
@@ -900,7 +922,7 @@ class ProductionController extends Controller
                 'periodiciterente' => $request->periodiciterente,
                 'dureerente' => $request->dureerente,
 
-                //info de reversement 
+                //info de reversement
                 'mode_reserversement' => $request->mode_reserversement,
                 'echeance_reversement' => $request->echeance_reversement,
                 'duree_reversement' => $request->duree_reversement,
@@ -933,9 +955,9 @@ class ProductionController extends Controller
             $sign = Signature::where('key_uuid', $request->tokGenerate)->first();
 
             if ($sign) {
-                $sign->update(['reference_key' => $idContrat]); 
+                $sign->update(['reference_key' => $idContrat]);
             }
-             
+
 
             // $otpGenerate = Tblotp::where('codeOTP', $request->otpGenerate)->first();
             // if($otpGenerate){
@@ -944,7 +966,7 @@ class ProductionController extends Controller
             //     ]);
             // }
 
-            
+
             $bulletinData = $this->generateBulletin($idContrat);
 
             // Si la génération du bulletin a échoué, lever une exception
@@ -952,9 +974,9 @@ class ProductionController extends Controller
                 throw new \Exception("Erreur lors de la génération du bulletin : " . $bulletinData['message']);
             }
 
-            // Envoi de l'email 
+            // Envoi de l'email
 
-           
+
 
             try {
                 $to = $request->email;
@@ -993,9 +1015,9 @@ class ProductionController extends Controller
                 ]);
             }
 
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'type' => 'success',
                 'urlback' => route('prod.show', ['id' => $idContrat]),
@@ -1017,7 +1039,7 @@ class ProductionController extends Controller
                 'code' => 500,
             ]);
         }
-       
+
     }
 
     private function calculeprimeYke($request, $GarantiesOptionnelles, $idAssure, $idContrat)
@@ -1025,7 +1047,7 @@ class ProductionController extends Controller
         $results = [];
 
         foreach ($GarantiesOptionnelles as $garantie) {
-           
+
             $postData = [
                 'codeProduit'      => $request->codeProduit,
                 'codeGarantie'     => $garantie->codeproduitgarantie,
@@ -1076,7 +1098,7 @@ class ProductionController extends Controller
     private function callApi($url, $postData)
     {
         $ch = curl_init($url);
-        
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -1093,7 +1115,7 @@ class ProductionController extends Controller
     }
 
 
-    
+
 
     private function generateBulletin($idContrat)
     {
@@ -1116,7 +1138,7 @@ class ProductionController extends Controller
 
             $imageUrl = env('SIGN_API') . "api/get-signature/" . $idContrat . "/E-SOUSCRIPTION";
             Log::info("sign url : " . $imageUrl );
-            
+
             $imageData = file_get_contents($imageUrl);
             $base64Image = base64_encode($imageData);
             $imageSrc = 'data:image/png;base64,'.$base64Image;
@@ -1131,13 +1153,13 @@ class ProductionController extends Controller
 
             Log::info("qr content : " . $qrContent);
 
-            
+
             $writer = new Writer($renderer);
-        
+
             // Génération en base64 (sans fichier temporaire)
             $qrCodeImage = $writer->writeString($qrContent);
             $qrCodeBase64 = 'data:image/png;base64,' . base64_encode($qrCodeImage);
-            
+
             // Passez $qrCodeBase64 à votre vue
 
 
@@ -1172,7 +1194,7 @@ class ProductionController extends Controller
                     'imageSrc' => $imageSrc,
                 ]);
                 $cguFile = public_path('root/cgu/cg_yke.pdf');
-                
+
             }else if($contrat->codeproduit == "CADENCE")
             {
                 $pdf = PDF::loadView('productions.components.bullettin.Cadencebulletin', [
@@ -1181,7 +1203,7 @@ class ProductionController extends Controller
                     'imageSrc' => $imageSrc,
                 ]);
                 $cguFile = public_path('root/cgu/cadenceCgu.pdf');
-                
+
             }else if($contrat->codeproduit == "DOIHOO"){
                 $pdf = PDF::loadView('productions.components.bullettin.Doihoobulletin', [
                     'contrat' => $contrat,
@@ -1197,7 +1219,7 @@ class ProductionController extends Controller
                     'imageSrc' => $imageSrc,
                 ]);
                 $cguFile = public_path('root/cgu/CADENCEpLUS.pdf');
-                
+
             }else{
                 $pdf = PDF::loadView('productions.components.bullettin.basicBulletin', [
                     'contrat' => $contrat,
@@ -1206,7 +1228,7 @@ class ProductionController extends Controller
                 ]);
                 $cguFile = public_path('root/cgu/CGPLanggnant.pdf');
             }
-            
+
 
             $bulletinDir = public_path('documents/bulletin/');
             if (!is_dir($bulletinDir)) {
@@ -1219,7 +1241,7 @@ class ProductionController extends Controller
             // Chemin vers le fichier CGU
             $cguFilePath = public_path('root/cgu/cg_yke.pdf');
 
-       
+
 
             // Initialiser FPDI pour fusionner les fichiers
             $finalPdf = new Fpdi();
@@ -1231,7 +1253,7 @@ class ProductionController extends Controller
                 $tplIdx = $finalPdf->importPage($pageNo);
                 $finalPdf->useTemplate($tplIdx);
             }
-        
+
             // Ajouter toutes les pages du fichier CGU
             $cguPageCount = $finalPdf->setSourceFile($cguFile);
             for ($pageNo = 1; $pageNo <= $cguPageCount; $pageNo++) {
@@ -1246,7 +1268,7 @@ class ProductionController extends Controller
 
             Log::info("finalBulletinPath");
 
-            // new code 
+            // new code
             $destinationPath = base_path(env('UPLOADS_PATH'));
             $fileName = $idContrat . '-' . now()->timestamp.'-' .'Bulletin_de_souscription' . '.pdf';
             $finalPdf->Output($destinationPath . $fileName, 'F');
@@ -1318,7 +1340,7 @@ class ProductionController extends Controller
                 Log::warning("Recto/Verso manquants pour le contrat {$contrat->id}");
             }
 
-            
+
 
             // enregistrer le bulletin dans la base de données
             foreach ($allFiles as $file) {
@@ -1609,7 +1631,7 @@ class ProductionController extends Controller
 // $files = $request->file('files');
 //                 $libelles = $request->input('libelles');  // Récupérer les libellés
 
-                
+
 //                 foreach ($files as $key => $file) {
 //                     $imageName = Str::uuid() . '.' . $file->getClientOriginalExtension();
 //                     $destinationPath = public_path('documents/files');

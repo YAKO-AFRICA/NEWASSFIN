@@ -44,9 +44,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
-    <script src="https://cdn.tiny.cloud/1/pfjd5f3rf5sx7e99t8p7wi1x9yz3phproft7hk92nakivoru/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    {{-- <script src="https://cdn.tiny.cloud/1/pfjd5f3rf5sx7e99t8p7wi1x9yz3phproft7hk92nakivoru/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script> --}}
 
-        <script>
+        {{-- <script>
             tinymce.init({
                 selector: 'textarea.tinymce-editor',
                 height: 400,
@@ -139,7 +139,7 @@
                     }
                 ]
             });
-        </script>
+        </script> --}}
 
 
     <style>
@@ -325,7 +325,7 @@
 
         <script type="module" src="{{ asset('api/request.js') }}"></script>
 
-        <script src=https://touchpay.gutouch.com/touchpay/script/prod_touchpay-0.0.1.js type="text/javascript"></script>
+        {{-- <script src=https://touchpay.gutouch.com/touchpay/script/prod_touchpay-0.0.1.js type="text/javascript"></script> --}}
 
 
         <script>
