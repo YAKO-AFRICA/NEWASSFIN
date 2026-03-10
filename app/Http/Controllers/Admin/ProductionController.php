@@ -390,6 +390,21 @@ class ProductionController extends Controller
         return view('productions.create.create', compact('product', 'villes', 'secteurActivites', 'professions', 'productGarantie', 'societes', 'agences', 'filliations', 'resultData', 'detailCountries'));
     }
 
+    public function createLibreYke($codeProduit)
+    {
+        // $codeProduit = 'YKE_2018';
+        $product = Product::where('CodeProduit', $codeProduit)->first();
+        $productGarantie = ProduitGarantie::where(['codeproduit' => $codeProduit, 'branche' => 'IND'])->get();
+        $villes = TblVille::select('libelleVillle')->get();
+        $professions = Profession::select('MonLibelle')->get();
+        $secteurActivites = TblSecteurActivite::select('MonLibelle')->get();
+        $societes = TblSociete::select('MonLibelle')->get();
+        $agences = TblAgence::select('NOM_LONG')->get();
+        $filliations = Filliation::select('MonLibelle')->get();
+
+        return view('productions.create.createLibre', compact('product', 'villes', 'secteurActivites', 'professions', 'productGarantie', 'societes', 'agences', 'filliations'));
+    }
+
 
     public function createdoihoo($codeProduit)
     {
@@ -491,8 +506,16 @@ class ProductionController extends Controller
     {
 
         $data = $request->all();
+        $reseauId = Reseau::where('codepartenaire', Auth::user()->membre->codereseau)->first();
+        $productByReseau = ReseauProduct::where('codereseau', $reseauId->id)->get();
+        $formuleProduct = ReseauProduct::where('codereseau', $reseauId->id)->where('codeproduit', $request->codeproduit)->first();
 
         Log::info($data);
+
+        $sessionSData = session()->get('simulationData', null);
+
+        Log::info("Champs simulationData trouvées : ");
+        Log::info($sessionSData);
 
         // On décode inputSessionData
         $inputSessionData = json_decode($data['inputSessionData'], true);
@@ -533,6 +556,8 @@ class ProductionController extends Controller
                 $prefix = '8901001011692018';
             } else if ($request->codeproduit == "CADENCE") {
                 $prefix = '679710010111099';
+            } else if ($request->codeproduit == "LPREVO") {
+                $prefix = '65838301000110';
             } else {
                 $prefix = '679710069100117';
             }
@@ -684,26 +709,7 @@ class ProductionController extends Controller
             // log::info("okay pour les garantie assurer : ");
             $garantiesData = $inputSessionData['garantieData'];
 
-            // foreach ($garantiesData as $garantie) {
-            //     Log::info("garantie", $garantie);
-            //     $GarantieOnBD = ProduitGarantie::where('codeproduitgarantie', $garantie['codeGarantie'])->first();
-
-            //     AssureGarantie::create([
-            //         'codeproduitgarantie' => $garantie['codeGarantie'],
-            //         'idproduitparantie' => $GarantieOnBD->id ?? null,
-            //         'monlibelle' => $garantie['libelle'],
-            //         'prime' => $garantie['prime'],
-            //         'primetotal' => $request->prime,
-            //         'primeaccesoire' => 0,
-            //         'type' => "Mixte",
-            //         'capitalgarantie' => $garantie['capital'],
-            //         'codeassure' => $idAssure,
-            //         'codecontrat' => $idContrat,
-            //         'refcontratsource' => $idContrat,
-            //         'cleintegration' => $key,
-            //         'estmigre' => 0,
-            //     ]);
-            // }
+      
 
 
             // recupere & creer les assurer de la session
@@ -877,7 +883,7 @@ class ProductionController extends Controller
 
             // ajout du contrat  numMobile
 
-            if ($request->modepaiement === "Mobile_money") {
+            if ($request->modepaiement === "EBANK") {
                 $numerocompte = $request->numMobile;
             } else {
                 $numerocompte = $request->numerocompte;
@@ -915,6 +921,7 @@ class ProductionController extends Controller
                 'codeadherent' => $idAdherent,
                 'estMigre' => 0,
                 'codeproduit' => $request->codeproduit,
+                'Formule' => $formuleProduct->codeproduitformule ?? null,
                 'numBullettin' => $numBullettin,
 
                 'libelleproduit' => $product->MonLibelle,
@@ -938,9 +945,9 @@ class ProductionController extends Controller
                 'codeguichet' => $request->codeguichet,
                 'rib' => $request->rib,
 
-                'branche' => "AGTGLE",
+                'branche' => $reseauId->codebranche,
 
-                'partenaire' => "ASSFIN",
+                'partenaire' => $reseauId->codereseau,
                 // 'nomaccepterpar' => now(),
                 // 'refcontratsource' => now(),
                 'cleintegration' => $keyUniq,
@@ -1040,6 +1047,382 @@ class ProductionController extends Controller
             ]);
         }
 
+    }
+
+    public function storeLibre(Request $request)
+    {
+
+        $data = $request->all();
+
+        log::info($data);
+
+        // On décode inputSessionData
+        $inputSessionData = json_decode($data['inputSessionData'], true);
+
+        // Maintenant on peut accéder à la périodicité
+        $periodicite = $request->periodicite ?? null;
+
+        Log::info("periodicite". $periodicite);
+
+        if (!empty($request->inputSessionData)) {
+            $simulationData = json_decode($request->inputSessionData);
+
+            // Log::info('Données de simulation reçues:'. $simulationData);
+        }
+
+        if($request->codeproduit == "DOIHOO"){
+            $prefix = '68111105104111111';
+             $formule = 'DOIHOO_2020_v8';
+        } else if ($request->codeproduit == "CAD_EDUCPLUS") {
+            $prefix = '679710069100117';
+            $formule = 'CADENCE_EDPV10';
+        } else if ($request->codeproduit == "YKE_2018") {
+            $prefix = '8901001011692018';
+            $formule = 'YKE_2018_V5';
+        } else {
+            $prefix = '679710069100117';
+        }
+
+  
+
+        
+
+        // On récupère le nombre de contrats existants avec ce préfixe et ce produit
+        $increment = Contrat::where('numBullettin', 'like', $prefix . '%')
+            ->where('codeproduit', $request->codeproduit)
+            ->count() + 1;
+
+        do {
+            $numBullettin = $prefix . $increment;
+            $numExist = Contrat::where('numBullettin', $numBullettin)->exists();
+            $increment++;
+        } while ($numExist);
+
+
+        DB::beginTransaction();
+        try { 
+
+            // Gestion de la civilité pour l'adhérent et l'assuré
+            $sexe = $request->civilite === "Monsieur" ? "M" : "F";
+            $sexeassur = $request->civiliteAssur === "Monsieur" ? "M" : "F";
+            $primeCalcule = $request->primepricipale + $request->surprime + $request->fraisadhesion;
+            $datenaissance = Carbon::parse($request->datenaissance)->format('Y-m-d H:i:s');
+
+            $age = Carbon::parse($datenaissance)->diffInYears(Carbon::now());
+
+            // creation id 
+            $idAdherent = Adherent::max('id') + 1;
+            $idAssure = Assurer::max('id') + 1;
+            $idBenef = Beneficiaire::max('id') + 1;
+            $idContrat = Contrat::max('id') + 1;
+            $idDocument = Document::max('id') + 1;
+
+
+            // creation de l'adhérent
+
+            $Adherent = Adherent::create([
+                'id' => $idAdherent,
+                'civilite' => $request->civilite,
+                'situationMatrimoniale' => $request->situation_matrimoniale,
+                'nom' => $request->nom,
+                'prenom' => $request->prenom,
+                'datenaissance' => $datenaissance,
+                'lieunaissance' => $request->lieunaissance,
+                'sexe' => $sexe,
+                'numeropiece' => $request->numeropiece,
+                'naturepiece' => $request->naturepiece,
+                'lieuresidence' => $request->lieuresidence,
+                'profession' => $request->profession,
+                'employeur' => $request->employeur,
+                'pays' => $request->pays,
+                'estmigre' => 0,
+                'email' => $request->email,
+                'telephone' => $request->telephone,
+                'telephone1' => $request->telephone1,
+                'mobile' => $request->mobile,
+                'codemembre' => 0,
+                'mobile1' => $request->mobile1,
+                'saisieLe' => now(),
+                'saisiepar' => Auth::user()->membre->idmembre,
+                'refcontratsource' => $request->refcontratsource,
+                'cleintegration' => $request->cleintegration,
+                'id_maj' => $request->id_maj,
+                'connexe' => $request->connexe,
+                'contratconnexe' => $request->contratconnexe,
+                'capitalconnexe' => $request->capitalconnexe
+            ]);
+
+            // creation de l'assuré souscripteur
+
+            if ($request->estAssure === "Oui") {
+
+                $Assurer = Assurer::create([
+                    'id' => $idAssure,
+                    'civilite' => $request->civilite,
+                    'nom' => $request->nom,
+                    'prenom' => $request->prenom,
+                    'filiation' => "LUIMM",
+                    'datenaissance' => $datenaissance,
+                    'lieunaissance' => $request->lieunaissance,
+                    'codecontrat' => $idContrat,
+                    'codeadherent' => $idAdherent,
+                    'sexe' => $sexe,
+                    'numeropiece' => $request->numeropiece,
+                    'naturepiece' => $request->naturepiece,
+                    'lieuresidence' => $request->lieuresidence,
+                    'profession' => $request->profession,
+                    'employeur' => $request->employeur,
+                    'pays' => $request->pays,
+                    'email' => $request->email,
+                    'telephone' => $request->telephone,
+                    'telephone1' => $request->telephone1,
+                    'mobile' => $request->mobile,
+                    'codemembre' => 0,
+                    'mobile1' => $request->mobile1,
+                    'saisieLe' => now(),
+                    'saisiepar' => auth::user()->membre->idmembre,
+                ]);
+            }
+
+
+            // recupere & creer les assurer de la session
+
+            $assures = json_decode($request->input('assures'), true);
+            // Log::info("assures". $assures);
+
+            if ($assures) {
+                foreach ($assures as $assure) {
+                    $datenaissanceAssur = isset($assure['datenaissance']) ? Carbon::parse($assure['datenaissance'])->format('Y-m-d H:i:s') : null;
+                    $idAssureInsert = Assurer::max('id') + 1;
+
+                    $sexeassurAdd = $assure['civilite'] === "Monsieur" ? "M" : "F";
+                    Assurer::create([
+                        'id' => $idAssureInsert,
+                        'civilite' => $assure['civilite'],
+                        'nom' => $assure['nom'],
+                        'prenom' => $assure['prenom'],
+                        'datenaissance' => $datenaissanceAssur,
+                        'codecontrat' => $idContrat,
+                        'codeadherent' => $idAdherent,
+                        'lieunaissance' => $assure['lieuNaissance'],
+                        'numeropiece' => $assure['numeropieceAssur'] ?? null,
+                        'naturepiece' => $assure['naturepieceAssur'] ?? null,
+                        'lieuresidence' => $assure['lieuresidenceAssur'] ?? null,
+                        'filiation' => $assure['lienParente'],
+                        'mobile' => $assure['mobileAssur'] ?? null,
+                        'estmigre' => $request->estmigre ?? null,
+                        'email' => $assure['emailAssur'] ?? null,
+                        'sexe' => $sexeassurAdd,
+                        'saisieLe' => now(),
+                        'saisiepar' => Auth::user()->membre->idmembre,
+                    ]);
+                    
+                }
+            }
+
+            // creation des garanties
+
+            // foreach ($simulationData->garantieData as $garantie) {
+                // Log::info("garantie". $garantie);produitCode
+                $GarantieOnBD = ProduitGarantie::where('codeproduit', $request->produitCode)->where('branche', 'IND')->get();
+
+                Log::info("GarantieOnBD". $GarantieOnBD);
+
+            foreach ($GarantieOnBD as $garantie) {
+
+                AssureGarantie::create([
+                    'codeproduitgarantie' => $garantie->codeproduitgarantie,
+                    'idproduitparantie' => $garantie->id,
+                    'monlibelle' => $garantie->libelle,
+                    'prime' => $request->primepricipale,
+                    'primetotal' => $request->primepricipale,
+                    'primeaccesoire' => 0,
+                    'type' => "Mixte",
+                    'capitalgarantie' => $garantie->capital,
+                    'codeassure' => $idAssure,
+                    'codecontrat' => $idContrat,
+                    'refcontratsource' => $idContrat,
+                    'estmigre' => 0,
+                ])->save();
+            }
+
+            $santeData = DeclarationSante::create([
+                'taille' => $request->taille,
+                'poids' => $request->poids,
+                'tensionMin' => $request->tensionMin,
+                'tensionMax' => $request->tensionMax,
+                'smoking' => $request->smoking,
+                'alcohol' => $request->alcohol,
+                'sport' => $request->sport,
+                'typeSport' => $request->typeSport,
+                'accident' => $request->accident,
+                'treatment' => $request->treatment, // trantement medical 6 dernier mois
+                'transSang' => $request->transSang, // transfusion de sang 6 dernier mois
+                'interChirugiale' => $request->interChirugiale, // intervention chirurgicaledeja subit
+                'prochaineInterChirugiale' => $request->prochaineInterChirugiale, // intervention chirurgicale prochaine
+                'diabetes' => $request->diabetes,
+                'hypertension' => $request->hypertension,
+                'sickleCell' => $request->sickleCell,
+                'liverCirrhosis' => $request->liverCirrhosis,
+                'lungDisease' => $request->lungDisease,
+                'cancer' => $request->cancer,
+                'anemia' => $request->anemia,
+                'kidneyFailure' => $request->kidneyFailure,
+                'stroke' => $request->stroke,
+                'codeContrat' => $idContrat,
+                'created_at' => now(),
+            ]);
+
+            // Récupérer et enregistrer les bénéficiaires
+            $beneficiaires = json_decode($request->input('beneficiaires'), true);
+
+            if ($request->addBeneficiary === "adherent") {
+                $benefauterm = "adherent";
+                $datenaissanceBenef = Carbon::parse($request->datenaissanceBenef)->format('Y-m-d H:i:s');
+
+                Beneficiaire::create([
+                    'id' => $idBenef,
+                    'civilite' => $request->civilite,
+                    'nom' => $request->nom,
+                    'prenom' => $request->prenom,
+                    'datenaissance' => $datenaissanceBenef,
+                    'codecontrat' => $idContrat,
+                    'codeadherent' => $idAdherent,
+                    'lieunaissance' => $request->lieunaissance,
+                    'numeropiece' => $request->numeropiece,
+                    'naturepiece' => $request->naturepiece,
+                    'lieuresidence' => $request->lieuresidence,
+                    'filiation' => $request->lienParente,
+                    'mobile' => $request->mobile,
+                    'email' => $request->email,
+                    'saisieLe' => now(),
+                    'saisiepar' => Auth::user()->membre->idmembre,
+                ])->save();
+            }
+
+            if ($beneficiaires) {
+
+                foreach ($beneficiaires as $beneficiaire) {
+                    $datenaissanceBeneficiaire = isset($beneficiaire['dateNaissance']) ? Carbon::parse($beneficiaire['dateNaissance'])->format('Y-m-d H:i:s') : null;
+                    $idBenefInsert = Beneficiaire::max('id') + 1;
+                    Beneficiaire::create([
+                        'id' => $idBenefInsert,
+                        'civilite' => $beneficiaire['civilite'] ?? null,
+                        'nom' => $beneficiaire['nom'],
+                        'prenom' => $beneficiaire['prenom'],
+                        'datenaissance' => $datenaissanceBeneficiaire,
+                        'codecontrat' => $idContrat,
+                        'codeadherent' => $idAdherent,
+                        'lieunaissance' => $beneficiaire['lieuNaissance'],
+                        'numeropiece' => $beneficiaire['numeropiece'] ?? null,
+                        'naturepiece' => $beneficiaire['naturepiece'] ?? null,
+                        'lieuresidence' => $beneficiaire['lieuResidence'],
+                        'filiation' => $beneficiaire['lienParente'],
+                        'mobile' => $beneficiaire['telephone'],
+                        'email' => $beneficiaire['email'],
+                        'saisieLe' => now(),
+                        'saisiepar' => Auth::user()->membre->idmembre,
+                    ]);
+                }
+            }
+
+            // ajout du contrat   numMobile
+
+            if ($request->modepaiement === "Mobile_money") {
+                $numerocompte = $request->numMobile;
+            } else {
+                $numerocompte = $request->numerocompte;
+            }
+
+            $product = Product::where('CodeProduit', $request->codeproduit)->first();
+
+            $contratData = Contrat::create([
+                'id' => $idContrat,
+                'dateeffet' => $request->dateEffet,
+                'modepaiement' => $request->modepaiement,
+                'organisme' => $request->organisme,
+                'agence' => Auth::user()->membre->agence,
+                'numerocompte' => $numerocompte,
+                'periodicite' => $periodicite,
+
+                'codeConseiller' => Auth::user()->membre->codeagent,
+                'nomagent' => Auth::user()->membre->nom . ' ' . Auth::user()->membre->prenom,
+
+                'primepricipale' => number_format($request->primepricipale, 2, ".", ""),
+                'prime' => $request->primepricipale,
+                'fraisadhesion' => $request->fraisadhesion,
+
+                'surprime' => $request->primePathologies ?? $request->surprime,
+                // 'capital' => $request->capital,
+                'capital' => number_format($request->capital, 2, ".", ""),
+                'etape' => 1,
+
+                'saisiele' => now(),
+                'saisiepar' => Auth::user()->idmembre,
+
+                'duree' => $request->duree,
+
+                'codeadherent' => $idAdherent,
+                'estMigre' => 0,
+                'codeproduit' => $request->codeproduit,
+                'numBullettin' => $numBullettin,
+
+                'libelleproduit' => $product->MonLibelle,
+                'montantrente' => $request->montantrente,
+                'periodiciterente' => $request->periodiciterente,
+                'dureerente' => $request->dureerente,
+
+                'personneressource' => $request->personneressource,
+                'contactpersonneressource' => $request->contactpersonneressource,
+                'beneficiaireauterme' => $benefauterm,
+                'beneficiaireaudeces' => $request->audecesContrat,
+
+                'personneressource2' => $request->personneressource2,
+                'contactpersonneressource2' => $request->contactpersonneressource2,
+                'codebanque' => $request->codebanque,
+                'codeguichet' => $request->codeguichet,
+                'rib' => $request->rib,
+
+                'branche' => 'BANKASS',
+
+                'partenaire' => 'ASSURFIN',
+                // 'nomaccepterpar' => now(),
+                // 'refcontratsource' => now(),
+                'cleintegration' => now()->format('Ymd'),
+
+                'estpaye' => 0,
+                // 'pretconnexe' => now(),
+                // 'details' => now(),
+                'nomsouscipteur' => $request->nom . ' ' . $request->prenom,
+                'typesouscipteur' => Auth::user()->membre->branche,
+                'Formule' => $formule,
+            ])->save();
+
+
+            
+            DB::commit();
+            
+            return response()->json([
+                'type' => 'success',
+                'urlback' => route('prod.edit', ['id' => $idContrat]),
+                'message' => "Enregistré avec succès !",
+                'code' => 200,
+            ]);
+
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            Log::error("Erreur système: ", ['error' => $th]);
+            return response()->json([
+                'type' => 'error',
+                'urlback' => '',
+                'message' => "Erreur système! $th",
+                'code' => 500,
+            ]);
+        }
+       
     }
 
     private function calculeprimeYke($request, $GarantiesOptionnelles, $idAssure, $idContrat)
@@ -1219,6 +1602,15 @@ class ProductionController extends Controller
                     'imageSrc' => $imageSrc,
                 ]);
                 $cguFile = public_path('root/cgu/CADENCEpLUS.pdf');
+
+            }else if($contrat->codeproduit == "LPREVO")
+            {
+                $pdf = PDF::loadView('productions.components.bullettin.LprevoBulletin', [
+                    'contrat' => $contrat,
+                    'qrCodeBase64' => $qrCodeBase64,
+                    'imageSrc' => $imageSrc,
+                ]);
+                $cguFile = public_path('root/cgu/CGLPREVO.pdf');
 
             }else{
                 $pdf = PDF::loadView('productions.components.bullettin.basicBulletin', [

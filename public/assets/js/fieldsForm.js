@@ -53,12 +53,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const sessionData = sessionStorage.getItem('simulationData');
     if (!sessionData) return;
 
+    console.log('Session data found:', sessionData);
+
     const simulationData = JSON.parse(sessionData);
 
     const fieldNames = [
         'periodicite', 'civilite', 'nom', 'prenom', 'datenaissance', 'lieunaissance',
         'naturepiece', 'numeropiece', 'lieuresidence', 'profession', 'employeur',
-        'email', 'mobile', 'mobile1', 'telephone', 'primepricipale', 'duree', 'dateEffet', 'capital', 'fraisAdhesion'
+        'email', 'mobile', 'mobile1', 'telephone', 'primepricipale', 'duree', 'dateEffet', 'capital', 'fraisadhesion','bonneSante','diabete','avc','cancer','insuffisanceRenale','hypertension','surprime'
     ];
 
     fieldNames.forEach((name) => {

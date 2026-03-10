@@ -190,6 +190,9 @@ Route::prefix('production')->name('prod.')->group(function(){
         Route::get('/proposition/edit/{id}', [ValidationController::class, 'edit'])->name('proposition.edit');
         Route::post('/traitement/proposition/valider/{id}', [ValidationController::class, 'acceptContrat'])->name('traitement.proposition.valider');
 
+        Route::get('/create/libre/souscription/{codeProduit}', [ProductionController::class, 'createLibreYke'])->name('createLibreYke');
+        Route::post('/storeLibre', [ProductionController::class, 'storeLibre'])->name('storeLibre');
+
 
 
 

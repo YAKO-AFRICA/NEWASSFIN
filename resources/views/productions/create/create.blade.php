@@ -34,9 +34,10 @@
     $keyUuid = $token['key_uuid'];
     $operationType = $token['operation_type'];
 
-    $simulationData = session('simulationData');
+    $simulationData = session()->get('simulationData', []);
 
     Log::info("Simulation data: " . json_encode($simulationData));
+
 @endphp
 
 <div class="productions">

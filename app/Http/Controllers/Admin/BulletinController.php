@@ -3,26 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 
-use Dompdf\Dompdf;
-use Dompdf\Options;
-
-use App\Models\Contrat;
-
-use BaconQrCode\Writer;
-use setasign\Fpdi\Fpdi;
-use Illuminate\Http\Request;
-use BaconQrCode\Encoder\QrCode;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\DB;
-
-use Illuminate\Support\Facades\Log;
-
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Http;
+use App\Models\Contrat;
+use BaconQrCode\Encoder\QrCode;
+use BaconQrCode\Renderer\Image\ImagickImageBackEnd; // Utilisez Imagick si disponible
+use BaconQrCode\Renderer\Image\SvgImageBackEnd; // Alternative SVG
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Renderer\Image\SvgImageBackEnd; // Alternative SVG
-use BaconQrCode\Renderer\Image\ImagickImageBackEnd; // Utilisez Imagick si disponible
+use BaconQrCode\Writer;
+use Barryvdh\DomPDF\Facade\Pdf;
+// use Barryvdh\DomPDF\PDF;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use setasign\Fpdi\Fpdi;
 
 class BulletinController extends Controller
 {
@@ -60,7 +57,7 @@ class BulletinController extends Controller
         // $pdf = Pdf::loadView('productions.components.bullettin.ykeBulletin');
         // $pdf = Pdf::loadView('productions.components.bullettin.basicBulletin');
         // $pdf = Pdf::loadView('productions.components.bullettin.pfaINDbulletin');
-        $pdf = Pdf::loadView('productions.components.bullettin.Cadencebulletintest');
+        $pdf = Pdf::loadView('productions.components.bullettin.LprevoBulletin');
         // $pdf = Pdf::loadView('productions.components.bullettin.Doihoobulletintest');
         // $pdf = Pdf::loadView('productions.components.bullettin.CadenceEduPlusbulletintest');
 
@@ -207,6 +204,15 @@ class BulletinController extends Controller
                 ]);
                 $cguFile = public_path('root/cgu/CADENCEpLUS.pdf');
                 
+            }else if($contrat->codeproduit == "LPREVO")
+            {
+                $pdf = PDF::loadView('productions.components.bullettin.LprevoBulletin', [
+                    'contrat' => $contrat,
+                    'qrCodeBase64' => $qrCodeBase64,
+                    'imageSrc' => $imageSrc,
+                ]);
+                $cguFile = public_path('root/cgu/CGLPREVO.pdf');
+
             }else{
 
                 $pdf = PDF::loadView('productions.components.bullettin.basicBulletin', [

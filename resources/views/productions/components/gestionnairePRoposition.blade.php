@@ -66,7 +66,7 @@
                         </div>
 
                         <!-- Widget 2: Ancienne Affaire -->
-                        {{-- <div class="col-md-4">
+                        <div class="col-md-4">
                             <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-body text-center">
                                     <div class="bg-warning bg-gradient rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 64px; height: 64px;">
@@ -77,7 +77,7 @@
                                         Saisissez les informartion contenue sur votre bulletin physique .
                                         Clickez sur Demarrer pour commencer le traitement.
                                     </p>
-                                    <a href="{{ route('prod.createLibreYke', $product->CodeProduit) }}" class="btn-prime btn-prime-two d-block">
+                                    <a href="{{ route('prod.createLibreYke', $product->codeproduit) }}" class="btn-prime btn-prime-two d-block">
                                         <button type="button" class="btn btn-outline-warning mt-2" >
                                             <i class="bi bi-pen me-1"></i>
                                             Saisissez maintenant
@@ -86,7 +86,7 @@
 
                                 </div>
                             </div>
-                        </div> --}}
+                        </div>
 
                         <!-- Widget 3: Télécharger Bulletin -->
                         {{-- <div class="col-md-4">

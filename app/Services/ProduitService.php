@@ -35,7 +35,6 @@ class ProduitService
 
     public function getFormulesProduit($codeProduit)
     {
-
         $response = Http::timeout(60)
             ->withHeaders([
                 'Authorization' => config('services.enov_api_token'),
@@ -63,11 +62,8 @@ class ProduitService
             ]);
 
         if ($response->successful()) {
-
             $data = $response->json();
-
             $formules = $data['getProduitByFormule'] ?? [];
-
             return collect($formules)->firstWhere('CodeProduitFormule', $codeFormule);
         }
 

@@ -31,9 +31,9 @@
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" name="modepaiement" type="radio" value="Mobile_money"
-                                id="Mobile_money">
-                            <label class="form-check-label" for="Mobile_money">
+                            <input class="form-check-input" name="modepaiement" type="radio" value="EBANK"
+                                id="EBANK">
+                            <label class="form-check-label" for="EBANK">
                                 Mobile money
                             </label>
                         </div>
@@ -333,8 +333,15 @@
                             <div class="col-12 mb-3">
                                 <label for="fraisAdhesion" class="form-label">Frais d’adhésion :</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="fraisAdhesion" name="fraisAdhesion"
-                                        min="0" value="7500">
+                                    <input type="number" class="form-control" id="fraisAdhesion" name="fraisadhesion"
+                                        min="0" value="5500">
+                                    <span class="input-group-text">FCFA</span>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="surprime" class="form-label">Surprime :</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="surprime" name="surprime">
                                     <span class="input-group-text">FCFA</span>
                                 </div>
                             </div>
@@ -391,7 +398,7 @@
 
             if (this.value === 'VIR' || this.value === 'BANK' || this.value === 'CHK') {
                 if (modeBancaire) modeBancaire.style.display = 'block';
-            } else if (this.value === 'Mobile_money') {
+            } else if (this.value === 'EBANK') {
                 if (modeMobile) modeMobile.style.display = 'block';
             } else if (this.value === 'SOURCE') {
                 if (modeSource) modeSource.style.display = 'block';

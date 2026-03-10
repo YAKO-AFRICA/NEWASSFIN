@@ -937,7 +937,7 @@
             </div>
         {{-- @elseif ($product->CodeProduit == 'CADENCE') --}}
         @elseif($product->CodeProduit == 'YKE_2018' || $product->CodeProduit == 'CAD_EDUCPLUS' || $product->CodeProduit == 'YKE_2008')
-        <div class="col-12">
+            <div class="col-12">
                 <div class="card" style="width: 100%">
                     <div class="card-header">
                         <h5 class="mb-0">Êtes-vous sous traitement médicale pour l'une de ces maladies ou
@@ -1889,6 +1889,73 @@
                     </div>
                 </div>
             </div>
+        @elseif ($product->CodeProduit == 'LPREVO')
+
+        <fieldset>
+            <legend>Déclaration de santé "Assuré" par le souscripteur</legend>
+            
+            <!-- Case à cocher principale -->
+            <div style="margin-bottom: 15px;">
+                <input type="checkbox" id="bonneSante" name="bonneSante">
+                <label for="bonneSante">L'assuré déclare être en bonne santé.</label>
+            </div>
+            
+            <!-- Liste des pathologies -->
+            <p style="font-weight: bold; margin-bottom: 10px;">L'assuré souffre-t-il de l'une des conditions suivantes :</p>
+            
+            <div style="margin-bottom: 10px;">
+                <!-- Diabète -->
+                <div style="margin-bottom: 8px;">
+                    <span style="margin-right: 10px;">Diabète :</span>
+                    <input type="radio" id="diabeteOui" name="diabete" value="oui">
+                    <label for="diabeteOui">Oui</label>
+                    <input type="radio" id="diabeteNon" name="diabete" value="non" checked>
+                    <label for="diabeteNon">Non</label>
+                </div>
+                
+                <!-- AVC -->
+                <div style="margin-bottom: 8px;">
+                    <span style="margin-right: 10px;">AVC :</span>
+                    <input type="radio" id="avcOui" name="avc" value="oui">
+                    <label for="avcOui">Oui</label>
+                    <input type="radio" id="avcNon" name="avc" value="non" checked>
+                    <label for="avcNon">Non</label>
+                </div>
+                
+                <!-- Cancer -->
+                <div style="margin-bottom: 8px;">
+                    <span style="margin-right: 10px;">Cancer :</span>
+                    <input type="radio" id="cancerOui" name="cancer" value="oui">
+                    <label for="cancerOui">Oui</label>
+                    <input type="radio" id="cancerNon" name="cancer" value="non" checked>
+                    <label for="cancerNon">Non</label>
+                </div>
+                
+                <!-- Insuffisance rénale -->
+                <div style="margin-bottom: 8px;">
+                    <span style="margin-right: 10px;">Insuff - Réna :</span>
+                    <input type="radio" id="insuffOui" name="insuffisanceRenale" value="oui">
+                    <label for="insuffOui">Oui</label>
+                    <input type="radio" id="insuffNon" name="insuffisanceRenale" value="non" checked>
+                    <label for="insuffNon">Non</label>
+                </div>
+                
+                <!-- Hypertension -->
+                <div style="margin-bottom: 8px;">
+                    <span style="margin-right: 10px;">Hypertension :</span>
+                    <input type="radio" id="hypertensionOui" name="hypertension" value="oui">
+                    <label for="hypertensionOui">Oui</label>
+                    <input type="radio" id="hypertensionNon" name="hypertension" value="non" checked>
+                    <label for="hypertensionNon">Non</label>
+                </div>
+            </div>
+            
+            <!-- Note sur la prime -->
+            <p style="font-size: 0.9em; color: #666; margin-top: 15px; font-style: italic;">
+                <small>Pour chaque pathologie pour laquelle un "oui" est coché, une prime 5500 sera ajoutée à la prime de base.</small>
+            </p>
+        </fieldset>
+
         @endif
 
         <div id="isSureteCheck" style="display: none;">
