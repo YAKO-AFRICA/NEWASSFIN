@@ -22,9 +22,9 @@
                             <label class="list-group-item d-flex align-items-center agent-item">
                                 <input class="form-check-input me-3" type="radio" name="assignedTo" value="{{ $commercial->idmembre }}">
                                 <div class="agent-info">
-                                    <strong class="agent-code">{{ $commercial->codeagent }}</strong> - <span class="agent-name">{{ $commercial->nom }}</span>
-                                    @if($commercial->agence)
-                                    <small class="text-muted d-block agent-agence">{{ $commercial->agence }}</small>
+                                    <strong class="agent-code">{{ $commercial->codeagent }}</strong> - <span class="agent-name">{{ $commercial->nom }} {{ $commercial->prenom }}</span>
+                                    @if($commercial->nomagence)
+                                    <small class="text-muted d-block agent-agence">{{ $commercial->nomagence }}</small>
                                     @endif
                                 </div>
                             </label>

@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class TblVille extends Model
 {
     use HasFactory;
-    protected $connection = 'mysql2';
-    protected $table = 'tbl_ville';
+    protected $connection = 'mysql';
+    protected $table = 'tblville';
 
     protected $fillable = [
-        'idville',
-        'libelleVillle'
+        'IdTblVille',
+        'CodeVille',
+        'MonLibelle',
+        'CodeDepartement'
     ];
     // Désactiver les timestamps
     public $timestamps = false;

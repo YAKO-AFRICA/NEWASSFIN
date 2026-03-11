@@ -416,11 +416,7 @@ Route::prefix('cotation')->name('cotation.')->group(function(){
 Route::prefix('prospect')->name('prospect.')->group(function(){
     Route::middleware('guest','PreventBackHistory')->group(function(){
 
-        Route::get('/create/{tokken}', [ProspectController::class, 'create'])->name('create');
-        Route::post('/store', [ProspectController::class, 'store']);
-        // formule by product reseau
-        Route::get('/finish/{uuid}', [ProspectController::class, 'finish'])->name('finish');
-        Route::post('/signaturePad', [ProspectController::class, 'signaturePad'])->name('signaturePad');
+        // formule by product reseau 
 
     });
     Route::middleware(['auth','PreventBackHistory'])->group(function () {
@@ -433,7 +429,7 @@ Route::prefix('prospect')->name('prospect.')->group(function(){
         // Route::get('/edit/{uuid}', [ProspectController::class, 'edit'])->name('edit');
         Route::put('/update/{uuid}', [ProspectController::class, 'update'])->name('update');
         Route::post('/prospects/{uuid}/convert', [ProspectController::class, 'convertToClient'])->name('convert');
-
+        Route::post('/store', [ProspectController::class, 'store']);
 
         Route::delete('/{prospectId}/products/{productId}', [ProspectController::class, 'destroy'])->name('delete');
         Route::post('/assign/{uuid}', [ProspectController::class, 'assign'])->name('assign');
@@ -441,16 +437,15 @@ Route::prefix('prospect')->name('prospect.')->group(function(){
 
         Route::get('/download', [ProspectController::class, 'downloadQrCode'])->name('download');
 
-
-        // convert prospert to Client
-
-        Route::get('/convert/form/{uuid}', [ProspectController::class, 'convertToClient'])->name('convert.form');
-
-
-
     });
 
 });
+
+// routes/web.php
+Route::get('/prospection/{token}', [ProspectController::class, 'showForm'])->name('prospection.form');
+
+
+Route::post('/prospection/{token}', [ProspectController::class, 'storeProspect']);
 
 
 

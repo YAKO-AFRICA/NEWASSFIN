@@ -1889,7 +1889,7 @@
                     </div>
                 </div>
             </div>
-        @elseif ($product->CodeProduit == 'LPREVO')
+        @elseif ($product->CodeProduit == 'LPREVOO')
 
         <fieldset>
             <legend>Déclaration de santé "Assuré" par le souscripteur</legend>

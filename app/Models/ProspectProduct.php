@@ -15,12 +15,13 @@ class ProspectProduct extends Model
 
     protected $fillable = [
         'prospect_id',
-        'product_id'
+        'product_id',
+        'product_formule',
+        'product_code',
     ];
 
     public function itemProduct()
     {
-        return $this->belongsTo(Product::class, 'product_id','IdProduit');
+        return $this->belongsTo(Product::class, 'product_code','CodeProduit');
     }
 }
-

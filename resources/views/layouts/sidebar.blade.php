@@ -24,25 +24,23 @@
         </div>
 
         <div class="overflow-auto " style="height: calc(90vh - 180px)">
-            @can('Voir e-validation')
-            <strong><li class="menu-label">E-VALIDATION</li></strong>
+            {{-- module de gestion de prospection --}}
+            @can('Voir e-prospection')
+            <strong><li class="menu-label">E-Prospection</li></strong>
             <li>
-                <a href="{{ route('prod.validation.index')}}">
+                <a href="{{ route('prospect.index')}}">
                     <div class="parent-icon">
-                        <i class='bx bx-home-alt'></i>
+                        <i class="lni lni-customer fs-5"></i>
                     </div>
-                    <div class="menu-title">Validation</div>
+                    <div class="menu-title">Prospection</div>
                 </a>
             </li>
-            @endcan
-            @can('Voir e-validation')
-            <strong><li class="menu-label">E-PRET</li></strong>
             <li>
-                <a href="{{ route('cotation.index')}}">
+                <a href="{{ route('prospect.index')}}">
                     <div class="parent-icon">
-                        <i class='bx bx-home-alt'></i>
+                        <i class='bx bx-message-square-edit'></i>
                     </div>
-                    <div class="menu-title">Gestion de cotation</div>
+                    <div class="menu-title">Pre-Souscription</div>
                 </a>
             </li>
             @endcan
@@ -75,18 +73,7 @@
                 @endcan
             @endcan
 
-            {{-- module de gestion de prospection --}}
-            @can('Voir e-prospection')
-            <strong><li class="menu-label">E-Prospection</li></strong>
-            <li>
-                <a href="{{ route('prospect.index')}}">
-                    <div class="parent-icon">
-                        <i class="lni lni-customer fs-5"></i>
-                    </div>
-                    <div class="menu-title">Nouvelle prospection</div>
-                </a>
-            </li>
-            @endcan
+            
 
             @can('Voir e-prestation')
                 <li class="menu-label">E-Prestation</li>
@@ -115,15 +102,6 @@
 
             @can('Voir le rapport des activites')
                 <li class="menu-label">Rapport d'activité</li>
-                @can('Voir le rapport de validation')
-                    <li>
-                        <a href="{{ route('report.eValidation')}}">
-                            <div class="parent-icon"><i class="bx bx-line-chart"></i>
-                            </div>
-                            <div class="menu-title">Validation</div>
-                        </a>
-                    </li>
-                @endcan
 
                 @can('Voir le rapport de souscription')
                     <li>
@@ -154,24 +132,6 @@
                 @endcan
                 
             @endcan
-
-            @can('Voir Collaborateur')
-            <strong><li class="menu-label">Collaborateurs</li></strong>
-            <li>
-                <a href="{{ route('setting.indexCollaborateur')}}">
-                    <div class="parent-icon"><i class="bx bx-user-circle"></i>
-                    </div>
-                    <div class="menu-title">Collaborateurs</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('setting.role')}}">
-                    <div class="parent-icon"><i class="fadeIn animated bx bx-user-check"></i>
-                    </div>
-                    <div class="menu-title">Role</div>
-                </a>
-            </li>
-            @endcan
                 
            @can('Voir les paramettres')
             <li class="menu-label">Paramètre</li>
@@ -182,55 +142,12 @@
                     <div class="menu-title">Reseaux</div>
                 </a>
             </li>
-            <li>
-                <a href="{{ route('setting.zone.index')}}">
-                    <div class="parent-icon"><i class="fadeIn animated bx bx-grid"></i>
-                    </div>
-                    <div class="menu-title">Zone</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('setting.equipe.index')}}">
-                    <div class="parent-icon"><i class='bx bxl-microsoft-teams'></i>
-                    </div>
-                    <div class="menu-title">Equipe</div>
-                </a>
-            </li>
 
             <li>
                 <a href="{{ route('setting.user.index')}}">
                     <div class="parent-icon"><i class="bx bx-user-circle"></i>
                     </div>
                     <div class="menu-title">Utilisateurs</div>
-                </a>
-            </li>
-            
-            
-            <li>
-                <a href="{{ route('setting.partner.index')}}">
-                    <div class="parent-icon"><i class="fadeIn animated bx bx-book-content"></i>
-                    </div>
-                    <div class="menu-title">Partenaire</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('setting.motifRejet.index')}}">
-                    <div class="parent-icon"><i class="lni lni-anchor"></i>
-                    </div>
-                    <div class="menu-title">Motif de rejet</div>
-                </a>
-            </li> 
-            <li>
-                <a href="{{ route('setting.prestation_product.index')}}">
-                    <div class="parent-icon"><i class='bx bx-network-chart'></i>
-                    </div>
-                    <div class="menu-title">Produit</div>
-                </a>
-            </li>
-           <li>
-                <a href="{{ route('setting.notifGroup.index')}}">
-                    <div class="parent-icon"><i class='bx bx-bell'></i></div>
-                    <div class="menu-title">Groupe de notifier</div>
                 </a>
             </li>
 

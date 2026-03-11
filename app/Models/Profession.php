@@ -11,7 +11,5 @@ class Profession extends Model
 
     protected $table = 'tblprofession';
 
-    
-
 
 }

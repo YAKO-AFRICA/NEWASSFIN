@@ -230,10 +230,10 @@ class ProductionController extends Controller
     public function stepProduct()
     {
 
-        $reseauId = Reseau::where('codepartenaire', Auth::user()->membre->codereseau)->first();
+        $reseauId = Reseau::where('codepartenaire', Auth::user()->membre->codepartenaire)->first();
         $productByReseau = ReseauProduct::where('codereseau', $reseauId->id)->get();
 
-        // dd($productByReseau);
+        // dd($reseauId);
 
         $products = $productByReseau;
 
@@ -506,7 +506,7 @@ class ProductionController extends Controller
     {
 
         $data = $request->all();
-        $reseauId = Reseau::where('codepartenaire', Auth::user()->membre->codereseau)->first();
+        $reseauId = Reseau::where('codepartenaire', Auth::user()->membre->codepartenaire)->first();
         $productByReseau = ReseauProduct::where('codereseau', $reseauId->id)->get();
         $formuleProduct = ReseauProduct::where('codereseau', $reseauId->id)->where('codeproduit', $request->codeproduit)->first();
 

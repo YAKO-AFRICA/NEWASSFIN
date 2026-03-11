@@ -2,39 +2,26 @@
 
 namespace App\Http\Controllers\Admin;
 
-use PDF;
-use Carbon\Carbon;
-use Dompdf\Dompdf;
-use App\Models\User;
+use App\Http\Controllers\Controller;
 use App\Models\Membre;
 use App\Models\Product;
-use App\Models\Prospect;
-
-
-use App\Models\TblVille;
-use App\Models\Signature;
 use App\Models\Profession;
-// use BaconQrCode\Encoder\QrCode;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\AssuranceInfo;
-use App\Models\ReseauProduct;
-use App\Models\SuivieProspert;
-use App\Models\contactProspert;
-use App\Models\PartnerProspert;
-use App\Models\ProductProspert;
-use App\Models\ProduitGarantie;
-use App\Models\ProspectProduct;
-use App\Models\AdherentProspert;
-use App\Models\DocumentProspert;
+use App\Models\Prospect;
 use App\Models\ProspectFollowup;
+use App\Models\ProspectProduct;
+use App\Models\Reseau;
+use App\Models\ReseauProduct;
 use App\Models\TblSecteurActivite;
+use App\Models\TblVille;
+use App\Models\User;
+use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use PDF;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProspectController extends Controller
@@ -46,139 +33,47 @@ class ProspectController extends Controller
 
     public function index(Request $request)
     {
-        $prospects = AdherentProspert::orderBy('created_at', 'desc')->paginate(20);
+        $query = Prospect::where('userAdd_uuid', auth()->user()->id)->orderBy('id', 'desc');
 
-        $myProspects = AdherentProspert::where('reference_par', Auth::user()->idmembre)->where('etat' , 'Actif')->orderBy('created_at', 'desc')->paginate(20);
-      
-
-        return view('prospects.index', compact('prospects','myProspects'));
-    }
-
-    public function finish($uuid)
-    {
-
-        $prospect = AdherentProspert::where('uuid', $uuid)->firstOrFail();
-
-        return view('prospects.finishStep', compact('prospect'));
-    }
-
-    public function signaturePad(Request $request)
-    {
-
-        Log::info($request->all());
-
-        try{
-
-            DB::beginTransaction();
-
-            if ($request->has('signature')) {
-                $signatureData = $request->input('signature');
-                $signatureFileName = 'signature_' . $request->prospect_code . '.png';
-                $signaturePath = 'signatures/' . $signatureFileName;
-                Storage::disk('public')->put($signaturePath, base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $signatureData)));
-
-                AssuranceInfo::where('prospert_uuid', $request->prospect_uuid)->update([
-                    'signature' => $signaturePath,
-                ]);
-
-                Signature::create([
-                    'operation_type' => 'prospect_signature',
-                    'reference_key' => $request->prospect_uuid,
-                    'key_uuid' => Str::uuid(),
-                    'signature_path' => $signaturePath,
-                    'status' => 'pending',
-                ]);
-            }
-
-
-            DB::commit();
-
-            return $response = [
-                'type' => 'success',
-                'urlback' => 'back',
-                'message' => "Enregistré avec succès!",
-                'code' => 200,
-            ];
-
-        }catch(\Exception $e){
-            DB::rollBack();
-
-            log::info($e->getMessage());
-
-            return $response = [
-                'type' => 'error',
-                'urlback' => '',
-                'message' => "Erreur système! $e->getMessage()",
-                'code' => 500,
-            ];
+        if ($request->has('code') && !empty($request->code)) {
+            $query->where('code', 'like', '%' . $request->code . '%');
         }
-            
-    }
 
+        if ($request->has('first_name') && !empty($request->first_name)) {
+            $query->where('first_name', 'like', '%' . $request->first_name . '%');
+        }
 
-    private function getAllCountries()
-    {
-        $baseUrl = 'https://api.thecompaniesapi.com/v2/locations/countries';
-        $allCountries = [];
+        if ($request->has('last_name') && !empty($request->last_name)) {
+            $query->where('last_name', 'like', '%' . $request->last_name . '%');
+        }
 
-        $page = 1;
-        $lastPage = 1;
-
-        do {
-            // Appel de l’API avec pagination
-            $response = Http::withOptions(['timeout' => 60])->get($baseUrl, [
-                'page' => $page,
-                'per_page' => 50,
+        if ($request->has('date_from') && !empty($request->date_from) && 
+            $request->has('date_to') && !empty($request->date_to)) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($request->date_from)->startOfDay(),
+                Carbon::parse($request->date_to)->endOfDay()
             ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-
-                // Ajouter les pays de cette page
-                if (isset($data['countries'])) {
-                    $allCountries = array_merge($allCountries, $data['countries']);
-                }
-
-                // Pagination : on récupère la dernière page
-                $lastPage = $data['meta']['lastPage'] ?? 1;
-                $page++;
-            } else {
-                break; 
-            }
-        } while ($page <= $lastPage);
-
-        // On récupère uniquement les noms français
-        // $paysList = collect($allCountries)->filter()->sort()->values();
-
-        return $allCountries;
-    }
-
-
-    public function create($token)
-    {
-
-        $response = Http::withOptions(['timeout' => 60])->get(config('services.base_url_api') . '/enov/villes');
-
-        if ($response->successful()) {
-            $villes = $response->json();
-        } else {
-            $villes = [];
         }
 
-        $commerciale = User::where('idmembre', $token)->firstOrFail();
+        $allPropects = $query->get();
 
-        $pays = $this->getAllCountries();
+        $reseauId = Reseau::where('codepartenaire', Auth::user()->membre->codepartenaire)->first();
+        $productByReseau = ReseauProduct::where('codereseau', $reseauId->id)->get();
 
-        // $productByReseau = ReseauProduct::select('CodeProduit')->where('codereseau', Auth::user()->membre->codereseau)->get();
-        $productByReseau = ReseauProduct::select('CodeProduit')->where('codereseau', $commerciale->membre->codereseau)->get();
+        // \dd($productByReseau);
+        $product = $productByReseau;
 
-        $codeProduits = $productByReseau->pluck('CodeProduit')->toArray();
+        
+        $villes = TblVille::select('*')->get();
+        $professions = Profession::select('*')->get();
+        $secteurActivites = TblSecteurActivite::select('*')->get();
 
-        $products = Product::whereIn('CodeProduit', $codeProduits)->get();
+        if ($request->has('print')) {
+            $pdf = PDF::loadView('prospects.print', compact('allPropects'));
+            return $pdf->download('rapport_prospection_'.date('Y-m-d').'.pdf');
+        }
 
-        $professions = Profession::select('MonLibelle')->get();
-        $secteurActivites = TblSecteurActivite::orderBy('MonLibelle')->get();
-        return view('prospects.create', compact('villes', 'professions', 'products', 'pays', 'commerciale','secteurActivites'));
+        return view('prospects.index', compact('allPropects', 'villes', 'professions', 'secteurActivites', 'product'));
     }
 
     /**
@@ -189,197 +84,113 @@ class ProspectController extends Controller
         //
     }
 
-
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
+
+        Log::info("Début de la création du prospect", ['request' => $request->all()]);
+        // Validation des données
+        $validated = $request->validate([
+            // 'code' => 'required|string|max:191|unique:prospects',
+            'first_name' => 'required|string|max:191',
+            'last_name' => 'required|string|max:191',
+            'email' => 'nullable|email|max:191',
+            'mobile' => 'nullable|string|max:191',
+            'adress' => 'nullable|string|max:191',
+            'city' => 'nullable|string|max:191',
+            'profession_uuid' => 'nullable|string|max:191',
+            'secteurActivity_uuid' => 'nullable|string|max:191',
+            'natureProspect' => 'nullable|string|max:191',
+            'produit_id' => 'nullable|string|max:191',
+            'montantPrime' => 'nullable|string|max:191',
+            'dateEffet' => 'nullable|date',
+            'typeCompagnie' => 'nullable|string|max:191',
+            'modeDePaiment' => 'nullable|string|max:191',
+            'lieuEvenement' => 'nullable|string|max:191',
+            'etat' => 'nullable|string|max:191',
+            'status' => 'nullable|string|max:191',
+            'note' => 'nullable|string',
+            'products' => 'nullable|array', 
+        ]);
+
         DB::beginTransaction();
 
         try {
+            $code = Refgenerate(Prospect::class, 'P', 'code');
+            // Création du prospect
+            $prospect = new Prospect();
+            $prospect->uuid = Str::uuid();
+            $prospect->code = $code;
 
-            Log::info($request->all());
-            // 🔹 Générer un UUID et un code
-            $uuid = (string) Str::uuid();
-            $code = 'PROS-' . strtoupper(Str::random(6));
+            $prospect->first_name = $validated['first_name'];
+            $prospect->last_name = $validated['last_name'];
+            $prospect->email = $validated['email'] ?? null;
+            $prospect->mobile = $validated['mobile'] ?? null;
+            $prospect->adress = $validated['adress'] ?? null;
+            $prospect->city = $validated['city'] ?? null;
+            $prospect->profession_uuid = $validated['profession_uuid'] ?? null;
+            $prospect->secteurActivity_uuid = $validated['secteurActivity_uuid'] ?? null;
+            $prospect->natureProspect = $validated['natureProspect'] ?? null;
+            // $prospect->produit_id = $validated['produit_id'] ?? null;
+            $prospect->montantPrime = $validated['montantPrime'] ?? null;
+            $prospect->dateEffet = $validated['dateEffet'] ?? null;
+            $prospect->typeCompagnie = $validated['typeCompagnie'] ?? null;
+            $prospect->modeDePaiment = $validated['modeDePaiment'] ?? null;
+            $prospect->lieuEvenement = $validated['lieuEvenement'] ?? null;
+            $prospect->etat = $validated['etat'] ?? 'actif';
+            $prospect->status = $validated['status'] ?? 'nouveau';
+            $prospect->note = $validated['note'] ?? null;
+            $prospect->userAdd_uuid = auth()->user()->id;
+            
+            $prospect->save();
 
-            // 🔹 Enregistrer l'adhérent principal
-            $prospect = AdherentProspert::create([
-                'uuid' => $uuid,
-                'code' => $code,
-                'civilite' => $request->civilite,
-                'nom' => $request->nom,
-                'prenom' => $request->prenom,
-                'genre' => $request->genre,
-                'date_naissance' => $request->date_naissance,
-                'lieu_naissance' => $request->lieu_naissance,
-                'lieu_residence' => $request->lieu_residence,
-                'situation_matrimoniale' => $request->situation_matrimoniale,
-                'type_piece_identite' => $request->type_piece_identite,
-                'numero_piece_identite' => $request->numero_piece_identite,
-                'email' => $request->email,
-                'adresse' => $request->adresse,
-                'pays' => $request->pays,
-                'profession' => $request->profession,
-                // 'employeur' => $request->employeur,
-                'employeur' => $request->employeur,
-                'personneRessource' => $request->personneRessource,
-                'contactRessource' => $request->contactRessource,
-                'personneRessource2' => $request->personneRessource2,
-                'contactRessource2' => $request->contactRessource2,
-                'notes' => $request->notes,
-                'reference_par' => $request->commerciale_code,
-            ]);
+            Log::info("Fin de la création du prospect", ['prospect' => $prospect]);
 
-            // 🔹 Enregistrer le produit sélectionné
-            if ($request->has('produits')) {
-                foreach ($request->produits as $prod) {
-                    ProductProspert::create([
-                        'uuid' => (string) Str::uuid(),
-                        'code' => 'PP-' . strtoupper(Str::random(6)),
-                        'product_uuid' => $prod,
-                        'prospert_uuid' => $uuid,
+            // Vérifie s'il y a des produits sélectionnés
+            if (!empty($request->products)) {
+                foreach ($request->products as $productId) {
+                    $reseauProduct = ReseauProduct::where('codeproduitformule', $productId)->first();
+
+                        Log::info("Produit trouvé", ['reseauProduct' => $reseauProduct]);
+
+                    ProspectProduct::create([
+                        'prospect_id' => $prospect->id,
+                        'product_id' => $reseauProduct->id,
+                        'product_formule' => $productId,
+                        'product_code' => $reseauProduct->codeproduit
                     ]);
                 }
             }
 
-            // 🔹 Enregistrer la signature et informations assurance
-            if ($uuid) {
-                // $signatureData = $request->input('signature');
-                // $signatureFileName = 'signature_' . time() . '.png';
-                // $signaturePath = 'signatures/' . $signatureFileName;
-                // Storage::disk('public')->put($signaturePath, base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $signatureData)));
-                $rib = $request->codeBanque .'-'. $request->codeGuichet .'-'. $request->numeroCompte .'-'. $request->cleRib;
-
-                AssuranceInfo::create([
-                    'uuid' => (string) Str::uuid(),
-                    'code' => 'AS-' . strtoupper(Str::random(6)),
-                    'produit_uuid' => $request->produits[0] ?? null,
-                    // 'signature' => $signaturePath,
-                    'datteEffet' => $request->datteEffet,
-                    'modePaiement' => $request->modePaiement,
-                    'periodicite' => $request->periodicite,
-                    'dejaClient' => $request->dejaClient,
-                    'assurerAuTerme' => $request->assurerAuTerme,
-                    'duree' => $request->duree,
-                    'prospert_uuid' => $uuid,
-                    'banque' => $request->banque,
-                    'rib' => $rib,
-                    'codeBanque' => $request->codeBanque,
-                    'codeGuichet' => $request->codeGuichet,
-                    'numeroCompte' => $request->numeroCompte,
-                    'cleRib' => $request->cleRib
-                ]);
-            }
-
-            // 🔹 Enregistrer les contacts
-            $contacts = json_decode($request->contacts, true);
-            if (!empty($contacts)) {
-                foreach ($contacts as $item) {
-                    contactProspert::create([
-                        'uuid' => (string) Str::uuid(),
-                        'code' => 'CON-' . strtoupper(Str::random(6)),
-                        'prospert_uuid' => $uuid,
-                        'contactType' => $item['contactType'] ?? '',
-                        'contact' => $item['contact'] ?? '',
-                        'etat' => 'ACTIF',
-                    ]);
-                }
-            }
-
-            // 🔹 Enregistrer les partenaires
-            $partners = json_decode($request->partners, true);
-
-            log::info($partners);
-            if (!empty($partners)) {
-                foreach ($partners as $item) {
-                    PartnerProspert::create([
-                        'uuid' => (string) Str::uuid(),
-                        'code' => 'PART-' . strtoupper(Str::random(6)),
-                        'prospert_uuid' => $uuid,
-                        'nom' => $item['nom'] ?? '',
-                        'prenom' => $item['prenom'] ?? '',
-                        'genre' => $item['genre'] ?? '',
-                        'civilite' => $item['civilite'] ?? '',
-                        'naturepiece' => $item['naturepiece'] ?? '',
-                        'numeropiece' => $item['numeropiece'] ?? '',
-                        'email' => $item['email'] ?? '',
-                        'situationMatrimoniale' => $item['situationMatrimoniale'] ?? '',
-                        'dateNaissance' => $item['dateNaissance'] ?? '',
-                        'lieuNaissance' => $item['lieuNaissance'] ?? '',
-                        'lieuResidence' => $item['lieuResidence'] ?? '',
-                        'adresseComplete' => $item['adresseComplete'] ?? '',
-                        'profession' => $item['profession'] ?? '',
-                        'employeur' => $item['employeur'] ?? '',
-                        'mobile' => $item['mobile'] ?? '',
-                        'filliation_code' => $item['filliation_code'] ?? '',
-                        'code_partner' => $item['type'] ?? '',
-                    ]);
-                }
-            }
-
-           $documents = $request->file('documents');
-
-            Log::info('documents reçus');
-            Log::info($request->file('documents'));
-
-            if ($documents) {
-                foreach ($documents as $index => $doc) {
-
-                    if (!isset($doc['file']) || !$doc['file']->isValid()) {
-                        continue;
-                    }
-
-                    $nature = $request->input("documents.$index.nature");
-
-                    $path = $doc['file']->store('prospects_docs', 'public');
-
-                    DocumentProspert::create([
-                        'uuid' => (string) Str::uuid(),
-                        'code' => 'DOC-' . strtoupper(Str::random(6)),
-                        'prospert_uuid' => $uuid,
-                        'filepath' => $path,
-                        'fileName' => $doc['file']->getClientOriginalName(),
-                        'nature' => $nature,
-                        'etat' => 'ACTIF',
-                    ]);
-                }
-            }
-
-
-            DB::commit();
-
+            // DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Prospect enregistré avec succès',
-                'code' => $code,
-                'uuid' => $uuid
-            ]);
+                'message' => 'Prospect créé avec succès',
+                'data' => $prospect
+            ], 201);
 
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur: ' . $e->getMessage()
+                'message' => 'Erreur lors de la création du prospect',
+                'error' => $e->getMessage(),
+                Log::error("Erreur lors de la création du prospect: " . $e->getMessage()),
             ], 500);
         }
     }
 
-
     public function addProduct(request $request)
     {
 
-
         DB::beginTransaction();
         try {
-            $code = Refgenerate(ProductProspert::class, 'P', 'code');
-
-            // 🔹 Enregistrer les produits
             if (!empty($request->products)) {
                 foreach ($request->products as $productId) {
-                    ProductProspert::create([
-                        'uuid' => (string) Str::uuid(),
-                        'code' => $code,
-                        'prospert_uuid' => $request->prospect_id,
-                        'product_uuid' => $productId,
+                    ProspectProduct::create([
+                        'prospect_id' => $request->prospect_id,
+                        'product_id' => $productId,
                     ]);
                 }
             }
@@ -406,68 +217,37 @@ class ProspectController extends Controller
         }
     }
 
-
-
-    public function show($uuid)
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
+        $prospect = Prospect::with(['followups.user'])->where('id', $id)->firstOrFail();
 
-        // Dans le contrôleur
-        $response = Http::withOptions(['timeout' => 60])->get(config('services.base_url_api') . '/enov/villes');
+        $commerciaux = Membre::whereNotNull('codeagent')->whereIn('codepartenaire', ["ASSFIN", "SAAF"])->limit(500)->get();
 
-        if ($response->successful()) {
-            $villes = $response->json();
-            $villesMap = collect($villes)->keyBy('CodeVille')->map(function($ville) {
-                return $ville['MonLibelle'];
-            })->toArray();
-        } else {
-            $villesMap = [];
-        }
+        $professions = Profession::orderBy('MonLibelle')->get();
+        $secteurActivites = TblSecteurActivite::orderBy('MonLibelle')->get();
+        $products = Product::orderBy('MonLibelle')->get();
+        $villes = TblVille::orderBy('MonLibelle')->get();
 
-        $badgeColors = [
-            'mobile'   => 'primary',
-            'fixe'     => 'danger',
-            'whatsapp' => 'success',
-            'email'    => 'warning',
-            'Wave'     => 'info',
-        ];
-
-        $prospect = AdherentProspert::with(['followups.user'])->where('uuid', $uuid)->firstOrFail();
-        $assurance = AssuranceInfo::where('code', $prospect->code)->first();
-        $contacts = ContactProspert::where('prospert_uuid', $prospect->uuid)->get();
-        $partenaires = PartnerProspert::where('prospert_uuid', $prospect->uuid)->get();
-        $documents = DocumentProspert::where('prospert_uuid', $prospect->uuid)->get();
-        $produits = ProductProspert::where('prospert_uuid', $prospect->uuid)->get();
-        // $allProducts = Product::orderBy('MonLibelle')->get();
-
-        $productByReseau = ReseauProduct::select('CodeProduit')
-            ->where('codereseau', Auth::user()->membre->codereseau)
-            ->get();
-
-        $codeProduits = $productByReseau->pluck('CodeProduit')->toArray();
-
-        $allProducts = Product::whereIn('CodeProduit', $codeProduits)->get();
-
-   
-
-
-        return view('prospects.show', compact('prospect', 'assurance', 'contacts', 'partenaires', 'documents', 'produits','villesMap','badgeColors','allProducts'));
+        return view('prospects.show', compact('prospect','commerciaux','products','professions','secteurActivites','villes'));
     }
 
 
     public function storeFollowup(Request $request, $uuid)
     {
-    
-        $prospect = AdherentProspert::where('uuid', $uuid)->firstOrFail();
+        $prospect = Prospect::where('uuid', $uuid)->firstOrFail();
         
-        $followup = SuivieProspert::create([
+        $followup = ProspectFollowup::create([
             'uuid' => Str::uuid(),
-            'prospect_uuid' => $prospect->uuid,
+            'prospect_id' => $prospect->id,
             'type' => $request->type,
             'notes' => $request->notes,
             'followup_date' => $request->followup_date,
             'next_followup_date' => $request->next_followup_date,
             'status' => $request->status,
-            'user_id' => Auth::user()->idmembre
+            'user_id' => auth()->user()->id,
         ])->save();
         
         // Mettre à jour le statut du prospect si nécessaire
@@ -478,18 +258,31 @@ class ProspectController extends Controller
         return redirect()->back()->with('success', 'Suivi enregistré avec succès');
     }
 
-    public function convertToClient(Request $request, $uuid)
+    public function convertToClient(Request $request, $id)
     {
-        $prospect = AdherentProspert::where('uuid', $uuid)->firstOrFail();
-        $partner = PartnerProspert::where('prospert_uuid', $uuid)->get();
-        $assures = PartnerProspert::where('prospert_uuid', $uuid)->where('code_partner', 'ASS')->get();
-        $beneficiaries = PartnerProspert::where('prospert_uuid', $uuid)->where('code_partner', 'BEN')->get();
-        $products = ProductProspert::where('prospert_uuid', $uuid)->get();
-        $allProducts = ReseauProduct::select('codeproduit', 'libelleproduit')
-            ->where('codereseau', Auth::user()->membre->codereseau)->get();
-
+        // $request->validate([
+        //     'client_code' => 'required|unique:clients,code'
+        // ]);
         
-        return view('productions.create.createProspert', compact('prospect','assures', 'beneficiaries', 'products','allProducts'));
+        // $prospect = Prospect::where('id', $id)->firstOrFail();
+        
+        // // Créer le client
+        // $client = Client::create([
+        //     'uuid' => Str::uuid(),
+        //     'code' => $request->client_code,
+        //     'first_name' => $prospect->first_name,
+        //     'last_name' => $prospect->last_name,
+        //     // ... autres champs
+        // ]);
+        
+        // // Mettre à jour le prospect
+        // $prospect->update([
+        //     'status' => 'converted',
+        //     'client_id' => $client->id
+        // ]);
+        
+        // return redirect()->route('clients.show', $client->id)
+        //     ->with('success', 'Prospect converti en client avec succès');
     }
 
     public function edit($uuid)
@@ -622,7 +415,7 @@ class ProspectController extends Controller
     // App\Http\Controllers\ProspectionController.php
     public function showForm($token)
     {
-        $commercial = User::where('idmembre', $token)->firstOrFail();
+        $commercial = User::where('idmembre', $token)->first();
 
         $professions = Profession::orderBy('MonLibelle')->get();
         $secteurActivites = TblSecteurActivite::orderBy('MonLibelle')->get();
@@ -641,7 +434,7 @@ class ProspectController extends Controller
 
     public function storeProspect(Request $request, $token)
     {
-        $commercial = User::where('qr_code_token', $token)->firstOrFail();
+        $commercial = User::where('idmembre', $token)->first();
         
         {
             // Validation des données
@@ -713,12 +506,10 @@ class ProspectController extends Controller
     
     
                 return response()->json([
-                    'type' => 'success',
-                    'urlback' => url("https://web.yakoafricassur.com/"),
-                    'message' => "Enregistré avec succès !",
-                    'code' => 200,
+                    'success' => true,
+                    'message' => 'Prospect créé avec succès',
                     'data' => $prospect
-                ]);
+                ], 201);
     
             } catch (\Exception $e) {
                 return response()->json([
@@ -730,18 +521,117 @@ class ProspectController extends Controller
         }
     }
 
+    // public function downloadQrCode()
+    // {
+    //     $user = auth()->user();
+        
+    //     $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')
+    //         ->size(500)
+    //         ->generate(route('prospection.form', $user->idmembre));
+        
+    //     return response($qrCode)
+    //         ->header('Content-Type', 'image/svg')
+    //         ->header('Content-Disposition', 'attachment; filename="qr-code-prospection.svg"');
+    // }
+
     public function downloadQrCode()
     {
-        $user = auth()->user();
-        
-        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')
-            ->size(500)
-            ->generate(route('prospection.form', $user->qr_code_token));
-        
-        return response($qrCode)
-            ->header('Content-Type', 'image/svg')
-            ->header('Content-Disposition', 'attachment; filename="qr-code-prospection.svg"');
+        try {
+            $user = auth()->user();
+            
+            // Générer le QR code
+            $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')
+                ->size(400)
+                ->margin(1)
+                ->errorCorrection('M')
+                ->generate(route('prospection.form', $user->idmembre));
+            
+            // Construire manuellement le SVG final
+            $svg = $this->buildSvgWithText($qrCode, "Veuillez scanner pour connaître nos produits");
+            
+            return response($svg)
+                ->header('Content-Type', 'image/svg+xml')
+                ->header('Content-Disposition', 'attachment; filename="qr-code-prospection.svg"');
+                
+        } catch (\Exception $e) {
+            // En cas d'erreur, retourner une réponse simple
+            return response()->json(['error' => 'Erreur lors de la génération du QR code'], 500);
+        }
     }
 
-  
+    private function buildSvgWithText($qrCodeSvg, $text)
+    {
+        // Dimensions
+        $qrSize = 800;
+        $padding = 5;
+        $textHeight = 100;
+        $totalHeight = $qrSize + $textHeight + ($padding * 2);
+        $totalWidth = $qrSize + ($padding * 2);
+        
+        // Extraire uniquement les paths du QR code
+        preg_match_all('/<path[^>]*d="[^"]*"[^>]*>/', $qrCodeSvg, $paths);
+        
+        // Commencer la construction du SVG
+        $svg = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
+        $svg .= '<svg xmlns="http://www.w3.org/2000/svg" width="' . $totalWidth . '" height="' . $totalHeight . '" viewBox="0 0 ' . $totalWidth . ' ' . $totalHeight . '">';
+        
+        // Fond blanc
+        $svg .= '<rect width="100%" height="100%" fill="white"/>';
+        
+        // Style du texte
+        $svg .= '<style>
+            .qr-text { 
+                font-family: Arial, sans-serif; 
+                font-size: 22px; 
+                font-weight: bold; 
+                fill: #333333; 
+                text-anchor: middle;
+                dominant-baseline: middle;
+            }
+            .sub-text {
+                font-family: Arial, sans-serif;
+                font-size: 18px;
+                fill: #666666;
+                text-anchor: middle;
+            }
+        </style>';
+        
+        // Calculer les positions pour centrer
+        $centerX = $totalWidth / 2;
+        $textTopY = 50;
+        
+        // Ajouter le titre
+        $svg .= '<text x="' . $centerX . '" y="' . $textTopY . '" class="qr-text">' . htmlspecialchars('Scannez ce QR code') . '</text>';
+        
+        // Ajouter la description
+        $words = explode(' ', $text);
+        if (count($words) > 4) {
+            $mid = ceil(count($words) / 2);
+            $line1 = implode(' ', array_slice($words, 0, $mid));
+            $line2 = implode(' ', array_slice($words, $mid));
+            
+            $svg .= '<text x="' . $centerX . '" y="' . ($textTopY + 30) . '" class="sub-text">' . htmlspecialchars($line1) . '</text>';
+            $svg .= '<text x="' . $centerX . '" y="' . ($textTopY + 55) . '" class="sub-text">' . htmlspecialchars($line2) . '</text>';
+        } else {
+            $svg .= '<text x="' . $centerX . '" y="' . ($textTopY + 30) . '" class="sub-text">' . htmlspecialchars($text) . '</text>';
+        }
+        
+        // Ajouter les paths du QR code (centré)
+        if (!empty($paths[0])) {
+            // Centrer le QR code horizontalement
+            $qrX = ($totalWidth - $qrSize) / 2;
+            $qrY = $textHeight + 20;
+            
+            $svg .= '<g transform="translate(' . $qrX . ', ' . $qrY . ')">';
+            foreach ($paths[0] as $path) {
+                $svg .= $path;
+            }
+            $svg .= '</g>';
+        }
+        
+        $svg .= '</svg>';
+        
+        return $svg;
+    }
+
 }

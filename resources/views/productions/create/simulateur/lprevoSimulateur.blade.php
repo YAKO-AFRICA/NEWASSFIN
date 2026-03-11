@@ -429,13 +429,14 @@
             simulationData.infoSimulation = {
                 isAssure: "oui",
                 primeFinal: primeTotale,
-                primepricipale: primeBase + primePathologiesTotal,
+                primepricipale: primeBase,
                 primePathologies: primePathologiesTotal,
                 codeProduit: "LPREVO",
                 periodicite: "A",
                 duree: 1,
+                surprime: primePathologiesTotal,
                 capital: capital,
-                fraisAdhesion: fraie_adhesion,
+                fraisadhesion: fraie_adhesion,
                 bonneSante: bonneSanteCheck.checked,
                 pathologies: pathologies
             };

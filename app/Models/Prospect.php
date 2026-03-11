@@ -75,6 +75,13 @@ class Prospect extends Model
         return $this->hasMany(ProspectFollowup::class)->orderBy('followup_date', 'desc');
     }
 
+    public function nextFollowup()
+    {
+        return $this->hasOne(ProspectFollowup::class)
+            ->whereNotNull('next_followup_date')
+            ->orderBy('next_followup_date', 'asc');
+    }
+
     public function profession()
     {
         return $this->belongsTo(TblProfession::class, 'profession_uuid','IdProfession');
@@ -85,7 +92,7 @@ class Prospect extends Model
     }
     public function ville()
     {
-        return $this->belongsTo(TblVille::class, 'city','idville');
+        return $this->belongsTo(TblVille::class, 'city','IdTblVille');
     }
 
     public function products()

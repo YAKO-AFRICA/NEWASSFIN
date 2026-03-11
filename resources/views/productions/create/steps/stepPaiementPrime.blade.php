@@ -334,7 +334,7 @@
                                 <label for="fraisAdhesion" class="form-label">Frais d’adhésion :</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control" id="fraisAdhesion" name="fraisadhesion"
-                                        min="0" value="5500">
+                                        min="0" value="">
                                     <span class="input-group-text">FCFA</span>
                                 </div>
                             </div>
@@ -390,20 +390,28 @@
     if (modeMobile) modeMobile.style.display = 'none';
     if (modeSource) modeSource.style.display = 'none';
 
-    modePaiementRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (modeBancaire) modeBancaire.style.display = 'none';
-            if (modeMobile) modeMobile.style.display = 'none';
-            if (modeSource) modeSource.style.display = 'none';
+    document.querySelectorAll('input[name="modepaiement"]').forEach(radio => {
+
+        radio.addEventListener('change', function () {
+
+            document.getElementById('mode_bancaire').style.display = 'none';
+            document.getElementById('mode_mobile').style.display = 'none';
+            document.getElementById('mode_source').style.display = 'none';
 
             if (this.value === 'VIR' || this.value === 'BANK' || this.value === 'CHK') {
-                if (modeBancaire) modeBancaire.style.display = 'block';
-            } else if (this.value === 'EBANK') {
-                if (modeMobile) modeMobile.style.display = 'block';
-            } else if (this.value === 'SOURCE') {
-                if (modeSource) modeSource.style.display = 'block';
+                document.getElementById('mode_bancaire').style.display = 'block';
             }
+
+            if (this.value === 'EBANK') {
+                document.getElementById('mode_mobile').style.display = 'block';
+            }
+
+            if (this.value === 'SOURCE') {
+                document.getElementById('mode_source').style.display = 'block';
+            }
+
         });
+
     });
 
     // ==================== GESTION DU REVERSEMENT (CADENCE) ====================
