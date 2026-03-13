@@ -351,7 +351,8 @@ class ProductionController extends Controller
     {
         $product = Product::where('CodeProduit', $codeProduit)->first();
         $productGarantie = ProduitGarantie::where(['codeproduit' => $codeProduit, 'branche' => 'IND'])->get();
-        $villes = TblVille::select('libelleVillle')->get();
+        $villes = TblVille::select('*')->limit(10)->get();
+        // dd($villes);
         $professions = Profession::select('MonLibelle')->get();
         $secteurActivites = TblSecteurActivite::select('MonLibelle')->get();
         // $societes = TblSociete::select('MonLibelle')->get();
@@ -1849,13 +1850,13 @@ class ProductionController extends Controller
         DB::beginTransaction();
         try {
 
-            if ($request->modepaiement === "Mobile_money") {
+            if ($request->modepaiement === "EBANK") {
                 $numerocompte = $request->numMobile;
             } else {
                 $numerocompte = $request->numerocompte;
             }
             Contrat::where('id', $id)->update([
-                'dateeffet' => $request->dateEffet,
+                // 'dateeffet' => $request->dateEffet,
                 'modepaiement' => $request->modepaiement,
                 'organisme' => $request->organisme,
                 'agence' => $request->agence,

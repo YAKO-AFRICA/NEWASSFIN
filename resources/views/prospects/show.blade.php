@@ -60,16 +60,16 @@
                                             <span data-bs-toggle="modal" data-bs-target="#productAddModal"> <i class="fadeIn animated bx bx-plus-medical text-primary fs-6"></i> Ajouter</span>
                                         </button>
                                     </p>
-                                    @if($prospect->products->count() > 0)
+                                    @if($prospect && $prospect->products && $prospect->products->count() > 0)
                                         <div class="d-flex flex-wrap gap-2" id="products-container">
                                             @foreach($prospect->products as $product)
                                                 <span class="badge bg-secondary text-white d-flex align-items-center product-badge" 
-                                                      id="product-{{ $product->IdProduit }}">
-                                                    {{ $product->itemProduct->MonLibelle }}
+                                                      id="product-{{ $product->IdProduit ?? '' }}">
+                                                    {{ $product->itemProduct->MonLibelle ?? '' }}
 
                                                     
                                                     <button class="btn btn-sm btn-link p-0 ms-2 text-white delete-product" 
-                                                            data-product-id="{{ $product->itemProduct->IdProduit }}"
+                                                            data-product-id="{{ $product->itemProduct->IdProduit ?? '' }}"
                                                             data-prospect-id="{{ $prospect->id }}"
                                                             title="Supprimer ce produit">
                                                         <i class="bx bxs-trash fs-6 p-1 mx-auto"></i>

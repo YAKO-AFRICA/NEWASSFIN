@@ -441,19 +441,15 @@ Route::prefix('prospect')->name('prospect.')->group(function(){
 
 });
 
+
+
 // routes/web.php
 Route::get('/prospection/{token}', [ProspectController::class, 'showForm'])->name('prospection.form');
 
 
-Route::post('/prospection/{token}', [ProspectController::class, 'storeProspect']);
+Route::post('/prospection/{token}', [ProspectController::class, 'storeProspect'])->name('storeProspect');
 
 
-
-// routes/web.php
-
-Route::get('/prospection/{token}', [ProspectController::class, 'showForm'])->name('prospection.form');
-
-Route::post('/prospection/{token}', [ProspectController::class, 'storeProspect']);
 
 
 Route::get('storage/documents/{file}', function ($file) {
@@ -514,12 +510,6 @@ route::get('/generate-bulletin-demo', [EpretController::class, 'generateBu'])->n
 Route::get('/generate-qr', [ProductionController::class, 'getQrCode'])->name('generate-qr-code');
 
 Route::post('/cretePaiement', [PaiementController::class, 'cretePaiement']);
-
-
-
-
-
-
 
 
 

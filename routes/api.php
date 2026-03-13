@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\PaiementController;
 use App\Http\Controllers\Admin\PrestationController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Setting\SiteWebController;
 use App\Http\Controllers\Setting\UserController;
 use App\Http\Controllers\Sites\SitePropositionController;
@@ -126,6 +127,8 @@ Route::get('/collaborateurs/users', function(Request $request) {
 
 
 Route::post('/save-site-simulateur-data', [SitePropositionController::class, 'saveSiteSimulateurData']);
+
+Route::post('/sendSms',[MessageController::class,'sendSms']);
 
 // Route::get('/get-user-data', [UserController::class, 'userDataApi']);
 

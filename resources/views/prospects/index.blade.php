@@ -36,16 +36,24 @@
                 <div class="card-body text-center">
                     {!! QrCode::size(200)->generate(route('prospection.form', auth()->user()->idmembre)) !!}
                     <p class="mt-2">Scanner ce code avec votre smartphone</p>
-                    <a href="{{ route('prospect.download') }}" class="btn btn-sm btn-outline-primary">
-                        Télécharger le QR Code
-                    </a>
+                    <div class="row">
+                        <div class="col">
+                            <a href="{{ route('prospect.download') }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fadeIn animated bx bx-download"></i> Télécharger le QR Code
+                            </a>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#shareLinkModal">
+                                <i class="fadeIn animated bx bx-share-alt"></i> Partager le lien
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-sm-12 col-md-8">
             <div class="card border-0 shadow-sm radius-10">
                 <div class="card-body p-4">
-                    
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <div>
                             <h5 class="mb-0 text-uppercase fw-bold">Gestion des Prospections</h5>
@@ -217,6 +225,7 @@
     </div>
 
     @include('prospects.addNew')
+    @include('prospects.shareLinkModal')
 
 </div>
 @endsection

@@ -3,505 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>YAKO AFRICA - Formulaire de Prospection</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <title>Document</title>
-</head>
-<body>
-    <div class="container mt-4">
-        @php
-            $token = auth()->user()->idmembre;
-            $commercial = \App\Models\User::where('idmembre', $token)->firstOrFail();
-        @endphp
-        <form method="post" action="{{ route('prospection.form', $token) }}" id="multiStepForm" class="submitForm">
-            @csrf
-            
-            <!-- Progress Bar -->
-            <div class="progress mb-4">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" id="formProgress" style="width: 0%; background-color: #1e4520" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
-            <input type="hidden" name="{{$commercial->idmembre}}">
-            
-            <!-- Steps Indicators - Version améliorée pour mobile -->
-            <ul class="nav nav-pills mb-4 justify-content-center flex-nowrap overflow-auto" id="formSteps" role="tablist" style="white-space: nowrap;">
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link active" id="step1-tab" data-bs-toggle="pill" data-bs-target="#step1" type="button" role="tab">
-                        <span class="step-number">1</span> <span class="step-label">Infos Perso</span>
-                    </button>
-                </li>
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link" id="step2-tab" data-bs-toggle="pill" data-bs-target="#step2" type="button" role="tab" disabled>
-                        <span class="step-number">2</span> <span class="step-label">Profession</span>
-                    </button>
-                </li>
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link" id="step3-tab" data-bs-toggle="pill" data-bs-target="#step3" type="button" role="tab" disabled>
-                        <span class="step-number">3</span> <span class="step-label">Assurance</span>
-                    </button>
-                </li>
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link" id="step4-tab" data-bs-toggle="pill" data-bs-target="#step4" type="button" role="tab" disabled>
-                        <span class="step-number">4</span> <span class="step-label">Finalisation</span>
-                    </button>
-                </li>
-            </ul>
-            
-            <div class="tab-content" id="formStepsContent">
-                <!-- Step 1: Personal Information -->
-                <div class="tab-pane fade show active" id="step1" role="tabpanel" aria-labelledby="step1-tab">
-                    <div class="card mb-4">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">Informations Personnelles</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-6 mb-3">
-                                    <label for="first_name" class="form-label">Prénom <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="first_name" name="first_name" required>
-                                    <div class="invalid-feedback">Veuillez saisir le prénom</div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="last_name" class="form-label">Nom <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
-                                    <div class="invalid-feedback">Veuillez saisir le nom</div>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email">
-                                    <div class="invalid-feedback">Veuillez saisir un email valide</div>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="mobile" class="form-label">Téléphone Mobile</label>
-                                    <input type="tel" class="form-control" id="mobile" name="mobile" maxlength="10" pattern="[0-9]{10}">
-                                    <div class="invalid-feedback">Veuillez saisir un numéro valide (10 chiffres)</div>
-                                </div>
-                                
-                                <div class="col-12 mb-3">
-                                    <label for="adress" class="form-label">Adresse</label>
-                                    <textarea class="form-control" id="adress" name="adress" rows="2"></textarea>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="city" class="form-label">Ville</label>
-                                    <select name="city" id="city" class="form-select modal-selecti">
-                                        <option value="" disabled selected>Sélectionner...</option>
-                                        @foreach ($villes as $item)
-                                            <option value="{{ $item->idville }}">{{ $item->libelleVillle }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-primary next-step" data-next="step2" style="background-color: #1e4520; border-color: #1e4520">
-                            Suivant <i class="fas fa-arrow-right ms-2"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Step 2: Professional Information -->
-                <div class="tab-pane fade" id="step2" role="tabpanel" aria-labelledby="step2-tab">
-                    <div class="card mb-4">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">Informations Professionnelles</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-6 mb-3">
-                                    <label for="profession_uuid" class="form-label">Profession</label>
-                                    <select class="form-select modal-selo" id="profession_uuid" name="profession_uuid">
-                                        <option value="">Sélectionner...</option>
-                                        @foreach ($professions as $item)
-                                            <option class="form-optio" value="{{ $item->id }}">{{ $item->MonLibelle }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="secteurActivity_uuid" class="form-label">Secteur d'Activité</label>
-                                    <select class="form-select" id="secteurActivity_uuid" name="secteurActivity_uuid">
-                                        <option value="">Sélectionner...</option>
-                                        @foreach ($secteurActivites as $item)
-                                            <option value="{{ $item->uuid }}">{{ $item->MonLibelle  }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="natureProspect" class="form-label">Nature du Prospect <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="natureProspect" name="natureProspect" required>
-                                        <option value="" disabled selected>Sélectionner...</option>
-                                        <option value="Suspect">Suspect</option>
-                                        <option value="Prospect">Prospect</option>
-                                        <option value="Déjà client">Déjà client</option>
-                                    </select>
-                                    <div class="invalid-feedback">Veuillez sélectionner une nature</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary prev-step" data-prev="step1">
-                            <i class="fas fa-arrow-left me-2"></i> Précédent
-                        </button>
-                        <button type="button" class="btn btn-primary next-step" data-next="step3" style="background-color: #1e4520; border-color: #1e4520">
-                            Suivant <i class="fas fa-arrow-right ms-2"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Step 3: Insurance Information -->
-                <div class="tab-pane fade" id="step3" role="tabpanel" aria-labelledby="step3-tab">
-                    <div class="card mb-4">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">Informations Assurance</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-6 mb-3">
-                                    <label for="products" class="form-label">Produit</label>
-                                    <select class="form-select" id="products" name="products[]" multiple>
-                                        @foreach ($product as $item)
-                                            <option value="{{ $item->IdProduit }}">
-                                                {{ $item->MonLibelle }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="typeCompagnie" class="form-label">Type de Compagnie</label>
-                                    <select class="form-select" id="typeCompagnie" name="typeCompagnie">
-                                        <option value="">Sélectionner...</option>
-                                        <option value="assurance">Assurance</option>
-                                        <option value="banque">Banque</option>
-                                        <option value="microfinance">Microfinance</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary prev-step" data-prev="step2">
-                            <i class="fas fa-arrow-left me-2"></i> Précédent
-                        </button>
-                        <button type="button" class="btn btn-primary next-step" data-next="step4" style="background-color: #1e4520; border-color: #1e4520">
-                            Suivant <i class="fas fa-arrow-right ms-2"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Step 4: Status and Finalization -->
-                <div class="tab-pane fade" id="step4" role="tabpanel" aria-labelledby="step4-tab">
-                    <div class="card mb-4">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">Finalisation</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-6 mb-3">
-                                    <label for="lieuEvenement" class="form-label">Lieu de prospection</label>
-                                    <input type="text" class="form-control" id="lieuEvenement" name="lieuEvenement">
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="status" class="form-label">Statut <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="status" name="status" required>
-                                        <option value="" disabled selected>Sélectionner...</option>
-                                        <option value="nouveau">Nouveau</option>
-                                        <option value="en_cours">En cours</option>
-                                        <option value="finalise">Finalisé</option>
-                                        <option value="annule">Annulé</option>
-                                    </select>
-                                    <div class="invalid-feedback">Veuillez sélectionner un statut</div>
-                                </div>
-                                
-                                <div class="col-12 mb-3">
-                                    <label for="note" class="form-label">Notes</label>
-                                    <textarea class="form-control" id="note" name="note" rows="3"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary prev-step" data-prev="step3">
-                            <i class="fas fa-arrow-left me-2"></i> Précédent
-                        </button>
-                        <button type="submit" class="btn btn-success" id="saveClientBtn" style="background-color: #1e4520; border-color: #1e4520">
-                            <i class="fas fa-save me-2"></i> Enregistrer
-                        </button>
-                    </div>
-                </div>
+    <style>
+        :root { --yako-green: #1e4520; --yako-light: #f0fdf4; }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        /* Étapes */
+        .step-dot {
+            width: 40px; height: 40px; border-radius: 50%; border: 2px solid #dee2e6;
+            background: white; z-index: 2; transition: all 0.4s ease;
+            display: flex; align-items: center; justify-content: center; font-weight: bold; color: #6c757d;
+        }
+        .step-dot.active {
+            background: var(--yako-green); color: white; border-color: var(--yako-green);
+            transform: scale(1.1); box-shadow: 0 0 15px rgba(30, 69, 32, 0.3);
+        }
+        .step-label { font-size: 0.8rem; font-weight: 600; color: #6c757d; margin-top: 8px; }
+        .active + .step-label { color: var(--yako-green); }
+
+        /* Cartes Produits */
+        .product-card { cursor: pointer; height: 100%; }
+        .product-card input:checked + .card {
+            border-color: var(--yako-green); background-color: var(--yako-light);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .selected-check {
+            position: absolute; top: 10px; right: 10px; color: var(--yako-green);
+            display: none; font-size: 1.2rem;
+        }
+        .product-card input:checked + .card .selected-check { display: block; }
+
+        /* Custom Buttons */
+        .btn-yako { background-color: var(--yako-green); color: white; border: none; padding: 10px 25px; transition: 0.3s; }
+        .btn-yako:hover { background-color: #143116; color: white; transform: translateY(-2px); }
+        .nature-btn input:checked + label { background-color: var(--yako-green) !important; color: white !important; border-color: var(--yako-green); }
+
+        /* Select2 Customization */
+        .select2-container--bootstrap-5 .select2-selection { border-radius: 0.375rem; border: 1px solid #dee2e6; }
+    </style>
+</head>
+
+<body>
+    <div class="container py-5">
+        <div class="card shadow-lg border-0 radius-15 overflow-hidden">
+            <div class="card-header bg-white border-0 pt-4 text-center">
+                <h4 class="fw-bold text-uppercase" style="color: var(--yako-green)">Fiche de Prospection</h4>
+                <p class="text-muted">Complétez les informations pour un suivi personnalisé</p>
             </div>
-        </form>
+            
+            <div class="card-body p-4">
+                <div class="form-progress-wrapper mb-5 px-md-5">
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar" id="formProgress" style="width: 25%; background-color: var(--yako-green)"></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-n3" style="margin-top: -22px;">
+                        <div class="text-center">
+                            <div class="step-dot active" id="step1-tab">1</div>
+                            <span class="step-label d-none d-md-block">Identité</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="step-dot" id="step2-tab">2</div>
+                            <span class="step-label d-none d-md-block">Profession</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="step-dot" id="step3-tab">3</div>
+                            <span class="step-label d-none d-md-block">Services</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="step-dot" id="step4-tab">4</div>
+                            <span class="step-label d-none d-md-block">Finalisation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="prospectForm" class="needs-validation" novalidate>
+                    <div class="tab-content" id="formStepsContent">
+                        
+                        <div class="tab-pane fade show active" id="step1">
+                            <h5 class="mb-4 fw-bold border-start border-4 border-success ps-3">Informations Personnelles</h5>
+                            <div class="row g-3">
+                                <input type="hidden" name="commercial_id" value="{{ $token }}">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Prénom <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white"><i class="fa-solid fa-user text-muted"></i></span>
+                                        <input type="text" class="form-control" name="first_name" required placeholder="Jean">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Nom <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="last_name" required placeholder="Dupont">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white"><i class="fa-solid fa-envelope text-muted"></i></span>
+                                        <input type="email" class="form-control" name="email" placeholder="jean.dupont@mail.com">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Téléphone <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white"><i class="fa-solid fa-phone text-muted"></i></span>
+                                        <input type="tel" class="form-control" id="mobile" name="mobile" maxlength="10" required placeholder="0102030405">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Ville de résidence</label>
+                                    <select name="city" class="form-select select2-city">
+                                        <option value=""></option>
+                                        @foreach ($villes as $item)
+                                            <option value="{{ $item->IdTblVille }}">{{ $item->MonLibelle }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-5">
+                                <button type="button" class="btn btn-yako px-4 next-step" data-next="2">
+                                    Continuer <i class="fa-solid fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="step2">
+                            <h5 class="mb-4 fw-bold border-start border-4 border-success ps-3">Cadre Professionnel</h5>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold d-block mb-3">Nature du Prospect <span class="text-danger">*</span></label>
+                                    <div class="row g-2">
+                                        <div class="col-md-4 nature-btn">
+                                            <input type="radio" class="btn-check" name="natureProspect" id="nat1" value="Suspect" required>
+                                            <label class="btn btn-outline-secondary w-100 py-3" for="nat1">
+                                                <i class="fa-solid fa-magnifying-glass mb-2 d-block fs-4"></i> Suspect
+                                            </label>
+                                        </div>
+                                        <div class="col-md-4 nature-btn">
+                                            <input type="radio" class="btn-check" name="natureProspect" id="nat2" value="Prospect">
+                                            <label class="btn btn-outline-secondary w-100 py-3" for="nat2">
+                                                <i class="fa-solid fa-user-tie mb-2 d-block fs-4"></i> Prospect
+                                            </label>
+                                        </div>
+                                        <div class="col-md-4 nature-btn">
+                                            <input type="radio" class="btn-check" name="natureProspect" id="nat3" value="Déjà client">
+                                            <label class="btn btn-outline-secondary w-100 py-3" for="nat3">
+                                                <i class="fa-solid fa-circle-check mb-2 d-block fs-4"></i> Déjà client
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Profession</label>
+                                    <select class="form-select select2-basic" name="profession_uuid">
+                                        @foreach ($professions as $item)
+                                            <option value="{{ $item->IdProfession }}">{{ $item->MonLibelle }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Secteur d'Activité</label>
+                                    <select class="form-select select2-basic" name="secteurActivity_uuid">
+                                        @foreach ($secteurActivites as $item)
+                                            <option value="{{ $item->IdSecteurActiviteSocietes }}">{{ $item->MonLibelle }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-5">
+                                <button type="button" class="btn btn-light prev-step" data-prev="1"><i class="fa-solid fa-chevron-left me-2"></i> Retour</button>
+                                <button type="button" class="btn btn-yako next-step" data-next="3">Suivant <i class="fa-solid fa-chevron-right ms-2"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="step3">
+                            <h5 class="mb-2 fw-bold border-start border-4 border-success ps-3">Produits d'intérêt</h5>
+                            <p class="text-muted small mb-4">Sélectionnez un ou plusieurs services qui pourraient intéresser le client.</p>
+                            <div class="row g-3">
+                                @foreach ($products as $item)
+                                <div class="col-md-4">
+                                    <label class="product-card d-block">
+                                        <input type="checkbox" name="products[]" value="{{ $item->codeproduitformule }}" class="d-none">
+                                        <div class="card border-2 position-relative">
+                                            <div class="selected-check"><i class="fa-solid fa-circle-check"></i></div>
+                                            <div class="card-body text-center p-3">
+                                                <div class="mb-2 text-success fs-3">
+                                                    <i class="fa-solid fa-shield-halved"></i>
+                                                </div>
+                                                <h6 class="fw-bold text-dark">{{ $item->libelleproduit }}</h6>
+                                                <p class="small text-muted mb-0">Protection optimale et accompagnement Yako.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                @endforeach
+                            </div>
+                            <div class="d-flex justify-content-between mt-5">
+                                <button type="button" class="btn btn-light prev-step" data-prev="2"><i class="fa-solid fa-chevron-left me-2"></i> Retour</button>
+                                <button type="button" class="btn btn-yako next-step" data-next="4">Suivant <i class="fa-solid fa-chevron-right ms-2"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="step4">
+                            <div class="text-center mb-4">
+                                <div class="bg-light-success p-3 rounded-circle d-inline-block mb-3">
+                                    <i class="fa-solid fa-paper-plane fs-1 text-success"></i>
+                                </div>
+                                <h5 class="fw-bold">Notes Finales</h5>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Adresse complète</label>
+                                    <textarea class="form-control" name="adress" rows="2" placeholder="Quartier, Rue, Porte..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Observations particulières</label>
+                                    <textarea class="form-control" name="note" rows="3" placeholder="Besoin spécifique, meilleur moment pour rappeler..."></textarea>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-5">
+                                <button type="button" class="btn btn-light prev-step" data-prev="3"><i class="fa-solid fa-chevron-left me-2"></i> Retour</button>
+                                <button type="submit" class="btn btn-success btn-lg px-5 shadow" id="submitBtn" style="background-color: var(--yako-green);">
+                                    <i class="fa-solid fa-cloud-arrow-up me-2"></i> ENREGISTRER LE PROSPECT
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Gestion des étapes
-            const form = document.getElementById('multiStepForm');
-            const steps = document.querySelectorAll('.tab-pane');
-            const stepTabs = document.querySelectorAll('[role="tab"]');
-            const progressBar = document.getElementById('formProgress');
-            const totalSteps = steps.length;
-            
-            // Initialisation
-            updateProgressBar(1);
-            
-            // Navigation entre les étapes
-            document.querySelectorAll('.next-step').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const currentStep = this.closest('.tab-pane');
-                    const nextStepId = this.getAttribute('data-next');
-                    
-                    // Validation avant de passer à l'étape suivante
-                    if (validateStep(currentStep)) {
-                        const nextStep = document.getElementById(nextStepId);
-                        
-                        // Activer l'étape suivante
-                        currentStep.classList.remove('show', 'active');
-                        nextStep.classList.add('show', 'active');
-                        
-                        // Mettre à jour les onglets
-                        const currentTab = document.querySelector(`[data-bs-target="#${currentStep.id}"]`);
-                        const nextTab = document.querySelector(`[data-bs-target="#${nextStepId}"]`);
-                        
-                        currentTab.classList.remove('active');
-                        nextTab.classList.add('active');
-                        nextTab.removeAttribute('disabled');
-                        
-                        // Mettre à jour la barre de progression
-                        const stepNumber = parseInt(nextStepId.replace('step', ''));
-                        updateProgressBar(stepNumber);
-                        
-                        // Faire défiler vers le haut
-                        window.scrollTo({top: 0, behavior: 'smooth'});
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.prev-step').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const currentStep = this.closest('.tab-pane');
-                    const prevStepId = this.getAttribute('data-prev');
-                    const prevStep = document.getElementById(prevStepId);
-                    
-                    // Activer l'étape précédente
-                    currentStep.classList.remove('show', 'active');
-                    prevStep.classList.add('show', 'active');
-                    
-                    // Mettre à jour les onglets
-                    const currentTab = document.querySelector(`[data-bs-target="#${currentStep.id}"]`);
-                    const prevTab = document.querySelector(`[data-bs-target="#${prevStepId}"]`);
-                    
-                    currentTab.classList.remove('active');
-                    prevTab.classList.add('active');
-                    
-                    // Mettre à jour la barre de progression
-                    const stepNumber = parseInt(prevStepId.replace('step', ''));
-                    updateProgressBar(stepNumber);
-                    
-                    // Faire défiler vers le haut
-                    window.scrollTo({top: 0, behavior: 'smooth'});
-                });
-            });
-            
-            // Fonction de validation d'étape
-            function validateStep(step) {
-                let isValid = true;
-                const requiredFields = step.querySelectorAll('[required]');
-                
-                requiredFields.forEach(field => {
-                    if (!field.value.trim()) {
-                        field.classList.add('is-invalid');
-                        isValid = false;
-                    } else {
-                        field.classList.remove('is-invalid');
-                    }
-                    
-                    // Validation spécifique pour l'email
-                    if (field.type === 'email' && field.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
-                        field.classList.add('is-invalid');
-                        isValid = false;
-                    }
-                    
-                    // Validation spécifique pour le téléphone
-                    if (field.id === 'mobile' && field.value.trim() && !/^[0-9]{10}$/.test(field.value)) {
-                        field.classList.add('is-invalid');
-                        isValid = false;
-                    }
-                });
-                
-                return isValid;
-            }
-            
-            // Mise à jour de la barre de progression
-            function updateProgressBar(currentStep) {
-                const progress = (currentStep / totalSteps) * 100;
-                progressBar.style.width = `${progress}%`;
-                progressBar.setAttribute('aria-valuenow', progress);
-            }
-            
-            // Validation en temps réel
-            form.querySelectorAll('[required]').forEach(field => {
-                field.addEventListener('input', function() {
-                    if (this.value.trim()) {
-                        this.classList.remove('is-invalid');
-                    }
-                });
-            });
-            
-            // Gestion responsive des onglets
-            function handleResponsiveTabs() {
-                const stepLabels = document.querySelectorAll('.step-label');
-                if (window.innerWidth < 768) {
-                    stepLabels.forEach(label => label.style.display = 'none');
-                } else {
-                    stepLabels.forEach(label => label.style.display = 'inline');
-                }
-            }
-            
-            // Initialisation et écouteur de redimensionnement
-            handleResponsiveTabs();
-            window.addEventListener('resize', handleResponsiveTabs);
+    $(document).ready(function() {
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Initialisation Select2 avec thème Bootstrap 5
+        $('.select2-basic').select2({
+            theme: 'bootstrap-5',
+            width: '100%'
         });
+
+        $('.select2-city').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Sélectionnez une ville",
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Navigation Suivant
+        $('.next-step').click(function() {
+            if (validateStep(currentStep)) {
+                currentStep = $(this).data('next');
+                showStep(currentStep);
+            }
+        });
+
+        // Navigation Retour
+        $('.prev-step').click(function() {
+            currentStep = $(this).data('prev');
+            showStep(currentStep);
+        });
+
+        function showStep(step) {
+            // Update Tabs
+            $('.tab-pane').removeClass('show active');
+            $(`#step${step}`).addClass('show active');
+            
+            // Update Progress Dots
+            $('.step-dot').removeClass('active');
+            for(let i=1; i<=step; i++) {
+                $(`#step${i}-tab`).addClass('active');
+            }
+
+            // Update Progress Bar
+            let percent = (step / totalSteps) * 100;
+            $('#formProgress').css('width', percent + '%');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function validateStep(step) {
+            const fields = $(`#step${step} [required]`);
+            let valid = true;
+            
+            fields.each(function() {
+                if (!this.checkValidity()) {
+                    $(this).addClass('is-invalid');
+                    valid = false;
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            if (!valid) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Champs manquants',
+                    text: 'Veuillez remplir tous les champs obligatoires avant de continuer.',
+                    confirmButtonColor: '#1e4520'
+                });
+            }
+            return valid;
+        }
+
+        // Soumission Finale avec SweetAlert2
+        $('#prospectForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateStep(4)) return;
+
+            const btn = $('#submitBtn');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span> Traitement...');
+
+            const formData = new FormData(this);
+
+            $.ajax({
+                url: "{{ route('storeProspect', $token) }}",
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function(response) {
+                    Swal.fire({
+                        title: 'Félicitations !',
+                        text: 'Le prospect a été enregistré avec succès.',
+                        icon: 'success',
+                        confirmButtonText: 'Aller sur le site',
+                        confirmButtonColor: '#1e4520',
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'https://web.yakoafricassur.com/';
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    btn.prop('disabled', false).html('<i class="fa-solid fa-cloud-arrow-up me-2"></i> ENREGISTRER');
+                    let msg = "Une erreur est survenue.";
+                    if(xhr.responseJSON && xhr.responseJSON.errors) {
+                        msg = Object.values(xhr.responseJSON.errors).flat().join('<br>');
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        html: msg,
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            });
+        });
+
+        // Validation téléphone (chiffres uniquement)
+        $('#mobile').on('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    });
     </script>
     
-    <style>
-        /* Style personnalisé pour les étapes */
-        .nav-pills {
-            overflow-x: auto;
-            flex-wrap: nowrap;
-            -webkit-overflow-scrolling: touch;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        
-        .nav-pills::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .nav-pills .nav-link {
-            position: relative;
-            padding: 0.75rem 1rem;
-            margin: 0 0.25rem;
-            border-radius: 2rem;
-            background-color: #f8f9fa;
-            color: #495057;
-            border: 1px solid #dee2e6;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        
-        @media (min-width: 768px) {
-            .nav-pills .nav-link {
-                padding: 0.75rem 1.5rem;
-                margin: 0 0.5rem;
-            }
-        }
-        
-        .nav-pills .nav-link:hover:not(.active) {
-            background-color: #e9ecef;
-        }
-        
-        .nav-pills .nav-link.active {
-            background-color: #1e4520;
-            color: white;
-            border-color: #1e4520;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .nav-pills .nav-link.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        
-        .step-number {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            line-height: 24px;
-            text-align: center;
-            border-radius: 50%;
-            background-color: #6c757d;
-            color: white;
-            margin-right: 8px;
-            font-weight: bold;
-        }
-        
-        .nav-pills .nav-link.active .step-number {
-            background-color: white;
-            color: #1e4520;
-        }
-        
-        .progress {
-            height: 10px;
-            background-color: #e9ecef;
-        }
-        
-        .progress-bar {
-            transition: width 0.3s ease;
-        }
-        
-        /* Style pour les champs invalides */
-        .is-invalid {
-            border-color: #dc3545 !important;
-        }
-        
-        .invalid-feedback {
-            display: none;
-            color: #dc3545;
-            font-size: 0.875em;
-        }
-        
-        .is-invalid ~ .invalid-feedback {
-            display: block;
-        }
-        
-        /* Améliorations responsive */
-        @media (max-width: 767.98px) {
-            .card-body .row > [class^="col-"] {
-                margin-bottom: 1rem;
-            }
-            
-            .step-label {
-                display: none;
-            }
-            
-            .nav-pills .nav-link {
-                padding: 0.5rem 0.75rem;
-            }
-            
-            .step-number {
-                width: 20px;
-                height: 20px;
-                line-height: 20px;
-                font-size: 0.75rem;
-                margin-right: 4px;
-            }
-        }
-        
-        /* Animation pour le changement d'étape */
-        .tab-pane.fade:not(.show) {
-            display: none;
-        }
-        
-        /* Style pour les selects multiples */
-        select[multiple] {
-            min-height: 120px;
-        }
-    </style>
 </body>
 </html>

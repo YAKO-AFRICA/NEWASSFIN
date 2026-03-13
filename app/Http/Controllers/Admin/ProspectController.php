@@ -33,7 +33,7 @@ class ProspectController extends Controller
 
     public function index(Request $request)
     {
-        $query = Prospect::where('userAdd_uuid', auth()->user()->id)->orderBy('id', 'desc');
+        $query = Prospect::where('userAdd_uuid', auth()->user()->id)->orderBy('created_at', 'ASC');
 
         if ($request->has('code') && !empty($request->code)) {
             $query->where('code', 'like', '%' . $request->code . '%');
@@ -415,109 +415,124 @@ class ProspectController extends Controller
     // App\Http\Controllers\ProspectionController.php
     public function showForm($token)
     {
+
         $commercial = User::where('idmembre', $token)->first();
 
         $professions = Profession::orderBy('MonLibelle')->get();
         $secteurActivites = TblSecteurActivite::orderBy('MonLibelle')->get();
-        $product = Product::orderBy('MonLibelle')->get();
-        $villes = TblVille::orderBy('idville')->get();
+        // $products = Product::orderBy('MonLibelle')->get();
+        $villes = TblVille::orderBy('MonLibelle')->get();
+        $reseauId = Reseau::where('codepartenaire', $commercial->membre->codepartenaire)->first();
+        $productByReseau = ReseauProduct::where('codereseau', $reseauId->id)->get();
+        $products = $productByReseau;
+        
         
         return view('prospects.apiPropect', [
             'commercial' => $commercial,
             'token' => $token,
             'professions' => $professions,
             'secteurActivites' => $secteurActivites,
-            'product' => $product,
+            'products' => $products,
             'villes' => $villes,
         ]);
     }
 
-    public function storeProspect(Request $request, $token)
+    public function storeProspect(Request $request)
     {
-        $commercial = User::where('idmembre', $token)->first();
+
+        Log::info("debut transact");
+
+
+        $commercial = User::where('idmembre', $request->commercial_id)->first();
         
-        {
-            // Validation des données
-            $validated = $request->validate([
-                // 'code' => 'required|string|max:191|unique:prospects',
-                'first_name' => 'required|string|max:191',
-                'last_name' => 'required|string|max:191',
-                'email' => 'nullable|email|max:191',
-                'mobile' => 'nullable|string|max:191',
-                'adress' => 'nullable|string|max:191',
-                'city' => 'nullable|string|max:191',
-                'profession_uuid' => 'nullable|string|max:191',
-                'secteurActivity_uuid' => 'nullable|string|max:191',
-                'natureProspect' => 'nullable|string|max:191',
-                'produit_id' => 'nullable|string|max:191',
-                'montantPrime' => 'nullable|string|max:191',
-                'dateEffet' => 'nullable|date',
-                'typeCompagnie' => 'nullable|string|max:191',
-                'modeDePaiment' => 'nullable|string|max:191',
-                'lieuEvenement' => 'nullable|string|max:191',
-                'etat' => 'nullable|string|max:191',
-                'status' => 'nullable|string|max:191',
-                'note' => 'nullable|string',
-                'products' => 'nullable|array',
-                'products.*' => 'integer|exists:tblproduit,IdProduit', 
-            ]);
-    
+        Log::info("Début de la création du prospect", ['request' => $request->all()]);
+        // Validation des données
+        $validated = $request->validate([
+            // 'code' => 'required|string|max:191|unique:prospects',
+            'first_name' => 'required|string|max:191',
+            'last_name' => 'required|string|max:191',
+            'email' => 'nullable|email|max:191',
+            'mobile' => 'nullable|string|max:191',
+            'adress' => 'nullable|string|max:191',
+            'city' => 'nullable|string|max:191',
+            'profession_uuid' => 'nullable|string|max:191',
+            'secteurActivity_uuid' => 'nullable|string|max:191',
+            'natureProspect' => 'nullable|string|max:191',
+            'produit_id' => 'nullable|string|max:191',
+            'montantPrime' => 'nullable|string|max:191',
+            'dateEffet' => 'nullable|date',
+            'typeCompagnie' => 'nullable|string|max:191',
+            'modeDePaiment' => 'nullable|string|max:191',
+            'lieuEvenement' => 'nullable|string|max:191',
+            'etat' => 'nullable|string|max:191',
+            'status' => 'nullable|string|max:191',
+            'note' => 'nullable|string',
+            'products' => 'nullable|array', 
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $code = Refgenerate(Prospect::class, 'P', 'code');
+            // Création du prospect
+            $prospect = new Prospect();
+            $prospect->uuid = Str::uuid();
+            $prospect->code = $code;
+
+            $prospect->first_name = $validated['first_name'];
+            $prospect->last_name = $validated['last_name'];
+            $prospect->email = $validated['email'] ?? null;
+            $prospect->mobile = $validated['mobile'] ?? null;
+            $prospect->adress = $validated['adress'] ?? null;
+            $prospect->city = $validated['city'] ?? null;
+            $prospect->profession_uuid = $validated['profession_uuid'] ?? null;
+            $prospect->secteurActivity_uuid = $validated['secteurActivity_uuid'] ?? null;
+            $prospect->natureProspect = $validated['natureProspect'] ?? null;
+            // $prospect->produit_id = $validated['produit_id'] ?? null;
+            $prospect->montantPrime = $validated['montantPrime'] ?? null;
+            $prospect->dateEffet = $validated['dateEffet'] ?? null;
+            $prospect->typeCompagnie = $validated['typeCompagnie'] ?? null;
+            $prospect->modeDePaiment = $validated['modeDePaiment'] ?? null;
+            $prospect->lieuEvenement = $validated['lieuEvenement'] ?? null;
+            $prospect->etat = $validated['etat'] ?? 'actif';
+            $prospect->status = $validated['status'] ?? 'nouveau';
+            $prospect->note = $validated['note'] ?? null;
+            $prospect->userAdd_uuid = $commercial->id;
             
-    
-            try {
-                $code = Refgenerate(Prospect::class, 'P', 'code');
-                // Création du prospect
-                $prospect = new Prospect();
-                $prospect->uuid = Str::uuid();
-                $prospect->code = $code;
-    
-                $prospect->first_name = $validated['first_name'];
-                $prospect->last_name = $validated['last_name'];
-                $prospect->email = $validated['email'] ?? null;
-                $prospect->mobile = $validated['mobile'] ?? null;
-                $prospect->adress = $validated['adress'] ?? null;
-                $prospect->city = $validated['city'] ?? null;
-                $prospect->profession_uuid = $validated['profession_uuid'] ?? null;
-                $prospect->secteurActivity_uuid = $validated['secteurActivity_uuid'] ?? null;
-                $prospect->natureProspect = $validated['natureProspect'] ?? null;
-                // $prospect->produit_id = $validated['produit_id'] ?? null;
-                $prospect->montantPrime = $validated['montantPrime'] ?? null;
-                $prospect->dateEffet = $validated['dateEffet'] ?? null;
-                $prospect->typeCompagnie = $validated['typeCompagnie'] ?? null;
-                $prospect->modeDePaiment = $validated['modeDePaiment'] ?? null;
-                $prospect->lieuEvenement = $validated['lieuEvenement'] ?? null;
-                $prospect->etat = $validated['etat'] ?? 'actif';
-                $prospect->status = $validated['status'] ?? 'nouveau';
-                $prospect->note = $validated['note'] ?? null;
-                $prospect->userAdd_uuid = $commercial->id;
-                
-                $prospect->save();
-    
-                // Vérifie s'il y a des produits sélectionnés
-                if (!empty($request->products)) {
-                    foreach ($request->products as $productId) {
-                        ProspectProduct::create([
-                            'prospect_id' => $prospect->id,
-                            'product_id' => $productId,
-                        ]);
-                    }
+            $prospect->save();
+
+            Log::info("Fin de la création du prospect", ['prospect' => $prospect]);
+
+            // Vérifie s'il y a des produits sélectionnés
+            if (!empty($request->products)) {
+                foreach ($request->products as $productId) {
+                    $reseauProduct = ReseauProduct::where('codeproduitformule', $productId)->first();
+
+                        Log::info("Produit trouvé", ['reseauProduct' => $reseauProduct]);
+
+                    ProspectProduct::create([
+                        'prospect_id' => $prospect->id,
+                        'product_id' => $reseauProduct->id,
+                        'product_formule' => $productId,
+                        'product_code' => $reseauProduct->codeproduit
+                    ]);
                 }
-    
-    
-    
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Prospect créé avec succès',
-                    'data' => $prospect
-                ], 201);
-    
-            } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Erreur lors de la création du prospect',
-                    'error' => $e->getMessage()
-                ], 500);
             }
+
+            // DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Prospect créé avec succès',
+                'data' => $prospect
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la création du prospect',
+                'error' => $e->getMessage(),
+                Log::error("Erreur lors de la création du prospect: " . $e->getMessage()),
+            ], 500);
         }
     }
 
@@ -541,7 +556,7 @@ class ProspectController extends Controller
             
             // Générer le QR code
             $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')
-                ->size(400)
+                ->size(700)
                 ->margin(1)
                 ->errorCorrection('M')
                 ->generate(route('prospection.form', $user->idmembre));
@@ -561,77 +576,86 @@ class ProspectController extends Controller
 
     private function buildSvgWithText($qrCodeSvg, $text)
     {
-        // Dimensions
-        $qrSize = 800;
-        $padding = 5;
-        $textHeight = 100;
-        $totalHeight = $qrSize + $textHeight + ($padding * 2);
+        // Taille QR
+        $qrSize = 1400;
+        $padding = 20;
+        $textHeight = 120;
+
         $totalWidth = $qrSize + ($padding * 2);
-        
-        // Extraire uniquement les paths du QR code
+        $totalHeight = $qrSize + $textHeight + ($padding * 2);
+
+        // Extraire les paths du QR
         preg_match_all('/<path[^>]*d="[^"]*"[^>]*>/', $qrCodeSvg, $paths);
-        
-        // Commencer la construction du SVG
+
         $svg = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
-        $svg .= '<svg xmlns="http://www.w3.org/2000/svg" width="' . $totalWidth . '" height="' . $totalHeight . '" viewBox="0 0 ' . $totalWidth . ' ' . $totalHeight . '">';
-        
-        // Fond blanc
+        $svg .= '<svg xmlns="http://www.w3.org/2000/svg" width="'.$totalWidth.'" height="'.$totalHeight.'" viewBox="0 0 '.$totalWidth.' '.$totalHeight.'">';
+
+        // Fond
         $svg .= '<rect width="100%" height="100%" fill="white"/>';
-        
-        // Style du texte
+
+        // Style texte
         $svg .= '<style>
-            .qr-text { 
-                font-family: Arial, sans-serif; 
-                font-size: 22px; 
-                font-weight: bold; 
-                fill: #333333; 
-                text-anchor: middle;
-                dominant-baseline: middle;
-            }
-            .sub-text {
+            .qr-title{
                 font-family: Arial, sans-serif;
-                font-size: 18px;
-                fill: #666666;
+                font-size: 20px;
+                font-weight: bold;
+                fill: #333;
+                text-anchor: middle;
+            }
+            .qr-sub{
+                font-family: Arial, sans-serif;
+                font-size: 15px;
+                fill: #666;
                 text-anchor: middle;
             }
         </style>';
-        
-        // Calculer les positions pour centrer
+
         $centerX = $totalWidth / 2;
-        $textTopY = 50;
-        
-        // Ajouter le titre
-        $svg .= '<text x="' . $centerX . '" y="' . $textTopY . '" class="qr-text">' . htmlspecialchars('Scannez ce QR code') . '</text>';
-        
-        // Ajouter la description
-        $words = explode(' ', $text);
-        if (count($words) > 4) {
-            $mid = ceil(count($words) / 2);
-            $line1 = implode(' ', array_slice($words, 0, $mid));
-            $line2 = implode(' ', array_slice($words, $mid));
-            
-            $svg .= '<text x="' . $centerX . '" y="' . ($textTopY + 30) . '" class="sub-text">' . htmlspecialchars($line1) . '</text>';
-            $svg .= '<text x="' . $centerX . '" y="' . ($textTopY + 55) . '" class="sub-text">' . htmlspecialchars($line2) . '</text>';
-        } else {
-            $svg .= '<text x="' . $centerX . '" y="' . ($textTopY + 30) . '" class="sub-text">' . htmlspecialchars($text) . '</text>';
-        }
-        
-        // Ajouter les paths du QR code (centré)
+
+        // Texte
+        $svg .= '<text x="'.$centerX.'" y="40" class="qr-title">Scannez ce QR code</text>';
+        $svg .= '<text x="'.$centerX.'" y="75" class="qr-sub">'.htmlspecialchars($text).'</text>';
+
+        // Position QR code
+        $qrX = 650;
+        $qrY = 90;
+
         if (!empty($paths[0])) {
-            // Centrer le QR code horizontalement
-            $qrX = ($totalWidth - $qrSize) / 2;
-            $qrY = $textHeight + 20;
-            
-            $svg .= '<g transform="translate(' . $qrX . ', ' . $qrY . ')">';
+
+            $svg .= '<g transform="translate('.$qrX.','.$qrY.') scale(4)">';
+
             foreach ($paths[0] as $path) {
                 $svg .= $path;
             }
+
             $svg .= '</g>';
         }
-        
+
         $svg .= '</svg>';
-        
+
         return $svg;
+    }
+
+    public function shareLink(Request $request)
+    {
+        
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = auth()->user();
+        $link = route('prospection.form', $user->idmembre);
+
+        // Envoyer l'email
+        \Mail::raw("Voici le lien de prospection : $link", function ($message) use ($request) {
+            $message->to($request->email)
+                    ->subject('Lien de Prospection');
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lien de prospection envoyé avec succès'
+        ]);
     }
 
 }
