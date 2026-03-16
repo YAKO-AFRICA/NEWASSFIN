@@ -56,26 +56,26 @@
                                 @endforeach
                             </select>
                         </div>
-                        
+
                         <div class="col-12 mb-3 row w-100">
                             <div class="col-sm-6 col-md-2 col-lg-2">
                                 <label class="form-label small">Code Banque</label>
-                                <input type="text" class="form-control account-number-input" id="codebanque" 
+                                <input type="text" class="form-control account-number-input" id="codebanque"
                                     placeholder="30003" maxlength="5" pattern="[0-9]{5}" name="codebanque">
-                            </div> 
+                            </div>
                             <div class="col-sm-6 col-md-3 col-lg-3">
                                 <label class="form-label small">Code Guichet</label>
-                                <input type="text" class="form-control account-number-input" id="codeguichet" 
+                                <input type="text" class="form-control account-number-input" id="codeguichet"
                                     placeholder="02005" maxlength="5" pattern="[0-9]{5}" name="codeguichet">
-                            </div> 
+                            </div>
                             <div class="col-sm-8 col-md-5 col-lg-5">
                                 <label class="form-label small">Numéro de compte</label>
-                                <input type="text" class="form-control account-number-input" id="numerocompte" 
+                                <input type="text" class="form-control account-number-input" id="numerocompte"
                                     placeholder="00123456789" maxlength="12" pattern="[0-9]{12}" name="numerocompte">
-                            </div> 
+                            </div>
                             <div class="col-sm-4 col-md-2 col-lg-2">
                                 <label class="form-label small">Clé RIB</label>
-                                <input type="text" class="form-control account-number-input" id="rib" 
+                                <input type="text" class="form-control account-number-input" id="rib"
                                     placeholder="12" maxlength="2" pattern="[0-9]{2}" name="rib">
                             </div>
                         </div>
@@ -130,7 +130,7 @@
                                 Trimestre
                             </label>
                         </div>
-                        
+
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" name="periodicite" type="radio" value="S"
                                 id="Semestre">
@@ -153,7 +153,7 @@
                             </label>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         @if ($product->CodeProduit == 'PFA_IND')
                             <div class="col-12 mb-3">
@@ -228,7 +228,7 @@
                                     <option value="" selected>Selectionnez la durée de service de la rente</option>
                                     <option value="12">12</option>
                                     <option value="24">24</option>
-                                    <option value="36">36</option> 
+                                    <option value="36">36</option>
                                 </select>
                             </div>
 
@@ -245,13 +245,13 @@
                             </div>
                             <div class="col-12 mb-3">
                                 <label for="fraisAdhesion" class="form-label">Fraie d'adhesion :</label>
-                                <input type="number" class="form-control" id="fraisAdhesion" name="fraisAdhesion"
-                                    min="0">
+                                <input type="number" class="form-control" id="fraisAdhesion" name="fraisadhesion"
+                                    min="0" value="7500">
                             </div>
                             <div class="col-12 mb-3">
                                 <label for="capital" class="form-label">Capital souscrit :</label>
                                 <input type="text" class="form-control" id="capital" name="capital" required>
-                                
+
                                     {{-- <select name="capital" id="capital" class="form-select" required>
                                         <option value="" selected>Selectionnez le capital souscrit</option>
                                         <option value="300000">300 000</option>
@@ -265,7 +265,7 @@
                             </div>
                             <div class="col-12 mb-3">
                                 <label for="duree" class="form-label">Durée de mes cotisations :</label>
-                                <input type="number" class="form-control" id="duree" name="duree" min="0"> 
+                                <input type="number" class="form-control" id="duree" name="duree" min="0">
                             </div>
 
                         @endif
@@ -295,7 +295,7 @@
             const codeGuichet = document.getElementById('codeguichet').value || '_____';
             const numeroCompte = document.getElementById('numerocompte').value || '___________';
             const cleRib = document.getElementById('rib').value || '__';
-            
+
             const preview = `${codeBanque} - ${codeGuichet} - ${numeroCompte} - ${cleRib}`;
             document.getElementById('numero_complet').textContent = preview;
         }
@@ -318,7 +318,7 @@
         document.getElementById("primepricipale").addEventListener("input", function() {
             const primeInput = document.getElementById("primepricipale");
             const primeError = document.getElementById("primepricipale-error");
-    
+
             // Vérifiez si la valeur est inférieure au minimum autorisé
             if (parseInt(primeInput.value) < parseInt(primeInput.min)) {
                 primeError.style.display = "block";
@@ -328,7 +328,7 @@
         });
     </script> --}}
 
-    
+
 
 
 

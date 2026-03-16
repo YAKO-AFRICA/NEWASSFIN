@@ -334,7 +334,7 @@
                                 <label for="fraisadhesion" class="form-label">Frais d’adhésion :</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control" id="fraisadhesion" name="fraisadhesion"
-                                        min="0"  value="">
+                                        min="0"  value="7500">
                                     <span class="input-group-text">FCFA</span>
                                 </div>
                             </div>

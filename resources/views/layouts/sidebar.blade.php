@@ -17,7 +17,7 @@
 
             <a href="{{ route('shared.home')}}">
                 <img src="{{ asset('logos/ASSURFIN.png') }}"
-                style="min-height: 100%; min-width: 100%; background-color: #fff' : 'height: 100%; width: 100%;" 
+                style="min-height: 100%; min-width: 100%; background-color: #fff' : 'height: 100%; width: 100%;"
                 class="logo-icon img-fluid"
                 alt="logo default">
             </a>
@@ -35,14 +35,14 @@
                     <div class="menu-title">Prospection</div>
                 </a>
             </li>
-            <li>
+            {{-- <li>
                 <a href="{{ route('preSouscription.index')}}">
                     <div class="parent-icon">
                         <i class='bx bx-message-square-edit'></i>
                     </div>
                     <div class="menu-title">Pre-Souscription</div>
                 </a>
-            </li>
+            </li> --}}
             @endcan
 
             @can('Voir e-souscription')
@@ -73,7 +73,7 @@
                 @endcan
             @endcan
 
-            
+
 
             @can('Voir e-prestation')
                 <li class="menu-label">E-Prestation</li>
@@ -86,7 +86,7 @@
                             <div class="menu-title">Nouvelle demande</div>
                         </a>
                     </li>
-                
+
                 @endcan
                 <li>
                     <a href="{{ route('prestation.mesPrestations')}}">
@@ -95,10 +95,10 @@
                         <div class="menu-title">Mes demandes</div>
                     </a>
                 </li>
-                
+
             @endcan
 
-            
+
 
             @can('Voir le rapport des activites')
                 <li class="menu-label">Rapport d'activité</li>
@@ -130,9 +130,9 @@
                         </a>
                     </li>
                 @endcan
-                
+
             @endcan
-                
+
            @can('Voir les paramettres')
             <li class="menu-label">Paramètre</li>
             <li>
@@ -156,7 +156,7 @@
 
             @can('Voir le support')
             <li class="menu-label">Support</li>
-          
+
             <li>
                 <a href="">
                     <div class="parent-icon"><i class="bx bx-folder"></i>
@@ -223,11 +223,11 @@
                             </a>
                             <div class="header-notifications-list header-message-list app-container">
                                  @forelse($allNotifications as $notification)
-                                    <a class="dropdown-item d-block p-3 border-bottom notification-item {{ $notification->read_at ? 'read-notification' : 'unread-notification' }}" 
+                                    <a class="dropdown-item d-block p-3 border-bottom notification-item {{ $notification->read_at ? 'read-notification' : 'unread-notification' }}"
                                     href="{{ route('notif.markToRead', $notification->id) }}"
                                     data-id="{{ $notification->id }}">
                                         <div class="d-flex align-items-start">
-                                    
+
                                             <div class="flex-grow-1">
                                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                                     <strong class="text-dark">{{ $notification->data['user'] }}</strong>
@@ -252,21 +252,21 @@
                 </ul>
             </div>
             <div class="user-box dropdown px-3">
-                <a class="d-flex align-items-center nav-link dropdown-toggle gap-3 dropdown-toggle-nocaret" 
-                   href="#" 
-                   role="button" 
-                   data-bs-toggle="dropdown" 
+                <a class="d-flex align-items-center nav-link dropdown-toggle gap-3 dropdown-toggle-nocaret"
+                   href="#"
+                   role="button"
+                   data-bs-toggle="dropdown"
                    aria-expanded="false">
                     <!-- User Avatar -->
-                    {{-- <img src="{{ asset('root/images/login-images/default.png') }}" 
-                         class="user-img rounded-circle" 
+                    {{-- <img src="{{ asset('root/images/login-images/default.png') }}"
+                         class="user-img rounded-circle"
                          alt="User Avatar"> --}}
                     @if(Auth::user()->membre->photo != null && Auth::user()->membre->photo != '')
                         <img src="{{ asset('images/userProfile/' . Auth::user()->membre->photo) }}" class="user-img" alt="user avatar">
                     @else
                         <img src="{{ asset('root/images/login-images/default.png')}}" class="user-img" alt="user avatar">
                     @endif
-                  
+
                     <!-- User Info -->
                     <div class="user-info text-white">
                         <p class="user-name mb-0 text-white fw-bold">
@@ -277,28 +277,28 @@
                         </p>
                     </div>
                 </a>
-            
+
                 <!-- Dropdown Menu -->
                 <ul class="dropdown-menu dropdown-menu-end shadow">
                     <!-- Profile Link -->
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="{{ route('setting.user.profile')}}">
-                            <i class="bx bx-user fs-5 me-2"></i> 
+                            <i class="bx bx-user fs-5 me-2"></i>
                             <span>Profil</span>
                         </a>
                     </li>
-                    
+
                     <!-- Divider -->
                     <li>
                         <div class="dropdown-divider my-2"></div>
                     </li>
-            
+
                     <!-- Logout -->
                     <li>
-                        <a class="dropdown-item d-flex align-items-center text-danger" 
+                        <a class="dropdown-item d-flex align-items-center text-danger"
                            href="{{ route('logout') }}"
                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="bx bx-exit fs-5 me-2"></i> 
+                            <i class="bx bx-exit fs-5 me-2"></i>
                             <span>Se Déconnecter</span>
                         </a>
                         <!-- Hidden Logout Form -->
@@ -308,7 +308,7 @@
                     </li>
                 </ul>
             </div>
-            
+
         </nav>
     </div>
 </header>
@@ -333,8 +333,8 @@
                     <div class="menu-title">Demo</div>
                 </a>
             </li> --}}
-            
-            
+
+
             {{-- @endcan
 
             @can('Voir le rapport') --}}
