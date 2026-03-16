@@ -61,7 +61,8 @@ document.addEventListener("DOMContentLoaded", function () {
             'ESP': 'Espèce',
             'CHK': 'Chèque',
             'Mobile_money': 'Mobile money',
-            'SOURCE': 'Prélèvement à la source'
+            'SOURCE': 'Prélèvement à la source',
+            'EBANK': 'EBANK'
         };
         return methods[value] || value;
     }
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('mode_bancaire').style.display = 
                 (this.value === 'VIR' || this.value === 'SOURCE') ? 'block' : 'none';
             document.getElementById('mode_mobile').style.display = 
-                (this.value === 'Mobile_money') ? 'block' : 'none';
+                (this.value === 'EBANK') ? 'block' : 'none';
             updateResume();
         });
     });

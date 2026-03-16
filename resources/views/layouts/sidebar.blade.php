@@ -36,7 +36,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('prospect.index')}}">
+                <a href="{{ route('preSouscription.index')}}">
                     <div class="parent-icon">
                         <i class='bx bx-message-square-edit'></i>
                     </div>

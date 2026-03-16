@@ -77,23 +77,27 @@
             <br>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="naturepiece" id="CNI" value="CNI" autocomplete="on" required>
-                <label class="form-check-label" for="CNI">CNI</label>
+                <label class="form-check-label text-uppercase" for="CNI">CNI</label>
             </div>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="naturepiece" id="Atestation" value="AT" autocomplete="on" required>
-                <label class="form-check-label" for="Atestation">Atestation</label>
+                <label class="form-check-label text-uppercase" for="Atestation">Atestation</label>
             </div>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="naturepiece" id="Passport" value="Passport" autocomplete="on" required>
-                <label class="form-check-label" for="Passport">Passport</label>
+                <label class="form-check-label text-uppercase" for="Passport">Passport</label>
             </div>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="naturepiece" id="Carte_Consulaire" value="Carte Consulaire" autocomplete="on" required>
-                <label class="form-check-label" for="Carte_Consulaire">Carte Consulaire</label>
+                <label class="form-check-label text-uppercase" for="Carte_Consulaire">Carte Consulaire</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="naturepiece" id="CMU" value="CMU" autocomplete="on" required>
+                <label class="form-check-label text-uppercase" for="CMU">CMU</label>
             </div>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="naturepiece" id="Autre" value="AUTRE" autocomplete="on" required>
-                <label class="form-check-label" for="Autre">Autre</label>
+                <label class="form-check-label text-uppercase" for="Autre">Autre</label>
             </div>
 
             @error('naturepiece')

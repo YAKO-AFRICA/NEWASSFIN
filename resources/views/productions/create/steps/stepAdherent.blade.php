@@ -140,6 +140,14 @@
                 <input class="form-check-input" type="radio" name="naturepiece" id="CarteConsulaire" value="CarteConsulaire" autocomplete="on" required>
                 <label class="form-check-label" for="CarteConsulaire">Carte Consulaire</label>
             </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="naturepiece" id="CMU" value="CMU" autocomplete="on" required>
+                <label class="form-check-label text-uppercase" for="CMU">CMU</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="naturepiece" id="Autre" value="AUTRE" autocomplete="on" required>
+                <label class="form-check-label text-uppercase" for="Autre">Autre</label>
+            </div>
 
             @error('naturepiece')
                 <span class="text-danger"> Veuillez cocher la nature de la pièce </span>

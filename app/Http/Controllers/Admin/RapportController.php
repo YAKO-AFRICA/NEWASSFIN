@@ -514,7 +514,7 @@ public function eSouscription(Request $request)
         $activeColumns = session('activeColumns', []);
 
         $product = Product::all();
-        $villes = TblVille::select('libelleVillle')->get();
+        $villes = TblVille::select('*')->get();
         $professions = Profession::select('MonLibelle')->get();
         $secteurActivites = TblSecteurActivite::select('MonLibelle')->get();
 

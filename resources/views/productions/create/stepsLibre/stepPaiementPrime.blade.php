@@ -31,7 +31,7 @@
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" name="modepaiement" type="radio" value="Mobile_money"
+                            <input class="form-check-input" name="modepaiement" type="radio" value="EBANK"
                                 id="Mobile_money">
                             <label class="form-check-label" for="Mobile_money">
                                 Mobile money
@@ -66,17 +66,17 @@
                             <div class="col-sm-6 col-md-3 col-lg-3">
                                 <label class="form-label small">Code Guichet</label>
                                 <input type="text" class="form-control account-number-input" id="codeguichet" 
-                                    placeholder="02005" maxlength="5" pattern="[0-9]{5}" name="codeguichet" required>
+                                    placeholder="02005" maxlength="5" pattern="[0-9]{5}" name="codeguichet">
                             </div> 
                             <div class="col-sm-8 col-md-5 col-lg-5">
                                 <label class="form-label small">Numéro de compte</label>
                                 <input type="text" class="form-control account-number-input" id="numerocompte" 
-                                    placeholder="00123456789" maxlength="12" pattern="[0-9]{12}" name="numerocompte" required>
+                                    placeholder="00123456789" maxlength="12" pattern="[0-9]{12}" name="numerocompte">
                             </div> 
                             <div class="col-sm-4 col-md-2 col-lg-2">
                                 <label class="form-label small">Clé RIB</label>
                                 <input type="text" class="form-control account-number-input" id="rib" 
-                                    placeholder="12" maxlength="2" pattern="[0-9]{2}" name="rib" required>
+                                    placeholder="12" maxlength="2" pattern="[0-9]{2}" name="rib">
                             </div>
                         </div>
                         <div class="col-12 mb-3">

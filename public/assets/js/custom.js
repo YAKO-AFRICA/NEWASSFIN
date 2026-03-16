@@ -242,7 +242,7 @@ $(".wrapper").on('submit', '.submitForm', function (e) {
             const modeMobile = document.getElementById('mode_mobile');
             
             // Vérifie si "paiement mobile" est sélectionné
-            if (this.value === 'Mobile_money') {
+            if (this.value === 'EBANK') {
                 modeMobile.style.display = 'block';
             } else {
                 modeMobile.style.display = 'none';

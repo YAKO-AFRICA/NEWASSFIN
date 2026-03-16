@@ -32,7 +32,11 @@
             <div class="col product-item">
                 <div class="card">
                     <div class="card-header">
-                        <h6 class="text-center text-capitalize">  {{ strtoupper($product->libelleproduit ?? 'N/A') }} </h6>
+                        @if ($product->codeproduit == 'LPREVO')
+                            <h6 class="text-center text-capitalize">  {{ strtoupper('YAKO SOUTRA') }} </h6>
+                        @else
+                            <h6 class="text-center text-capitalize">  {{ strtoupper($product->libelleproduit ?? 'N/A') }} </h6>
+                        @endif
                     </div>
                     <div class="card-body py-1">
                         <p class="card-text">

@@ -351,7 +351,7 @@ class ProductionController extends Controller
     {
         $product = Product::where('CodeProduit', $codeProduit)->first();
         $productGarantie = ProduitGarantie::where(['codeproduit' => $codeProduit, 'branche' => 'IND'])->get();
-        $villes = TblVille::select('*')->limit(10)->get();
+        $villes = TblVille::select('*')->get();
         // dd($villes);
         $professions = Profession::select('MonLibelle')->get();
         $secteurActivites = TblSecteurActivite::select('MonLibelle')->get();
@@ -396,7 +396,7 @@ class ProductionController extends Controller
         // $codeProduit = 'YKE_2018';
         $product = Product::where('CodeProduit', $codeProduit)->first();
         $productGarantie = ProduitGarantie::where(['codeproduit' => $codeProduit, 'branche' => 'IND'])->get();
-        $villes = TblVille::select('libelleVillle')->get();
+        $villes = TblVille::select('*')->get();
         $professions = Profession::select('MonLibelle')->get();
         $secteurActivites = TblSecteurActivite::select('MonLibelle')->get();
         $societes = TblSociete::select('MonLibelle')->get();
@@ -1054,6 +1054,9 @@ class ProductionController extends Controller
     {
 
         $data = $request->all();
+        $reseauId = Reseau::where('codepartenaire', Auth::user()->membre->codepartenaire)->first();
+        $productByReseau = ReseauProduct::where('codereseau', $reseauId->id)->get();
+        $formuleProduct = ReseauProduct::where('codereseau', $reseauId->id)->where('codeproduit', $request->codeproduit)->first();
 
         log::info($data);
 
@@ -1067,26 +1070,21 @@ class ProductionController extends Controller
 
         if (!empty($request->inputSessionData)) {
             $simulationData = json_decode($request->inputSessionData);
-
-            // Log::info('Données de simulation reçues:'. $simulationData);
         }
 
         if($request->codeproduit == "DOIHOO"){
             $prefix = '68111105104111111';
-             $formule = 'DOIHOO_2020_v8';
         } else if ($request->codeproduit == "CAD_EDUCPLUS") {
             $prefix = '679710069100117';
-            $formule = 'CADENCE_EDPV10';
-        } else if ($request->codeproduit == "YKE_2018") {
+        } else if ($request->codeproduit == "YKE_2018" || $request->codeproduit == "YKE_2008") {
             $prefix = '8901001011692018';
-            $formule = 'YKE_2018_V5';
+        } else if ($request->codeproduit == "CADENCE") {
+            $prefix = '679710010111099';
+        } else if ($request->codeproduit == "LPREVO") {
+            $prefix = '65838301000110';
         } else {
             $prefix = '679710069100117';
         }
-
-  
-
-        
 
         // On récupère le nombre de contrats existants avec ce préfixe et ce produit
         $increment = Contrat::where('numBullettin', 'like', $prefix . '%')
@@ -1329,7 +1327,7 @@ class ProductionController extends Controller
 
             // ajout du contrat   numMobile
 
-            if ($request->modepaiement === "Mobile_money") {
+            if ($request->modepaiement === "Mobile_money" || $request->modepaiement === "EBANK") {
                 $numerocompte = $request->numMobile;
             } else {
                 $numerocompte = $request->numerocompte;
@@ -1366,7 +1364,6 @@ class ProductionController extends Controller
                 'codeadherent' => $idAdherent,
                 'estMigre' => 0,
                 'codeproduit' => $request->codeproduit,
-                'numBullettin' => $numBullettin,
 
                 'libelleproduit' => $product->MonLibelle,
                 'montantrente' => $request->montantrente,
@@ -1384,9 +1381,9 @@ class ProductionController extends Controller
                 'codeguichet' => $request->codeguichet,
                 'rib' => $request->rib,
 
-                'branche' => 'BANKASS',
+                'branche' => Auth::user()->membre->branche,
 
-                'partenaire' => 'ASSURFIN',
+                'partenaire' => Auth::user()->membre->partenaire,
                 // 'nomaccepterpar' => now(),
                 // 'refcontratsource' => now(),
                 'cleintegration' => now()->format('Ymd'),
@@ -1396,7 +1393,8 @@ class ProductionController extends Controller
                 // 'details' => now(),
                 'nomsouscipteur' => $request->nom . ' ' . $request->prenom,
                 'typesouscipteur' => Auth::user()->membre->branche,
-                'Formule' => $formule,
+                'Formule' => $formuleProduct->codeproduitformule ?? null,
+                'numBullettin' => $numBullettin,
             ])->save();
 
 
