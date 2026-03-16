@@ -12,35 +12,35 @@
                     <div class=" mt-4">
                         <div class="mb-3">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" name="modepaiement" type="radio" value="VIR" id="Virement_bancaire" 
+                                <input class="form-check-input" name="modepaiement" type="radio" value="VIR" id="Virement_bancaire"
                                     @if ($contrat->modepaiement === 'VIR')
                                         checked
                                     @endif>
                                 <label class="form-check-label" for="Virement_bancaire">Virement bancaire</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" name="modepaiement" type="radio" value="ESP" id="Espece" 
+                                <input class="form-check-input" name="modepaiement" type="radio" value="ESP" id="Espece"
                                     @if ($contrat->modepaiement === 'ESP')
                                         checked
                                     @endif>
                                 <label class="form-check-label" for="Espece">Espèce</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" name="modepaiement" type="radio" value="CHK" id="Cheque" 
+                                <input class="form-check-input" name="modepaiement" type="radio" value="CHK" id="Cheque"
                                     @if ($contrat->modepaiement === 'CHK')
                                         checked
                                     @endif>
                                 <label class="form-check-label" for="Cheque">Chèque</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" name="modepaiement" type="radio" value="Mobile_money" id="Mobile_money" 
-                                    @if ($contrat->modepaiement === 'Mobile_money')
+                                <input class="form-check-input" name="modepaiement" type="radio" value="Mobile_money" id="Mobile_money"
+                                    @if ($contrat->modepaiement === 'Mobile_money' || $contrat->modepaiement === 'EBANK')
                                         checked
                                     @endif>
                                 <label class="form-check-label" for="Mobile_money">Mobile money</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" name="modepaiement" type="radio" value="SOURCE" id="Prelevement_source" 
+                                <input class="form-check-input" name="modepaiement" type="radio" value="SOURCE" id="Prelevement_source"
                                     @if ($contrat->modepaiement === 'SOURCE')
                                         checked
                                     @endif>
@@ -66,7 +66,7 @@
                                 </select>
 
                             </div>
-                           
+
 
                             <div class="col-12 mb-3">
 
@@ -90,16 +90,16 @@
                                 <div class="col-6 mb-3">
 
                                     <label for="codeguichet" class="form-label">Code Guichet</label>
-    
+
                                     <input type="text" class="form-control" value="{{ $contrat->codeguichet ?? 0}}" id="codeguichet" name="codeguichet">
-    
+
                                 </div>
                                 <div class="col-6 mb-3">
 
                                     <label for="rib" class="form-label">Rib</label>
-    
+
                                     <input type="text" class="form-control" value="{{ $contrat->rib ?? 0}}" id="rib" name="rib">
-    
+
                                 </div>
                             </div>
 
@@ -148,7 +148,7 @@
                     <div class="">
                         <div class="mb-3">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" name="periodicite" type="radio" value="M" id="Mois" 
+                                <input class="form-check-input" name="periodicite" type="radio" value="M" id="Mois"
                                        @if ($contrat->periodicite === 'M')
                                             checked
                                        @endif>
@@ -156,14 +156,14 @@
                             </div>
 
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" name="periodicite" type="radio" value="T" id="Trimestre" 
+                                <input class="form-check-input" name="periodicite" type="radio" value="T" id="Trimestre"
                                        @if ($contrat->periodicite === 'T')
                                             checked
                                        @endif>
                                 <label class="form-check-label" for="Trimestre">Trimestre</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" name="periodicite" type="radio" value="S" id="Semestre" 
+                                <input class="form-check-input" name="periodicite" type="radio" value="S" id="Semestre"
                                        @if ($contrat->periodicite === 'S')
                                             checked
                                        @endif>
@@ -172,13 +172,13 @@
                             </div>
                             <div class="form-check form-check-inline">
 
-                                <input class="form-check-input" name="periodicite" type="radio" value="A" id="Annee" 
+                                <input class="form-check-input" name="periodicite" type="radio" value="A" id="Annee"
 
                                        @if ($contrat->periodicite === 'A')
 
                                             checked
 
-                                           
+
 
                                        @endif>
 
@@ -186,7 +186,7 @@
 
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" name="periodicite" type="radio" value="U" id="Versement_unique" 
+                                <input class="form-check-input" name="periodicite" type="radio" value="U" id="Versement_unique"
                                       @if ($contrat->periodicite === 'U')
                                             checked
                                       @endif>
@@ -216,14 +216,14 @@
                                 <input type="number" class="form-control" id="rente" name="rente" min="0" value="{{ $contrat->montantrente ?? '--'}}"  placeholder="{{ $contrat->montantrente ?? '--'}}" readonly>
                             </div>
 
-                            
+
                             <div class="col-12 mb-3">
                                 <label for="fraisadhesion" class="form-label">Frais d'adhesion :</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control" id="fraisadhesion" name="fraisadhesion" min="0" value="{{ $contrat->fraisadhesion ?? '--'}}"  placeholder="{{ $contrat->fraisadhesion ?? '--'}}">
                                     <div class="input-group-text">FCFA</div>
                                 </div>
-                                
+
                             </div>
                         </div>
 
