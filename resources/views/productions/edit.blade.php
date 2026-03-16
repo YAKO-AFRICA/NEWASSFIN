@@ -28,14 +28,14 @@
 
     </div>
 
-    
+
 
 </div>
 
 <div class="ms-auto">
     <div class="d-flex justify-content-end my-4">
         <div class="btn-group gap-1 gap-md-2 gap-lg-3">
-        
+
             @if ($contrat->etape != 2)
             <form action="{{ route('prod.transmettreContrat', $contrat->id)}}" method="post" class="submitForm">
                 @csrf
@@ -74,7 +74,7 @@
                         <strong>N° bullettin :</strong> <span>{{ $contrat->numBullettin ?? '' }}</span>
                     </p>
                     <p>
-                        <center>Status : 
+                        <center>Status :
                             @if ($contrat->etape == 0)
                                 <span class="text-secondary badge rounded-pill  bg-light-secondary">Brouillon</span>
                             @elseif ($contrat->etape == 1)
@@ -157,13 +157,13 @@
                             </p>
                         </div>
                         <h6 class="text-primary mb-0">
-                            <a class="btn btn-sm btn-outline-secondary" data-bs-target="#view-bulletin{{$doc->id}}" data-bs-toggle="modal" title="Preview"> 
+                            <a class="btn btn-sm btn-outline-secondary" data-bs-target="#view-bulletin{{$doc->id}}" data-bs-toggle="modal" title="Preview">
                                 <i class="bx bx-show"></i>
                             </a>
                             {{-- <a class="btn btn-sm btn-outline-secondary" href=""> <i class="bx bx-trash"></i></a> --}}
                         </h6>
 
-                        
+
 
                         <div class="modal fade" id="view-bulletin{{$doc->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 
@@ -194,7 +194,7 @@
                                             </button>
                                         </form>
 
-                                        
+
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
 
                                     </div>
@@ -211,13 +211,13 @@
 
                 @else
 
-                    
+
 
                 @endif
 
-                
 
-                
+
+
 
             </div>
 
@@ -236,7 +236,7 @@
                     <h5>Modifier les Détails du Contrat</h5>
 
                     @include('productions.components.editContrat')
-                    
+
                 </section>
 
                 <section id="edit-adherent" class="section-content d-none">
@@ -277,7 +277,7 @@
 
             const sections = document.querySelectorAll('.section-content');
 
-    
+
 
             links.forEach(link => {
 
@@ -285,13 +285,13 @@
 
                     const targetId = link.getAttribute('data-target');
 
-    
+
 
                     // Masquer toutes les sections
 
                     sections.forEach(section => section.classList.add('d-none'));
 
-    
+
 
                     // Afficher la section correspondante
 
@@ -311,11 +311,48 @@
 
     </script>
 
-    
-<script>
-    const contratInfo = {!! json_encode($contrat) !!};
 
-    console.log(contratInfo.adherent);
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+
+        const contratInfo = {!! json_encode($contrat) !!};
+
+        console.log(contratInfo.adherent);
+
+        const modeBancaire = document.getElementById('mode_bancaire');
+        const modeMobile = document.getElementById('mode_mobile');
+        const modeSource = document.getElementById('mode_source');
+
+        if (modeBancaire) modeBancaire.style.display = 'none';
+        if (modeMobile) modeMobile.style.display = 'none';
+        if (modeSource) modeSource.style.display = 'none';
+
+        document.querySelectorAll('input[name="modepaiement"]').forEach(radio => {
+
+            radio.addEventListener('change', function () {
+
+                document.getElementById('mode_bancaire').style.display = 'none';
+                document.getElementById('mode_mobile').style.display = 'none';
+                document.getElementById('mode_source').style.display = 'none';
+
+                if (this.value === 'VIR' || this.value === 'BANK' || this.value === 'CHK') {
+                    document.getElementById('mode_bancaire').style.display = 'block';
+                }
+
+                if (this.value === 'EBANK' || this.value === 'Mobile_money') {
+                    document.getElementById('mode_mobile').style.display = 'block';
+                }
+
+                if (this.value === 'SOURCE') {
+                    document.getElementById('mode_source').style.display = 'block';
+                }
+
+            });
+
+        });
+
+    })
 </script>
 
 
@@ -324,6 +361,6 @@
 
 <!--end row-->
 
-    
+
 
 @endsection

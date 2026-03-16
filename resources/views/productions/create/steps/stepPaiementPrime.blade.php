@@ -402,7 +402,7 @@
                 document.getElementById('mode_bancaire').style.display = 'block';
             }
 
-            if (this.value === 'EBANK') {
+            if (this.value === 'EBANK' || this.value === 'Mobile_money') {
                 document.getElementById('mode_mobile').style.display = 'block';
             }
 
