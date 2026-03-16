@@ -53,28 +53,36 @@
                                             <option value="A">Annuel</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-6">
                                         <label class="form-label">Durée Cotisation</label>
-                                        <input type="number" class="form-control" id="duree" name="duree" min="5" max="5" value="5" readonly>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="duree" name="duree" min="5" max="5" value="5" readonly>
+                                            <div class="input-group-text">ANNEES</div>
+                                        </div>
+
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Capital Souscrit</label>
-                                        <select name="capitalSouscrit" id="capitalSouscrit" class="form-select" required>
-                                            <option value="" selected disabled>Choisissez un capital</option>
-                                            {{-- <option value="300000">300 000 FCFA</option> --}}
-                                            <option value="500000">500 000 FCFA</option>
-                                            <option value="750000">750 000 FCFA</option>
-                                            <option value="1000000">1 000 000 FCFA</option>
-                                            <option value="1250000">1 250 000 FCFA</option>
-                                            <option value="1500000">1 500 000 FCFA</option>
-                                            <option value="2000000">2 000 000 FCFA</option>
-                                            <option value="3000000">3 000 000 FCFA</option>
-                                            <option value="4000000">4 000 000 FCFA</option>
-                                            <option value="5000000">5 000 000 FCFA</option>
-                                        </select>
+                                        <div class="input-group">
+
+                                            <select name="capitalSouscrit" id="capitalSouscrit" class="form-select" required>
+                                                <option value="" selected disabled>Choisissez un capital</option>
+                                                {{-- <option value="300000">300 000 FCFA</option> --}}
+                                                <option value="500000">500 000 FCFA</option>
+                                                <option value="750000">750 000 FCFA</option>
+                                                <option value="1000000">1 000 000 FCFA</option>
+                                                <option value="1250000">1 250 000 FCFA</option>
+                                                <option value="1500000">1 500 000 FCFA</option>
+                                                <option value="2000000">2 000 000 FCFA</option>
+                                                <option value="3000000">3 000 000 FCFA</option>
+                                                <option value="4000000">4 000 000 FCFA</option>
+                                                <option value="5000000">5 000 000 FCFA</option>
+                                            </select>
+                                            <div class="input-group-text">FCFA</div>
+                                        </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6">
                                         <label class="form-label">Date de naissance de l'assuré</label>
                                         <input type="date" class="form-control" id="dateNaissance" name="dateNaissance" required>
@@ -83,7 +91,7 @@
                                         <label class="form-label">Âge Calculé</label>
                                         <input type="hidden" class="form-control" id="age" name="age">
                                     </div>
-                                    
+
                                     <div class="col-md-6">
                                         <label class="form-label">Date d'effet</label>
                                         <input type="date" class="form-control" id="dateEffet" name="dateEffet" required>
@@ -91,7 +99,7 @@
                                 </div>
                             </div>
                         </div>
-                    
+
                         <div class="card mb-4">
                             <div class="card-header bg-primar text-white">
                                 <h5 class="mb-0">Le souscripteur est il l'assuré ?</h5>
@@ -122,7 +130,7 @@
                                         Ajouter la garantie optionnelle Senior
                                     </label>
                                 </div>
-                    
+
                                 <div class="row" id="seniorPrimeInputWrapper" style="display: none;">
                                     <div class="col-md-6">
                                         <label for="seniorPrimeInput" class="form-label">Prime pour la garantie Senior</label>
@@ -135,7 +143,7 @@
                                 </div>
                             </div>
                         </div>
-                    
+
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4 row">
                             <button type="submit" class="btn btn-primary col">
                                 <i class="bi bi-calculator me-2"></i>Simuler
@@ -143,10 +151,10 @@
                             <button type="button" id="btn-reset" class="btn btn-outline-secondary me-md-2 col float-start">
                                 <i class="bi bi-arrow-counterclockwise me-2"></i>Réinitialiser
                             </button>
-                           
+
                         </div>
                     </form>
-                    
+
                 </fieldset>
             </div>
         </div>
@@ -158,7 +166,7 @@
 
                 <div class="card-body">
                     <div class="container">
-                        
+
                         <table class="table table-bordered table-striped">
                             <thead class="table-light">
                                 <tr>
@@ -168,7 +176,7 @@
                                 </tr>
                             </thead>
                             <tbody id="result">
-                                
+
                             </tbody>
                         </table>
                         <table class="table">

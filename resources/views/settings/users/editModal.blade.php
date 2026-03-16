@@ -86,9 +86,10 @@
                                     <div class="mb-3 col-sm-12 col-md-6">
                                         <label for="codeequipe" class="form-label">Equipe/Agence</label>
                                         <select name="codeequipe" id="codeequipe" class="form-select">
-                                            <option value="{{ $item->codeequipe }}">{{ $item->equipe->libelleequipe ?? '' }}</option>
-                                            @foreach ($equipes as $equipe)
-                                                <option class="form-control" value="{{ $equipe->codeequipe }}">{{ $equipe->libelleequipe }}</option>
+                                            @foreach ($agenceByReseeaus as $agenceByReseeau)
+                                                <option class="form-control" value="{{ $agenceByReseeau['CodeUnite'] }}">
+                                                    {{ $agenceByReseeau['MonLibelle'] ?? ''}}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>

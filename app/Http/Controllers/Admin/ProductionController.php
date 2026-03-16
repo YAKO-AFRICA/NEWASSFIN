@@ -230,6 +230,9 @@ class ProductionController extends Controller
     public function stepProduct()
     {
 
+        session()->forget('simulationData');
+        session()->forget('simulation_primes');
+
         $reseauId = Reseau::where('codepartenaire', Auth::user()->membre->codepartenaire)->first();
         $productByReseau = ReseauProduct::where('codereseau', $reseauId->id)->get();
 
@@ -352,7 +355,7 @@ class ProductionController extends Controller
         $product = Product::where('CodeProduit', $codeProduit)->first();
         $productGarantie = ProduitGarantie::where(['codeproduit' => $codeProduit, 'branche' => 'IND'])->get();
         $villes = TblVille::select('*')->get();
-        // dd($villes);
+        // dd($productGarantie);
         $professions = Profession::select('MonLibelle')->get();
         $secteurActivites = TblSecteurActivite::select('MonLibelle')->get();
         // $societes = TblSociete::select('MonLibelle')->get();
@@ -710,9 +713,6 @@ class ProductionController extends Controller
             // log::info("okay pour les garantie assurer : ");
             $garantiesData = $inputSessionData['garantieData'];
 
-      
-
-
             // recupere & creer les assurer de la session
 
             $assures = json_decode($request->input('assures'), true);
@@ -863,18 +863,18 @@ class ProductionController extends Controller
                     Beneficiaire::create([
                         'id' => $idBenefInsert,
                         'civilite' => $beneficiaire['civilite'] ?? null,
-                        'nom' => $beneficiaire['nom'],
-                        'prenom' => $beneficiaire['prenom'],
-                        'datenaissance' => $datenaissanceBeneficiaire,
+                        'nom' => $beneficiaire['nom'] ?? null,
+                        'prenom' => $beneficiaire['prenom'] ?? null,
+                        'datenaissance' => $datenaissanceBeneficiaire ?? null,
                         'codecontrat' => $idContrat,
                         'codeadherent' => $idAdherent,
-                        'lieunaissance' => $beneficiaire['lieuNaissance'],
+                        'lieunaissance' => $beneficiaire['lieuNaissance'] ?? null,
                         'numeropiece' => $beneficiaire['numeropiece'] ?? null,
                         'naturepiece' => $beneficiaire['naturepiece'] ?? null,
-                        'lieuresidence' => $beneficiaire['lieuResidence'],
-                        'filiation' => $beneficiaire['lienParente'],
-                        'mobile' => $beneficiaire['telephone'],
-                        'email' => $beneficiaire['email'],
+                        'lieuresidence' => $beneficiaire['lieuResidence'] ?? null,
+                        'filiation' => $beneficiaire['lienParente'] ?? null,
+                        'mobile' => $beneficiaire['telephone'] ?? null,
+                        'email' => $beneficiaire['email'] ?? null,
                         'saisieLe' => now(),
                         'cleintegration' => $keyUniq,
                         'saisiepar' => Auth::user()->membre->idmembre,
@@ -897,8 +897,8 @@ class ProductionController extends Controller
                 'id' => $idContrat,
                 'dateeffet' => $request->dateEffet,
                 'modepaiement' => $request->modepaiement,
-                'organisme' => "ASSURFINANCE",
-                'agence' => Auth::user()->membre->codeequipe,
+                'organisme' => $request->organisme,
+                'agence' => $request->agence,
                 'numerocompte' => $numerocompte,
                 'periodicite' => $periodicite,
 
@@ -910,7 +910,6 @@ class ProductionController extends Controller
                 'fraisadhesion' => $request->fraisadhesion,
 
                 'surprime' => $request->surprime,
-                // 'capital' => $request->capital,
                 'capital' => number_format($request->capital, 2, ".", ""),
                 'etape' => 1,
 
@@ -1099,7 +1098,7 @@ class ProductionController extends Controller
 
 
         DB::beginTransaction();
-        try { 
+        try {
 
             // Gestion de la civilité pour l'adhérent et l'assuré
             $sexe = $request->civilite === "Monsieur" ? "M" : "F";
@@ -1109,7 +1108,7 @@ class ProductionController extends Controller
 
             $age = Carbon::parse($datenaissance)->diffInYears(Carbon::now());
 
-            // creation id 
+            // creation id
             $idAdherent = Adherent::max('id') + 1;
             $idAssure = Assurer::max('id') + 1;
             $idBenef = Beneficiaire::max('id') + 1;
@@ -1215,17 +1214,12 @@ class ProductionController extends Controller
                         'saisieLe' => now(),
                         'saisiepar' => Auth::user()->membre->idmembre,
                     ]);
-                    
+
                 }
             }
 
-            // creation des garanties
-
-            // foreach ($simulationData->garantieData as $garantie) {
-                // Log::info("garantie". $garantie);produitCode
-                $GarantieOnBD = ProduitGarantie::where('codeproduit', $request->produitCode)->where('branche', 'IND')->get();
-
-                Log::info("GarantieOnBD". $GarantieOnBD);
+            $GarantieOnBD = ProduitGarantie::where('codeproduit', $request->produitCode)->where('branche', 'IND')->get();
+            Log::info("GarantieOnBD". $GarantieOnBD);
 
             foreach ($GarantieOnBD as $garantie) {
 
@@ -1398,9 +1392,9 @@ class ProductionController extends Controller
             ])->save();
 
 
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'type' => 'success',
                 'urlback' => route('prod.edit', ['id' => $idContrat]),
@@ -1421,7 +1415,7 @@ class ProductionController extends Controller
                 'code' => 500,
             ]);
         }
-       
+
     }
 
     private function calculeprimeYke($request, $GarantiesOptionnelles, $idAssure, $idContrat)

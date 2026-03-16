@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
     resetForm();
 
     // ==================== GESTIONNAIRES D'ÉVÉNEMENTS ====================
-    
+
     // Calcul automatique de l'âge
     if (elements.dateNaissance) {
         elements.dateNaissance.addEventListener("change", function() {
@@ -48,11 +48,11 @@ document.addEventListener("DOMContentLoaded", function() {
             const today = new Date();
             let age = today.getFullYear() - dateNaissance.getFullYear();
             const monthDiff = today.getMonth() - dateNaissance.getMonth();
-            
+
             if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dateNaissance.getDate())) {
                 age--;
             }
-            
+
             if (elements.age) {
                 elements.age.value = age;
                 elements.age.dispatchEvent(new Event('change'));
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Réinitialiser le formulaire
         if (elements.form) {
             elements.form.reset();
-            
+
             // Réinitialiser les champs spécifiques
             if (elements.duree) elements.duree.value = "5";
             if (elements.codePeriodicite) elements.codePeriodicite.value = "M";
@@ -99,15 +99,15 @@ document.addEventListener("DOMContentLoaded", function() {
         // Réinitialiser l'affichage
         if (elements.result) elements.result.innerHTML = "";
         if (elements.primeTotal) elements.primeTotal.textContent = "0";
-        
+
         // Cacher la section senior
         if (elements.seniorPrimeInputWrapper) {
             elements.seniorPrimeInputWrapper.style.display = "none";
         }
-        
+
         // Désactiver le bouton de souscription
         setSouscriptionButtonState(false);
-        
+
         // Réinitialiser l'état
         simulationData = {
             garantieData: [],
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function() {
             totalPrime: 0,
             totalPurePrime: 0
         };
-        
+
         // Nettoyer le sessionStorage
         sessionStorage.removeItem("simulationData");
     }
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!elements.dateNaissance?.value) errors.push("La date de naissance est requise");
         if (!elements.capitalSouscrit?.value) errors.push("Le capital souscrit est requis");
         if (!elements.dateEffet?.value) errors.push("La date d'effet est requise");
-        
+
         const isAssure = elements.isAssureOui?.checked || elements.isAssureNon?.checked;
         if (!isAssure) errors.push("Veuillez indiquer si le souscripteur est l'assuré");
 
@@ -186,13 +186,13 @@ document.addEventListener("DOMContentLoaded", function() {
     if (elements.form) {
         elements.form.addEventListener("submit", async function(e) {
             e.preventDefault();
-            
+
             // Validation
             if (!validateForm()) return;
 
             // Réinitialiser les résultats précédents
             clearResults();
-            
+
             // Afficher le chargement
             showLoading();
 
@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 "https://api.yakoafricassur.com/enov/prime-garantie",
                 {
                     method: "POST",
-                    headers: { 
+                    headers: {
                         "Content-Type": "application/json",
                         "Accept": "application/json"
                     },
@@ -250,16 +250,16 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
 
             const data = await response.json();
-            
+
             if (Array.isArray(data)) {
                 data.forEach(item => {
                     if (item.Prime > 0) {
                         const prime = Number(item.Prime || 0);
-                        
+
                         // Mettre à jour les totaux
                         simulationData.totalPrime += prime;
                         simulationData.totalPurePrime += prime;
-                        
+
                         // Ajouter aux données de garantie
                         simulationData.garantieData.push({
                             codeGarantie: garantie.codeproduitgarantie,
@@ -267,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             capital: formData.capitalSouscrit,
                             libelle: garantie.libelle || garantie.codeproduitgarantie
                         });
-                        
+
                         // Afficher la garantie
                         displayGarantie(
                             garantie.libelle || garantie.codeproduitgarantie,
@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function() {
     async function addSeniorGarantie(formData) {
         return new Promise((resolve) => {
             const seniorPrime = parseFloat(elements.seniorPrimeInput?.value) || 0;
-            
+
             if (seniorPrime <= 0) {
                 showNotification("Veuillez saisir une prime valide pour la garantie Senior", "error");
                 resolve(false);
@@ -300,7 +300,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // Mettre à jour les totaux
             simulationData.totalPrime += seniorPrime;
             simulationData.totalPurePrime += seniorPrime;
-            
+
             // Ajouter aux données
             simulationData.garantieData.push({
                 codeGarantie: "SENIOR",
@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 capital: CONSTANTS.CAPITAL_SENIOR,
                 libelle: "Garantie optionnelle Senior"
             });
-            
+
             // Afficher la garantie
             displayGarantie(
                 "Garantie Senior",
@@ -347,14 +347,14 @@ document.addEventListener("DOMContentLoaded", function() {
             capital: formData.capitalSouscrit,
             dateEffet: formData.dateEffet,
             datenaissance: formData.dateNaissance,
-            fraisAdhesion: CONSTANTS.FRAIS_ADHESION
+            fraisadhesion: CONSTANTS.FRAIS_ADHESION
         };
 
         console.log("Données de simulation:", simulationData);
 
         // Sauvegarder dans sessionStorage
         sessionStorage.setItem("simulationData", JSON.stringify(simulationData));
-        
+
         // Envoyer au serveur
         sendSimulationToServer();
 
@@ -369,7 +369,7 @@ document.addEventListener("DOMContentLoaded", function() {
      */
     function sendSimulationToServer() {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
-        
+
         if (!csrfToken) {
             console.error("CSRF token non trouvé");
             return;
@@ -446,7 +446,7 @@ document.addEventListener("DOMContentLoaded", function() {
      */
     function showLoading() {
         if (!elements.result) return;
-        
+
         elements.result.innerHTML = `
             <tr>
                 <td colspan="3" class="text-center py-4">

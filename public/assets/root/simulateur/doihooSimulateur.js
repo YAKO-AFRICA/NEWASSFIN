@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const resetBtn = document.getElementById('resetBtn');
     const primeForm = document.getElementById('doihooSimulateurForm');
 
-    
+
     const FRAIS_ADHESION = 7500;
     let donneesGlobale = [];
 
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         garantieData: [],
         infoSimulation: {}
     };
-    
+
     const authToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjExODcyLCJlbWFpbCI6ImZvcm1hdGlvbi5ibmlAYm5pLmNvbSIsIm5vbSI6IkJOSSIsImNvZGVhZ2VudCI6IkIwNDAiLCJ0eXBlbWVicmUiOm51bGwsInByZW5vbSI6IkZvcm1hdGlvbiJ9.gwxwy43VeMDcfaTpgpFbuWkxjirIBqvuXq3UZOuw_nA";
 
     let tablePrimes = [];
@@ -57,11 +57,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 primepricipale: parseFloat(primePrincipElement.textContent.replace(/\s/g, '').replace('FCFA', '')),
                 age: ageSelect.value,
                 duree: dureeContratInput.value,
-                fraisAdhesion: FRAIS_ADHESION,
+                fraisadhesion: FRAIS_ADHESION,
                 primeFinale: parseFloat(primeTotalElement.textContent.replace(/\s/g, '').replace('FCFA', '')),
             }
         };
-        
+
         sessionStorage.setItem('simulationData', JSON.stringify(simulationData));
 
         console.log('Données de simulation sauvegardées:', simulationData);
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-  
+
 
     resetBtn.addEventListener('click', function() {
         // Réinitialiser les champs
@@ -78,19 +78,19 @@ document.addEventListener('DOMContentLoaded', function () {
         capitalSelect.innerHTML = '<option value="" selected>Sélectionnez un capital</option>';
         ageSelect.innerHTML = '<option value="" selected disabled>Sélectionnez un age</option>';
         dureeContratInput.value = '8';
-        
+
         // Réinitialiser les résultats
         resultContainer.innerHTML = '';
         primePrincipElement.textContent = '0';
         primeTotalElement.textContent = '0';
         btnSouscription.classList.add('btn-inactif');
-        
+
         // Effacer complètement la session
         sessionStorage.removeItem('simulationData');
         sessionStorage.removeItem('simulationData');
 
         sessionStorage.removeItem('donneesGlobale');
-        
+
         // Réinitialiser les données
         tablePrimes = [];
         currentCalculations = [];
@@ -105,13 +105,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         resetSelect(capitalSelect, 'Sélectionnez un capital');
         resetSelect(ageSelect, 'Sélectionnez une plage d\'âge');
-        
+
         try {
             // Récupération des tables de primes
             const cacheKey = `${codeProduit}_${codePeriodicite}`;
             if (!dataCache.tables[cacheKey]) {
                 const tableResponse = await fetchWithRetry(
-                    "https://api.yakoafricassur.com/enov/get-table-prime-web", 
+                    "https://api.yakoafricassur.com/enov/get-table-prime-web",
                     { CodeProduit: codeProduit, CodePeriodicite: codePeriodicite }
                 );
                 tablePrimes = tableResponse.dataTablePrime || [];
@@ -128,23 +128,23 @@ document.addEventListener('DOMContentLoaded', function () {
             // Récupération des capitaux
             if (!dataCache.capitals[codeGroupe]) {
                 const capitalResponse = await fetchWithRetry(
-                    "https://api.yakoafricassur.com/enov/get-capital-web", 
+                    "https://api.yakoafricassur.com/enov/get-capital-web",
                     { CodeGroupe: codeGroupe }
                 );
                 dataCache.capitals[codeGroupe] = capitalResponse.dataCapital || [];
             }
-            
+
             populateSelect(capitalSelect, dataCache.capitals[codeGroupe], 'Capital', 'Libelle');
 
             // Récupération des âges
             if (!dataCache.ages[codeGroupe]) {
                 const ageResponse = await fetchWithRetry(
-                    "https://api.yakoafricassur.com/enov/get-age-prime-web", 
+                    "https://api.yakoafricassur.com/enov/get-age-prime-web",
                     { CodeGroupe: codeGroupe }
                 );
                 dataCache.ages[codeGroupe] = ageResponse.dataTableAge || [];
             }
-            
+
             populateSelect(ageSelect, dataCache.ages[codeGroupe], 'AgeAssure', 'Titre');
 
         } catch (err) {
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Code periodicité :', periodiciteSelect.value);
 
         donneesGlobale = [];
-        
+
         const capital = parseFloat(capitalSelect.value);
         const age = parseInt(ageSelect.value);
         const duree = parseInt(dureeContratInput.value);
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
         currentCalculations = [];
         resultContainer.innerHTML = '<tr><td colspan="3" class="text-center">Calcul en cours...</td></tr>';
         btnSouscription.classList.add('btn-inactif');
-        
+
         try {
             const calculations = garanties.map(async garantie => {
                 console.log(`Traitement de la garantie : ${garantie.libelle} (Code: ${garantie.codeproduitgarantie})`);
@@ -187,10 +187,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!match) return null;
                 console.log('Match trouvé dans les tables de primes :', match.CodeGRoupeIntervalle, match.codeTable);
                 // console.log(`Calcul de la prime pour ${garantie.libelle} avec capital ${capital}, âge ${age}, durée ${duree}`);
-            
+
                 const isDoihoo = garantie.codeproduitgarantie === "DOI_2020";
                 const adjustedCapital = isDoihoo ? (capital * 0.2) : capital;
-            
+
                 const requestBody = {
                     CodeGroupe: match.CodeGRoupeIntervalle,
                     AgeAssure: age,
@@ -198,14 +198,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     codeTable: match.codeTable,
                     Duree: duree
                 };
-            
-            
+
+
                 try {
                     const response = await fetchWithRetry(
-                        "https://api.yakoafricassur.com/enov/get-prime-by-param-web", 
+                        "https://api.yakoafricassur.com/enov/get-prime-by-param-web",
                         requestBody
                     );
-                    
+
                     const prime = parseFloat(response.dataTablePrimeRes[0]?.Prime || 0);
                     console.log(`Prime calculée pour ${garantie.libelle}:`, prime);
 
@@ -230,9 +230,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             primeFinale: parseFloat(primeTotalElement.textContent.replace(/\s/g, '').replace('FCFA', '')),
                         }
                     };
-                    
+
                     sessionStorage.setItem('simulationData', JSON.stringify(simulationData));
-            
+
 
                     return {
                         libelle: garantie.libelle,
@@ -244,14 +244,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     return null;
                 }
             });
-            
+
 
             const results = await Promise.all(calculations);
             currentCalculations = results.filter(r => r !== null);
-            
+
             updateResultsUI();
-            
-            
+
+
         } catch (err) {
             console.error("Erreur générale calcul primes:", err.message);
             showError("Une erreur est survenue lors du calcul des primes. Veuillez vérifier les données saisies.");
@@ -269,16 +269,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         resultContainer.innerHTML = '';
-        
+
         let primePrincipale = 0;
         let primeTotale = 0;
 
         currentCalculations.forEach(item => {
             const row = document.createElement('tr');
-            
+
             primePrincipale += item.prime;
             primeTotale += item.prime;
-            
+
             row.innerHTML = `
                 <td>${item.libelle}</td>
                 <td class="text-end">${formatCurrency(item.prime)}</td>
@@ -289,28 +289,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
         primePrincipElement.textContent = formatCurrency(primePrincipale);
         primeTotalElement.textContent = formatCurrency(primeTotale + FRAIS_ADHESION);
-        
+
         // Activer le bouton de souscription si calcul réussi
         btnSouscription.classList.remove('btn-inactif');
     }
 
-  
+
 
     function loadFromSession() {
         const savedData = sessionStorage.getItem('simulationData');
         if (savedData) {
             const data = JSON.parse(savedData);
-            
+
             if (data.codePeriodicite) periodiciteSelect.value = data.codePeriodicite;
             if (data.duree) dureeContratInput.value = data.duree;
-            
+
             // Si des données existent, déclencher le chargement automatique
             if (data.codeProduit && data.codePeriodicite) {
                 fetchAllData().then(() => {
                     // Après le chargement, restaurer les sélections
                     if (data.capital) capitalSelect.value = data.capital;
                     if (data.age) ageSelect.value = data.age;
-                    
+
                     // Si tout est complet, recalculer les primes
                     if (data.capital && data.age && data.currentCalculations) {
                         currentCalculations = data.currentCalculations;
@@ -327,18 +327,18 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const response = await fetch(url, {
                     method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json", 
-                        "Authorization": authToken 
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": authToken
                     },
                     body: JSON.stringify(body)
                 });
-                
+
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
+
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
-                
+
                 return data;
             } catch (err) {
                 if (i === retries - 1) throw err;
@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function populateSelect(select, items, valueField, textField) {
         resetSelect(select, `Sélectionnez un ${select.id === 'capital' ? 'capital' : 'âge'}`);
-        
+
         if (Array.isArray(items)) {
             items.forEach(item => {
                 const opt = document.createElement('option');
@@ -365,10 +365,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function formatCurrency(amount) {
-        return new Intl.NumberFormat('fr-FR', { 
-            style: 'decimal', 
+        return new Intl.NumberFormat('fr-FR', {
+            style: 'decimal',
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2 
+            maximumFractionDigits: 2
         }).format(amount) + ' FCFA';
     }
 
@@ -379,14 +379,14 @@ document.addEventListener('DOMContentLoaded', function () {
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
-        
+
         let errorContainer = document.getElementById('error-container');
         if (!errorContainer) {
             errorContainer = document.createElement('div');
             errorContainer.id = 'error-container';
             document.querySelector('.card-body').prepend(errorContainer);
         }
-        
+
         errorContainer.innerHTML = '';
         errorContainer.appendChild(alert);
     }
@@ -406,12 +406,12 @@ document.addEventListener('DOMContentLoaded', function () {
     capitalSelect.addEventListener('change', debounce(calculatePrimes, 300));
     ageSelect.addEventListener('change', debounce(calculatePrimes, 300));
     dureeContratInput.addEventListener('input', debounce(calculatePrimes, 300));
-    
+
     // Calcul automatique si tous les champs sont déjà remplis au chargement
     if (periodiciteSelect.value && capitalSelect.value && ageSelect.value && dureeContratInput.value) {
         calculatePrimes();
     }
 
-   
+
 });
 

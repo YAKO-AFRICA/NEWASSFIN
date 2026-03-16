@@ -45,7 +45,7 @@
             <span class="d-none d-sm-inline">Bulletin</span>
         </a>
 
-        <input type=button onclick='calltouchpay("{{ $contrat->id }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer ma première prime" />
+        {{-- <input type=button onclick='calltouchpay("{{ $contrat->id }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer ma première prime" /> --}}
     </div>
 </div>
 <div id="stepper1" class="bs-stepper">
@@ -223,8 +223,10 @@
                                         @switch($contrat->modepaiement)
                                             @case('VIR') Virement bancaire @break
                                             @case('ESP') Espèce @break
+                                            @case('SOLDE') Solde @break
                                             @case('CHK') Chèque @break
                                             @case('Mobile_money') Mobile money @break
+                                            @case('EBANK') EBANK @break
                                             @case('SOURCE') Prélèvement à la source @break
                                             @default --
                                         @endswitch
@@ -235,13 +237,13 @@
                                         <dd>{{ $contrat->organisme ?? '--' }}</dd>
                     
                                         <dt>Agence</dt>
-                                        <dd>{{ $contrat->user->membre->nomagence ?? '--' }}</dd>
+                                        <dd>{{ $contrat->agence ?? '--' }}</dd>
                     
                                         <dt>N° de compte (Matricule)</dt>
                                         <dd>{{ $contrat->numerocompte ?? '--' }}</dd>
                                     @endif
                     
-                                    @if ($contrat->modepaiement === 'Mobile_money')
+                                    @if ($contrat->modepaiement === 'Mobile_money' || $contrat->modepaiement === 'EBANK')
                                         <dt>N° Mobile</dt>
                                         <dd>{{ $contrat->numerocompte ?? '--' }}</dd>
                                     @endif

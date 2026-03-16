@@ -219,7 +219,11 @@
                             
                             <div class="col-12 mb-3">
                                 <label for="fraisadhesion" class="form-label">Frais d'adhesion :</label>
-                                <input type="number" class="form-control" id="fraisadhesion" name="fraisadhesion" min="0" value="{{ $contrat->fraisadhesion ?? '--'}}"  placeholder="{{ $contrat->fraisadhesion ?? '--'}}">
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="fraisadhesion" name="fraisadhesion" min="0" value="{{ $contrat->fraisadhesion ?? '--'}}"  placeholder="{{ $contrat->fraisadhesion ?? '--'}}">
+                                    <div class="input-group-text">FCFA</div>
+                                </div>
+                                
                             </div>
                         </div>
 

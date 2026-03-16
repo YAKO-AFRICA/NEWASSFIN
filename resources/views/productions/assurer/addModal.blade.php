@@ -54,26 +54,26 @@
                                     <label for="datenaissanceAssur" class="form-label">Date de naissance <span class="star">*</span></label>
                                     <input type="date" name="datenaissanceAssur" class="form-control" id="datenaissanceAssur"
                                         placeholder="Date de naissance" required>
-                                    
+
                                     @error('datenaissanceAssur')
                                         <span class="text-danger"> Veuillez remplir la date de naissance </span>
                                     @enderror
                                 </div>
-                                <div class="col-12 col-lg-6"> 
+                                <div class="col-12 col-lg-6">
                                     <label for="lieunaissanceAssur" class="form-label">Lieu de naissance</label>
                                     <select class="form-select" name="lieunaissanceAssur" id="lieunaissanceAssur" data-codeproduit="{{ $product->CodeProduit }}" data-placeholder="Sélectionner le lieu">
                                         <option value="" selected>Sélectionner le lieu</option> <!-- Option vide pour le placeholder -->
-                                        
+
                                         @foreach($villes as $ville)
-                                            <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option> 
-                                        @endforeach 
+                                            <option value="{{ $ville->IdTblVille }}">{{ $ville->MonLibelle }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div><!---end row-->
                             <div class="row g-3 mb-3">
                                 <div class="col-12 col-lg-6">
                                     <label for="" class="form-label">Nature de la pièce</label>
-                                    <br> 
+                                    <br>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input naturepieceAssur" type="radio" name="naturepieceAssur" id="CNIAssur" value="CNI">
                                         <label class="form-check-label" for="CNIAssur">CNI</label>
@@ -85,7 +85,7 @@
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input naturepieceAssur" type="radio" name="naturepieceAssur" id="PassportAssur" value="Passport">
                                         <label class="form-check-label" for="PassportAssur">Passeport</label>
-                                    </div> 
+                                    </div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="naturepieceAssur" id="carteConsulaire" value="Carte Consulaire" autocomplete="on" >
                                         <label class="form-check-label" for="carteConsulaire">Carte Consulaire</label>
@@ -95,23 +95,23 @@
                                         <label class="form-check-label" for="AutrePiece">Autre</label>
                                     </div>
                                 </div>
-                                <div class="col-12 col-lg-6"> 
+                                <div class="col-12 col-lg-6">
                                     <label for="numeropieceAssur" class="form-label">numéro de la pièce</label>
                                     <input type="text" name="numeropieceAssur" class="form-control" id="numeropieceAssur"
                                         placeholder="numero de la pièce d'identité">
-                                        
-                                     
-                                </div> 
+
+
+                                </div>
                             </div><!---end row-->
                             <div class="row g-3 mb-3">
-                                <div class="col-12 col-lg-6"> 
+                                <div class="col-12 col-lg-6">
                                     <label for="lieuresidenceAssur" class="form-label">Lieu de residence</label>
                                     <select class="form-select" name="lieuresidenceAssur" id="lieuresidenceAssur" data-placeholder="Sélectionner le lieu">
                                         <option selected value="">Sélectionner le lieu</option> <!-- Option vide pour le placeholder -->
-                                        
+
                                         @foreach($villes as $ville)
-                                            <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option> 
-                                        @endforeach 
+                                            <option value="{{ $ville->IdTblVille }}">{{ $ville->MonLibelle }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-12 col-lg-6">
@@ -125,7 +125,7 @@
                                             <option value="{{ $item->CodeFiliation }}">{{ $item->MonLibelle }}</option>
                                         @endforeach
                                     </select>
-                                </div> 
+                                </div>
                             </div>
                             <div class="row g-3 mb-3">
                                 <div class="col-12 col-lg-6">
@@ -133,20 +133,20 @@
                                     <div class="input-group mb-3">
                                         <input type="tel" name="mobileAssur" id="mobileAssur" class="form-control" placeholder="ex: +225 0701020304" minlength="10" maxlength="15" >
                                     </div>
-                                    
+
                                     @error('mobileAssur')
-                                        <span class="text-danger"> Veuillez remplir votre numéro de mobile </span> 
-                                    @enderror 
+                                        <span class="text-danger"> Veuillez remplir votre numéro de mobile </span>
+                                    @enderror
                                 </div>
                                 <div class="col-12 col-lg-6">
                                     <label for="emailAssur" class="form-label">Email</label>
                                     <input type="email" name="emailAssur" class="form-control" id="emailAssur"
                                         placeholder="Email">
-                                        
+
                                     @error('email')
                                         <span class="text-danger"> Veuillez remplir votre email </span>
                                     @enderror
-                                </div> 
+                                </div>
                             </div>
                             <div class="col-12">
                                 <div class="d-flex align-items-center justify-content-between gap-3">
@@ -157,12 +157,12 @@
                                         <button type="button" class="btn btn-two" id="btn-ajouter">Ajouter</button>
                                     </div>
                                 </div>
-                                
-                            </div> 
-                        </form> 
+
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </div>

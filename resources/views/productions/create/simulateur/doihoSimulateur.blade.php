@@ -61,7 +61,10 @@
                             </div>
                             <div class="col-sm-12 col-md-6 mb-3">
                                 <label class="form-label">Durée Cotisation :</label>
-                                <input type="number" class="form-control" id="duree" name="duree" value="8" required readonly>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="duree" name="duree" value="8" required readonly>
+                                    <div class="input-group-text">ANNEES</div>
+                                </div>
                             </div>
                             <div class="col-sm-12 col-md-6 mb-3">
                                 <label class="form-label">Code Périodicité :</label>
@@ -77,14 +80,18 @@
                            
                             <div class="col-sm-12 col-md-6 mb-3">
                                 <label class="form-label">Capital Souscrit :</label>
+
+                                <div class="input-group">
                               
-                                <select class="form-control" id="capital" required autocomplete="off">
-                                    <option value="" selected>Sélectionnez un capital</option>
-                                    <option value="1000000">1 000 000 FCFA</option>
-                                    <option value="2000000">2 000 000 FCFA</option>
-                                    <option value="3000000">3 000 000 FCFA</option>
-                                    <option value="5000000">5 000 000 FCFA</option>
-                                </select>
+                                    <select class="form-control" id="capital" required autocomplete="off">
+                                        <option value="" selected>Sélectionnez un capital</option>
+                                        <option value="1000000">1 000 000 FCFA</option>
+                                        <option value="2000000">2 000 000 FCFA</option>
+                                        <option value="3000000">3 000 000 FCFA</option>
+                                        <option value="5000000">5 000 000 FCFA</option>
+                                    </select>
+                                    <div class="input-group-text">FCFA</div>
+                                </div>
                             </div>
                             <div class="col-sm-12 col-md-6 mb-3">
                                 <label class="form-label">Date de naissance :</label>

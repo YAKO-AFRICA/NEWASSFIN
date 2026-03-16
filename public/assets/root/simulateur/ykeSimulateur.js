@@ -10,11 +10,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // const primePrincipElement = document.getElementById("primePrincip");
     const btnSouscription = document.getElementById("btn-souscription");
     const btnReset = document.getElementById("btn-reset");
-    
+
     let hommagePrime = 0;
+    const fraie_adhesion = 7500;
     let simulationData = null;
-    
-    
+
+
+
 
     // Calcul de l'âge à partir de la date de naissance
     dateNaissanceInput.addEventListener("change", function () {
@@ -51,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         seniorPrimeInputWrapper.style.display = "none";
         btnSouscription.classList.add("btn-inactif");
         simulationData = null;
-        
+
         // Afficher un message de confirmation
         showToast("Formulaire réinitialisé avec succès", "success");
     }
@@ -59,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Soumission du formulaire
     form.addEventListener("submit", function (e) {
         e.preventDefault();
-        
+
         // Validation du formulaire
         if (!validateForm()) {
             return;
@@ -69,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let formData = new FormData(this);
         let totalPrime = fraisAdhesion;
         let totalPurePrime = 0;
-    
+
         // Réinitialiser l'affichage des résultats
         resultDiv.innerHTML = "";
         showLoading();
@@ -91,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 capital: formData.get("capitalSouscrit"),
                 dateEffet: formData.get("dateEffet"),
                 datenaissance: formData.get("dateNaissance"),
-                fraisAdhesion: fraisAdhesion
+                fraisadhesion: fraisAdhesion,
             }
         };
 
@@ -111,29 +113,29 @@ document.addEventListener("DOMContentLoaded", function () {
             showToast("Veuillez saisir votre date de naissance", "error");
             return false;
         }
-        
+
         if (!document.getElementById("capitalSouscrit").value) {
             showToast("Veuillez sélectionner un capital", "error");
             return false;
         }
-        
+
         if (!document.getElementById("dateEffet").value) {
             showToast("Veuillez sélectionner une date d'effet", "error");
             return false;
         }
-        
+
         if (garantieSeniorCheck.checked && !document.getElementById("seniorPrimeInput").value) {
             showToast("Veuillez saisir une prime pour la garantie Senior", "error");
             return false;
         }
-        
+
         return true;
     }
 
     // Fonction pour traiter les garanties
     function processGaranties(garantiesToProcess, formData, totalPrime, totalPurePrime) {
         let processedCount = 0;
-        
+
         garantiesToProcess.forEach((garantie) => {
             let newFormData = new FormData();
             formData.forEach((value, key) => newFormData.append(key, value));
@@ -149,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 processedCount++;
-                
+
                 if (!data || data.error) {
                     console.error(`Erreur pour ${garantie.codeproduitgarantie}:`, data?.message || "Réponse vide");
                     return;
@@ -167,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     totalPrime += parseInt(prime);
                     totalPurePrime += parseInt(prime);
-                    
+
                     // Mise à jour de l'affichage
                     updateDisplay(garantie, prime, capital, totalPrime, totalPurePrime);
 
@@ -196,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => {
                 processedCount++;
                 console.error(`Erreur API pour ${garantie.codeproduitgarantie}:`, error);
-                
+
                 if (processedCount === garantiesToProcess.length) {
                     hideLoading();
                     showToast("Une erreur est survenue lors du calcul des primes", "error");
@@ -210,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const seniorPrimeInput = document.getElementById("seniorPrimeInput");
         let seniorPrime = parseInt(seniorPrimeInput.value) || 0;
         let seniorCapital = 500000;
-        
+
         if (seniorPrime <= 0) {
             hideLoading();
             showToast("Veuillez saisir une prime valide pour la garantie Senior", "error");
@@ -274,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function finishProcess() {
         hideLoading();
-        
+
         // Validation des données
         if (!simulationData || !simulationData.infoSimulation || !simulationData.garantieData || simulationData.garantieData.length === 0) {
             // showToast("Données de simulation invalides", "error");
@@ -283,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Affichage des résultats
         resultDiv.innerHTML += `
-            
+
             <tr class="table-primary" colspan="3">
                 <td><strong>TOTAL PRIME</strong></td>
                 <td class="text-end"><strong>${simulationData.infoSimulation.primepricipale.toLocaleString('fr-FR')} FCFA</strong></td>
@@ -303,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content") 
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
             },
             body: JSON.stringify(simulationData)
         })
@@ -313,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(data => {
             if (data && !data.error) {
-                
+
             } else {
                 throw new Error(data?.message || "Erreur serveur");
             }
@@ -347,14 +349,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Si aucune option n'est cochée → bloquer la redirection
         if (!isAssureInput) {
-            event.preventDefault(); 
+            event.preventDefault();
 
             swal.fire({
                 title: "Veuillez choisir une option (Oui ou Non) pour l'assuré avant de continuer",
                 icon: "warning",
                 confirmButtonText: "OK"
             });
-            
+
             // Met le focus sur le premier radio pour attirer l’attention
             const firstRadio = document.querySelector('input[name="isAssure"]');
             if (firstRadio) {
@@ -375,5 +377,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Fonction pour masquer l'indicateur de chargement
-  
+
 });

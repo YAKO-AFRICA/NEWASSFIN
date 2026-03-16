@@ -91,28 +91,42 @@
                     <form id="primeFormLprevo">
                         @csrf
 
-                        <div class="form-group row">
+                       <div class="form-group row">
+
                             <div class="col-sm-12 col-md-6 mb-3">
-                                <label class="form-label">Produit :</label>
-                                <input type="text" class="form-control" id="CodeProduit" name="CodeProduit" value="{{ $formule['CodeProduit']}}" required readonly>
+                                <label class="form-label">Code Produit :</label>
+                                <input type="text" class="form-control" id="CodeProduit" name="CodeProduit"
+                                    value="{{ $formule['CodeProduit']}}" required readonly>
                             </div>
+
                             <div class="col-sm-12 col-md-6 mb-3">
                                 <label class="form-label">Périodicité :</label>
-                                <input type="text" class="form-control" id="codePeriodiciteLprevo" name="codePeriodicite" value="A" required readonly>
+                                <input type="hidden" id="codePeriodiciteLprevo" name="codePeriodicite" value="A">
+                                <input type="text" class="form-control" value="ANNUELLE" readonly>
                             </div>
+
                             <div class="col-sm-12 col-md-6 mb-3">
-                                <label class="form-label">Capital souhaitée (F CFA) :</label>
-                                <select name="capitalSouscrit" id="capitalSouscrit" class="form-select" required>
-                                    <option value="" selected>Sélectionnez un capital</option>
-                                    <option value="100000">100 000</option>
-                                    <option value="250000">250 000</option>
-                                    <option value="500000">500 000</option>
-                                </select>
+                                <label class="form-label">Capital souhaité :</label>
+                                <div class="input-group">
+                                    <select name="capitalSouscrit" id="capitalSouscrit" class="form-select" required>
+                                        <option value="" selected>Sélectionnez un capital</option>
+                                        <option value="100000">100 000</option>
+                                        <option value="250000">250 000</option>
+                                        <option value="500000">500 000</option>
+                                    </select>
+                                    <span class="input-group-text">FCFA</span>
+                                </div>
                             </div>
+
                             <div class="col-sm-12 col-md-6 mb-3">
-                                <label class="form-label">Durée (Année):</label>
-                                <input type="number" class="form-control" id="dureeLprevo" name="duree" value="1" min="1" max="1" required readonly>
+                                <label class="form-label">Durée :</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="dureeLprevo"
+                                        name="duree" value="1" min="1" max="1" required readonly>
+                                    <span class="input-group-text">Année</span>
+                                </div>
                             </div>
+
                         </div>
 
                         <!-- Formulaire de déclaration de santé -->
@@ -120,7 +134,7 @@
                             <div class="sante-title">
                                 <i class="fas fa-heartbeat me-2"></i>Déclaration de santé "Assuré" par le souscripteur
                             </div>
-                            
+
                             <div class="mb-4">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="bonneSante" checked>
@@ -134,101 +148,102 @@
                                 <small><i class="fas fa-info-circle me-1"></i>L'assuré souffre-t-il de l'une des conditions suivantes :</small>
                             </div>
 
-                            <!-- Pathologies -->
-                            <div class="pathologie-row">
-                                <div class="row align-items-center">
-                                    <div class="col-md-4">
-                                        <label class="fw-bold">Diabète :</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="radio-group">
-                                            <div class="radio-option">
-                                                <input type="radio" name="diabete" id="diabeteOui" value="oui" class="pathologie-radio" data-pathologie="diabete">
-                                                <label for="diabeteOui">Oui</label>
-                                            </div>
-                                            <div class="radio-option">
-                                                <input type="radio" name="diabete" id="diabeteNon" value="non" checked class="pathologie-radio" data-pathologie="diabete">
-                                                <label for="diabeteNon">Non</label>
+                            <div class="row">
+                                <div class="pathologie-row col-sm-12 col-md-6 col-lg-6">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="fw-bold">Diabète :</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="radio-group">
+                                                <div class="radio-option">
+                                                    <input type="radio" name="diabete" id="diabeteOui" value="oui" class="pathologie-radio" data-pathologie="diabete">
+                                                    <label for="diabeteOui">Oui</label>
+                                                </div>
+                                                <div class="radio-option">
+                                                    <input type="radio" name="diabete" id="diabeteNon" value="non" checked class="pathologie-radio" data-pathologie="diabete">
+                                                    <label for="diabeteNon">Non</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="pathologie-row">
-                                <div class="row align-items-center">
-                                    <div class="col-md-4">
-                                        <label class="fw-bold">AVC :</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="radio-group">
-                                            <div class="radio-option">
-                                                <input type="radio" name="avc" id="avcOui" value="oui" class="pathologie-radio" data-pathologie="avc">
-                                                <label for="avcOui">Oui</label>
-                                            </div>
-                                            <div class="radio-option">
-                                                <input type="radio" name="avc" id="avcNon" value="non" checked class="pathologie-radio" data-pathologie="avc">
-                                                <label for="avcNon">Non</label>
+                                <div class="pathologie-row col-sm-12 col-md-6 col-lg-6">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="fw-bold">AVC :</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="radio-group">
+                                                <div class="radio-option">
+                                                    <input type="radio" name="avc" id="avcOui" value="oui" class="pathologie-radio" data-pathologie="avc">
+                                                    <label for="avcOui">Oui</label>
+                                                </div>
+                                                <div class="radio-option">
+                                                    <input type="radio" name="avc" id="avcNon" value="non" checked class="pathologie-radio" data-pathologie="avc">
+                                                    <label for="avcNon">Non</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="pathologie-row">
-                                <div class="row align-items-center">
-                                    <div class="col-md-4">
-                                        <label class="fw-bold">Cancer :</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="radio-group">
-                                            <div class="radio-option">
-                                                <input type="radio" name="cancer" id="cancerOui" value="oui" class="pathologie-radio" data-pathologie="cancer">
-                                                <label for="cancerOui">Oui</label>
-                                            </div>
-                                            <div class="radio-option">
-                                                <input type="radio" name="cancer" id="cancerNon" value="non" checked class="pathologie-radio" data-pathologie="cancer">
-                                                <label for="cancerNon">Non</label>
+                                <div class="pathologie-row col-sm-12 col-md-6 col-lg-6">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="fw-bold">Cancer :</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="radio-group">
+                                                <div class="radio-option">
+                                                    <input type="radio" name="cancer" id="cancerOui" value="oui" class="pathologie-radio" data-pathologie="cancer">
+                                                    <label for="cancerOui">Oui</label>
+                                                </div>
+                                                <div class="radio-option">
+                                                    <input type="radio" name="cancer" id="cancerNon" value="non" checked class="pathologie-radio" data-pathologie="cancer">
+                                                    <label for="cancerNon">Non</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="pathologie-row">
-                                <div class="row align-items-center">
-                                    <div class="col-md-4">
-                                        <label class="fw-bold">Insuffisance Rénale :</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="radio-group">
-                                            <div class="radio-option">
-                                                <input type="radio" name="insuffRenale" id="insuffRenaleOui" value="oui" class="pathologie-radio" data-pathologie="insuffRenale">
-                                                <label for="insuffRenaleOui">Oui</label>
-                                            </div>
-                                            <div class="radio-option">
-                                                <input type="radio" name="insuffRenale" id="insuffRenaleNon" value="non" checked class="pathologie-radio" data-pathologie="insuffRenale">
-                                                <label for="insuffRenaleNon">Non</label>
+                                <div class="pathologie-row col-sm-12 col-md-6 col-lg-6">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="fw-bold">Hypertension :</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="radio-group">
+                                                <div class="radio-option">
+                                                    <input type="radio" name="hypertension" id="hypertensionOui" value="oui" class="pathologie-radio" data-pathologie="hypertension">
+                                                    <label for="hypertensionOui">Oui</label>
+                                                </div>
+                                                <div class="radio-option">
+                                                    <input type="radio" name="hypertension" id="hypertensionNon" value="non" checked class="pathologie-radio" data-pathologie="hypertension">
+                                                    <label for="hypertensionNon">Non</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="pathologie-row">
-                                <div class="row align-items-center">
-                                    <div class="col-md-4">
-                                        <label class="fw-bold">Hypertension :</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="radio-group">
-                                            <div class="radio-option">
-                                                <input type="radio" name="hypertension" id="hypertensionOui" value="oui" class="pathologie-radio" data-pathologie="hypertension">
-                                                <label for="hypertensionOui">Oui</label>
-                                            </div>
-                                            <div class="radio-option">
-                                                <input type="radio" name="hypertension" id="hypertensionNon" value="non" checked class="pathologie-radio" data-pathologie="hypertension">
-                                                <label for="hypertensionNon">Non</label>
+                                <div class="pathologie-row col-sm-12 col-md-6 col-lg-6">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="fw-bold">Insuffisance Rénale :</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="radio-group">
+                                                <div class="radio-option">
+                                                    <input type="radio" name="insuffRenale" id="insuffRenaleOui" value="oui" class="pathologie-radio" data-pathologie="insuffRenale">
+                                                    <label for="insuffRenaleOui">Oui</label>
+                                                </div>
+                                                <div class="radio-option">
+                                                    <input type="radio" name="insuffRenale" id="insuffRenaleNon" value="non" checked class="pathologie-radio" data-pathologie="insuffRenale">
+                                                    <label for="insuffRenaleNon">Non</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -277,7 +292,7 @@
                                 <td><span class="text-warning">+</span> <strong id="pathologiePrimeMontant">0</strong> FCFA</td>
                             </tr>
                         </table>
-                        
+
                         <div class="ribbon">Prime totale/annuelle</div>
 
                         <table class="table">
@@ -356,7 +371,7 @@
 
         function calculerPathologies() {
             const pathologies = [];
-            
+
             if (document.querySelector('input[name="diabete"]:checked')?.value === 'oui') {
                 pathologies.push('Diabète');
             }
@@ -372,7 +387,7 @@
             if (document.querySelector('input[name="hypertension"]:checked')?.value === 'oui') {
                 pathologies.push('Hypertension');
             }
-            
+
             return pathologies;
         }
 
@@ -402,14 +417,14 @@
             // Calcul des pathologies
             const pathologies = calculerPathologies();
             const primePathologiesTotal = pathologies.length * primePathologie;
-            
+
             // Prime totale (base + pathologies)
             const primeTotale = primeBase + primePathologiesTotal + fraie_adhesion;
 
             // Mise à jour de l'affichage de la ligne des pathologies
             const pathologieRow = document.getElementById('pathologiePrimeRow');
             const pathologieMontant = document.getElementById('pathologiePrimeMontant');
-            
+
             if (pathologies.length > 0) {
                 pathologieRow.style.display = 'table-row';
                 pathologieMontant.textContent = primePathologiesTotal.toLocaleString();
@@ -498,7 +513,7 @@
 
         document.getElementById("resetBtn").addEventListener("click", function() {
             capitalSelect.value = "";
-            
+
             // Réinitialiser la déclaration de santé
             bonneSanteCheck.checked = true;
             radiosPathologie.forEach(radio => {

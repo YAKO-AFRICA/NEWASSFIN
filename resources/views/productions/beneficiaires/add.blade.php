@@ -27,8 +27,8 @@
                             <select id="lieunaissanceBenef" class="form-select">
                                 <option selected value="">Sélectionner le lieu</option>
                                 @foreach($villes as $ville)
-                                    <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option> 
-                                @endforeach 
+                                    <option value="{{ $ville->IdTblVille }}">{{ $ville->MonLibelle }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -38,43 +38,47 @@
                             <select id="lieuresidenceBenef" class="form-select">
                                 <option selected value="">Sélectionner le lieu</option>
                                 @foreach($villes as $ville)
-                                    <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option> 
-                                @endforeach 
+                                    <option value="{{ $ville->IdTblVille }}">{{ $ville->MonLibelle }}</option>
+                                @endforeach
                             </select>
                         </div>
-                        <select id="lienParenteBenef" class="form-select" name="lienParenteBenef">
+                        <div class="col-12 col-lg-6">
+                            <label for="lienParente" class="form-label">Lien de Parenté</label>
+                            <select id="lienParenteBenef" class="form-select" name="lienParenteBenef">
+
                             <option selected value="" disabled>Sélectionner le lien de Parenté</option>
-                            
+
                             @foreach ($filliations as $item)
                                 @if(!empty($item->MonLibelle))
                                     <option value="{{ $item->MonLibelle }}">{{ $item->MonLibelle }}</option>
                                 @endif
                             @endforeach
                         </select>
+                        </div>
                     </div>
-                    
+
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-lg-6">
                             <label class="form-label">Téléphone <span class="text-danger">*</span></label>
-                            <input type="text" id="mobileBenef" class="form-control" placeholder="Téléphone">
+                            <input type="tel" id="mobileBenef" class="form-control" placeholder="Téléphone" minlength="10" maxlength="14">
                         </div>
                         <div class="col-12 col-lg-6">
                             <label for="emailBenef" class="form-label">Email</label>
                             <input type="email" id="emailBenef" class="form-control" placeholder="Email">
                         </div>
                     </div>
-                    <div class="row g-3 mb-3">
+                    {{-- <div class="row g-3 mb-3">
                         <div class="col-12">
                             <label for="partBenef" class="form-label">Part en %</label>
                             <input type="number" id="partBenef" class="form-control" placeholder="Part du bénéficiaire" min="0" max="100">
                         </div>
-                    </div>
+                    </div> --}}
                     <input type="hidden" id="beneficiariesInput" name="beneficiaires">
                     <div class="modal-footer d-flex justify-content-between">
                         <button type="button" class="btn border-btn" data-bs-dismiss="modal">Annuler</button>
                         <button type="button" class="btn btn-two" onclick="addBeneficiary()">Ajouter</button>
                     </div>
-                </form> 
+                </form>
             </div>
         </div>
     </div>

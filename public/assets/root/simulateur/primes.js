@@ -31,13 +31,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 infoSimulation: {
                     codeProduit: produitValue,
                     primepricipale: primeValue,
-                    fraisAdhesion: FRAIS_ADHESION,
+                    fraisadhesion: FRAIS_ADHESION,
                     primeFinale: primeValue
                 }
             };
 
             sessionStorage.setItem('simulationData', JSON.stringify(simulationData));
-            
+
             // Vérification immédiate
             const stored = sessionStorage.getItem('simulationData');
             console.log('Vérification:', stored ? JSON.parse(stored) : 'VIDE');
@@ -47,13 +47,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const garantieTable = document.getElementById('garantiesTableBody');
-    
+
             function updateGarantiesTable() {
                 const donneSession = sessionStorage.getItem('simulationData');
-                
+
                 // Vider le tableau
                 garantieTable.innerHTML = '';
-                
+
                 if (donneSession) {
                     try {
                         const simulationData = JSON.parse(donneSession);
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             garanties.forEach(garantie => {
                                 const prime = parseInt(garantie.prime || garantie.Prime || 0);
                                 totalPrimeGaranties += prime;
-                                
+
                                 const garantieRow = document.createElement('tr');
                                 garantieRow.innerHTML = `
                                     <td>${garantie.libelle || garantie.Libelle || '--'}</td>
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (simulationData.infoSimulation?.primepricipale || simulationData.PrimeTotal) {
                             const primepricipale = parseInt(simulationData.infoSimulation?.primepricipale || simulationData.PrimeTotal || 0);
                         }
-                        
+
                     } catch (e) {
                         console.error("Erreur lors du parsing des données:", e);
                         garantieTable.innerHTML = `
@@ -145,6 +145,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     primeSouhaite.addEventListener("blur", updateSimulationData);
 
-  
+
 });
 

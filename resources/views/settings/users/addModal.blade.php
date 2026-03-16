@@ -54,7 +54,7 @@
                         <fieldset class="border p-3" style="width: 100%;">
 
                             <legend class="float-none w-auto px-2"><small><h5 class="mb-4">Étape 1 : Reseau</h5></small></legend>
-                        
+
                             <div class="mb-3">
                                 <label for="codeagent" class="form-label">Code Agent <span class="text-danger">*</span></label>
                                 <input type="text" name="codeagent" id="codeagent" class="form-control" required>
@@ -84,11 +84,11 @@
                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                     <label for="codeequipe" class="form-label">Equipe/Agence</label>
                                     <select name="codeequipe" id="codeequipe" class="form-select">
-                                       
+
                                         <option value="" disabled selected>-- Choisir une équipe --</option>
-                                        @foreach ($equipes as $equipe)
-                                            <option class="form-control" value="{{ $equipe->codeequipe }}">
-                                                {{ $equipe->libelleequipe ?? ''}}
+                                        @foreach ($agenceByReseeaus as $agenceByReseeau)
+                                            <option class="form-control" value="{{ $agenceByReseeau['CodeUnite'] }}">
+                                                {{ $agenceByReseeau['MonLibelle'] ?? ''}}
                                             </option>
                                         @endforeach
                                     </select>
@@ -112,7 +112,7 @@
                         <fieldset class="border p-3" style="width: 100%;">
 
                             <legend class="float-none w-auto px-2"><small><h5 class="mb-4">Étape 2 : Informations personnelles</h5></small></legend>
-                            
+
                             <div class="mb-3">
                                 <label class="form-label d-block">Sexe</label>
                                 <div class="form-check form-check-inline">
@@ -124,7 +124,7 @@
                                     <label class="form-check-label" for="sexeM">Masculin</label>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -181,7 +181,7 @@
                                         <label for="profile" class="form-label">Profile <span class="text-danger">*</span></label>
                                         <select name="profile_id" id="profileSelect" class="form-control" required>
                                             <option value="" disabled selected>-- Choisir une option --</option>
-                                            
+
                                             @foreach ($profiles as $profile)
                                                 <option class="form-option" value="{{ $profile->id }}">{{ $profile->role }}</option>
                                             @endforeach
@@ -200,7 +200,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -215,7 +215,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
 
                         </fieldset>
                     </div>
@@ -241,7 +241,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
 
                         </fieldset>
                     </div>
@@ -257,7 +257,7 @@
     </div>
 </div>
 
-    
+
 
 
 
@@ -267,7 +267,7 @@
         // Show the correct step
         document.querySelectorAll('.step').forEach(el => el.classList.add('d-none'));
         document.querySelector(`#step-${stepAdd}`).classList.remove('d-none');
-        
+
         // Update buttons
         document.querySelector('.prev-step').classList.toggle('d-none', stepAdd === 1);
         document.querySelector('.next-step').classList.toggle('d-none', stepAdd === 4);

@@ -13,6 +13,7 @@ use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -66,7 +67,7 @@ class UserController extends Controller
     {
 
         $membres = Membre::orderby('created_at', 'desc')
-        ->where('typ_membre', '!=', '3')->where('codepartenaire','!=', 'llv')
+        ->where('typ_membre', '!=', '3')->whereIn('codepartenaire',['ASSFIN', 'SAAF'])
         ->get()
         ->groupBy('codepartenaire');
 
@@ -78,15 +79,30 @@ class UserController extends Controller
         $membresbypartenaire = Membre::orderby('idmembre', 'desc')->with('zone', 'equipe', 'reseau')
         ->where('codepartenaire', $id)->get();
 
-        $reseaux = Reseau::all();
-        $zones = Zone::all();
-        $equipes = Equipe::all();
-        $partners = Partner::all();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjExODcyLCJlbWFpbCI6ImZvcm1hdGlvbi5ibmlAYm5pLmNvbSIsIm5vbSI6IkJOSSIsImNvZGVhZ2VudCI6IkIwNDAiLCJ0eXBlbWVicmUiOm51bGwsInByZW5vbSI6IkZvcm1hdGlvbiJ9.gwxwy43VeMDcfaTpgpFbuWkxjirIBqvuXq3UZOuw_nA',
+            'Accept' => 'application/json',
+        ])
+        ->post('https://api.yakoafricassur.com/enov/search-agence-web', [
+            'codeReseau' => 'ASSFIN'
+        ]);
+
+        $responseData = $response->json();
+        $agenceByReseeaus = $responseData['dataAgence'] ?? [];
+
+        // dd($agenceByReseeau);
+
+        $reseaux = Reseau::whereIn('codepartenaire',['ASSFIN', 'SAAF'])->get();
+        $reseauIdPluck = $reseaux->pluck('id');
+        $zones = Zone::whereIn('codereseau', $reseauIdPluck)->get();
+        // dd($zones);
+        // $equipes = Equipe::all();
+        $partners = Partner::whereIn('code',['ASSFIN', 'SAAF'])->get();
         $roles = Role::all();
         $profiles = Profile::where('codereseau', 4)->get();
         $codepartenaire = $id;
 
-        return view('settings.users.indexByPartner', compact('membresbypartenaire', 'reseaux', 'zones', 'equipes', 'partners', 'roles', 'codepartenaire', 'profiles'));
+        return view('settings.users.indexByPartner', compact('membresbypartenaire', 'reseaux', 'zones', 'partners', 'roles', 'codepartenaire', 'profiles','agenceByReseeaus'));
     }
     public function updateColumns(Request $request)
     {

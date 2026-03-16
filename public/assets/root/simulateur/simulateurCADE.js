@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function init() {
         setupEventListeners();
         loadSessionData();
-        
+
         if (isFormComplete()) {
             calculatePremiums();
         }
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.form.addEventListener('submit', handleFormSubmit);
         elements.subscribeBtn.addEventListener('click', handleSubscription);
         elements.resetBtn.addEventListener('click', resetSimulation);
-        
+
         elements.productCode.addEventListener('change', loadAllData);
         elements.frequency.addEventListener('change', loadAllData);
         elements.capital.addEventListener('change', debounce(calculatePremiums, 300));
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadAllData().then(() => {
                 if (savedData.parameters?.capital) elements.capital.value = savedData.parameters.capital;
                 if (savedData.parameters?.age) elements.age.value = savedData.parameters.age;
-                
+
                 if (savedData.results?.coverages?.length > 0) {
                     state.currentCalculations = savedData.results.coverages;
                     updateResultsDisplay();
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 periodicite: elements.frequency.value,
                 capital: parseFloat(elements.capital.value),
                 age: parseInt(elements.age.value),
-                fraisAdhesion: constants.ADHESION_FEE,
+                fraisadhesion: constants.ADHESION_FEE,
                 duree: parseInt(elements.duration.value),
                 primeFinale: parseCurrency(elements.totalPremium.textContent),
             }
@@ -153,16 +153,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         resetSelect(elements.capital, 'Sélectionnez un capital');
         resetSelect(elements.age, 'Sélectionnez une plage d\'âge');
-        
+
         try {
             const cacheKey = `${productCode}_${periodicity}`;
-            
+
             if (!state.cache.tables[cacheKey]) {
                 const tableResponse = await apiRequest(
-                    constants.API_ENDPOINTS.tables, 
-                    { 
-                        CodeProduit: productCode, 
-                        CodePeriodicite: periodicity 
+                    constants.API_ENDPOINTS.tables,
+                    {
+                        CodeProduit: productCode,
+                        CodePeriodicite: periodicity
                     }
                 );
                 state.primesTable = tableResponse.dataTablePrime || [];
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         constants.API_ENDPOINTS.primes,
                         requestData
                     );
-                    
+
                     return {
                         coverageName: coverage.libelle,
                         capital: requestData.Capital,
@@ -244,10 +244,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const results = await Promise.all(calculations);
             state.currentCalculations = results.filter(Boolean);
-            
+
             updateResultsDisplay();
             saveSessionData();
-            
+
         } catch (error) {
             console.error("Erreur calcul des primes:", error);
             showError("Erreur lors du calcul. Vérifiez les données saisies.");
@@ -266,16 +266,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         elements.resultsContainer.innerHTML = '';
-        
+
         let mainPremium = 0;
         let totalPremium = 0;
 
         state.currentCalculations.forEach(item => {
             const row = document.createElement('tr');
-            
+
             mainPremium += item.premium;
             totalPremium += item.premium;
-            
+
             row.innerHTML = `
                 <td>${item.coverageName} ${isMandatoryCoverage(item.coverageName) ? '' : '(option)'}</td>
                 <td class="text-end">${formatCurrency(item.premium)}</td>
@@ -316,17 +316,17 @@ document.addEventListener('DOMContentLoaded', function() {
         resetSelect(elements.capital, 'Sélectionnez un capital');
         resetSelect(elements.age, 'Sélectionnez un âge');
         elements.duration.value = '10';
-        
+
         // Réinitialisation des résultats
         elements.resultsContainer.innerHTML = '';
         elements.mainPremium.textContent = formatCurrency(0);
         elements.totalPremium.textContent = formatCurrency(0);
         elements.subscribeBtn.classList.add('btn-inactif');
-        
+
         // Nettoyage du state et du cache
         state.primesTable = [];
         state.currentCalculations = [];
-        
+
         // Nettoyage du sessionStorage
         sessionStorage.removeItem('simulationData');
     }
@@ -337,18 +337,18 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const response = await fetch(url, {
                     method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json", 
-                        "Authorization": constants.AUTH_TOKEN 
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": constants.AUTH_TOKEN
                     },
                     body: JSON.stringify(body)
                 });
-                
+
                 if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
-                
+
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
-                
+
                 return data;
             } catch (error) {
                 if (i === retries - 1) throw error;
@@ -358,13 +358,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function isFormComplete() {
-        return elements.frequency.value && elements.capital.value && 
+        return elements.frequency.value && elements.capital.value &&
                elements.age.value && elements.duration.value;
     }
 
     function populateSelect(select, items, valueField, textField) {
         resetSelect(select, `Sélectionnez un ${select.id === 'capital' ? 'capital' : 'âge'}`);
-        
+
         if (Array.isArray(items)) {
             items.forEach(item => {
                 const option = document.createElement('option');
@@ -380,9 +380,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function formatCurrency(amount) {
-        return new Intl.NumberFormat('fr-FR', { 
+        return new Intl.NumberFormat('fr-FR', {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2 
+            maximumFractionDigits: 2
         }).format(amount) + ' FCFA';
     }
 
@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
             errorContainer.id = 'error-container';
             document.querySelector('.card-body').prepend(errorContainer);
         }
-        
+
         errorContainer.innerHTML = `
             <div class="alert alert-danger alert-dismissible fade show">
                 ${message}
