@@ -45,7 +45,6 @@ class PaiementController extends Controller
                 'referenceSource' => $data['idContrat'],
                 'idcontrat' => $data['idContrat'],
                 'saisiele' => now(),
-                
             ]);
 
             Log::info($facture);
@@ -59,8 +58,6 @@ class PaiementController extends Controller
             Log::error("Erreur lors de la création du paiement: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Erreur lors de la création du paiement']);
         }
-
-        
     }
 
 

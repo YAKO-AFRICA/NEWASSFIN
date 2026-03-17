@@ -46,7 +46,6 @@
         </a>
 
         <input type=button onclick='calltouchpay("{{ $contrat->id }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer les frais d'adhesion" />
-        {{-- <input type=button onclick='calltouchpay("{{ $contrat->id }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer ma première prime" /> --}}
     </div>
 </div>
 <div id="stepper1" class="bs-stepper">
@@ -893,12 +892,8 @@
 
 
 <script>
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const contratInfo = {!! json_encode($contrat) !!};
-        console.log(contratInfo);
-    })
-    
+    const contratInfo = {!! json_encode($contrat) !!};
+    console.log(contratInfo.adherent);
 </script>
 
 <script>
@@ -917,17 +912,11 @@
 
 <script type="text/javascript">
     function calltouchpay(contratId) {
-
-        alert(contratInfo.fraisadhesion);
-        
         const code = Math.floor(Math.random() * 9999) + 1;
-
         // Construire le code paiement
         const dateCode = getDateCode();
         const codePaiement = `PAI-${dateCode}-${code}`;
-
         // alert(codePaiement);
-
 
         const order_number = codePaiement;
         const agency_code = "CILLV4645";
@@ -937,8 +926,8 @@
 
         const url_redirection_success = window.location.href + '/payment/success';
         const url_redirection_failed = window.location.href + '/payment/failed';
-        const amount = contratInfo.fraisadhesion;
-        // const amount = "7500";
+        // const amount = contratInfo.fraisadhesion;
+        const amount = "7500";
         const city = "";
         const email = contratInfo.adherent.email || "";
         const clientFirstname = contratInfo.adherent.prenom || "";

@@ -125,6 +125,7 @@
                             <td>{{ $item->nom ?? "" }} {{ $item->prenom ?? "" }}</td>
                             <td>{{ $item->email ?? "" }}</td>
                             <td>{{ $item->codeagent ?? "" }}</td>
+                            <td>{{ $item->nomagence ?? "" }}</td>
                             <td>{{ $item->typ_membre ?? "" }}</td>
 
                             <!-- Remplissage des colonnes dynamiques activées -->
