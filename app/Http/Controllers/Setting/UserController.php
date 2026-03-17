@@ -413,10 +413,10 @@ class UserController extends Controller
         ];
         $roleName = $rolesMap[$request->profile_id] ?? 'Inconnu';
 
-        $agence = Equipe::find($request->codeequipe);
-        if (!$agence) {
-            return response()->json(['type' => 'error', 'message' => "Agence introuvable", 'code' => 404]);
-        }
+        // $agence = Equipe::find($request->codeequipe);
+        // if (!$agence) {
+        //     return response()->json(['type' => 'error', 'message' => "Agence introuvable", 'code' => 404]);
+        // }
 
         DB::beginTransaction();
         try {
@@ -424,15 +424,15 @@ class UserController extends Controller
             Membre::where('idmembre', $id)->update([
                 'codereseau'    => $request->codereseau,
                 'codezone'      => $request->codezone,
-                'codeequipe'    => $agence->id,
+                // 'codeequipe'    => $agence->id,
                 'sexe'          => $request->sexe,
                 'nom'           => $request->nom,
                 'prenom'        => $request->prenom,
                 'datenaissance' => $request->datenaissance,
                 'profession'    => $request->profession,
-                'agence'        => $agence->codeequipe,
-                'nomagence'     => $agence->libelleequipe,
-                'branche'       => $request->branche,
+                // 'agence'        => $agence->codeequipe,
+                // 'nomagence'     => $agence->libelleequipe,
+                // 'branche'       => $request->branche,
                 'login'         => $request->login,
                 'role'          => $roleName,
                 'coderole'      => $request->profile_id,

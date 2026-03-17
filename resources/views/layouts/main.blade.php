@@ -153,21 +153,21 @@
             --border-radius: 12px;
         }
         .badge {
-        display: inline-block;
-        padding: 0.2rem 0.5rem;
-        color: #fff;
-        border-radius: 0.25rem;
-        font-size: 12px;
-    }
-            .select2-container--default .select2-selection--single {
-                height: 38px !important;
-                display: flex;
-                align-items: center;
-            }
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            color: #fff;
+            border-radius: 0.25rem;
+            font-size: 12px;
+        }
+        .select2-container--default .select2-selection--single {
+            height: 38px !important;
+            display: flex;
+            align-items: center;
+        }
 
-            .select2-container--default .select2-selection--single .select2-selection__rendered {
-                line-height: 38px !important;
-            }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 38px !important;
+        }
     </style>
 
     <style>
@@ -325,7 +325,7 @@
 
         <script type="module" src="{{ asset('api/request.js') }}"></script>
 
-        {{-- <script src=https://touchpay.gutouch.com/touchpay/script/prod_touchpay-0.0.1.js type="text/javascript"></script> --}}
+        <script src=https://touchpay.gutouch.com/touchpay/script/prod_touchpay-0.0.1.js type="text/javascript"></script>
 
 
         <script>

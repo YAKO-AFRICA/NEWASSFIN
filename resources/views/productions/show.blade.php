@@ -45,6 +45,7 @@
             <span class="d-none d-sm-inline">Bulletin</span>
         </a>
 
+        <input type=button onclick='calltouchpay("{{ $contrat->id }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer les frais d'adhesion" />
         {{-- <input type=button onclick='calltouchpay("{{ $contrat->id }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer ma première prime" /> --}}
     </div>
 </div>
@@ -892,8 +893,12 @@
 
 
 <script>
-    const contratInfo = {!! json_encode($contrat) !!};
-    console.log(contratInfo.adherent);
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const contratInfo = {!! json_encode($contrat) !!};
+        console.log(contratInfo);
+    })
+    
 </script>
 
 <script>
@@ -912,6 +917,8 @@
 
 <script type="text/javascript">
     function calltouchpay(contratId) {
+
+        alert(contratInfo.fraisadhesion);
         
         const code = Math.floor(Math.random() * 9999) + 1;
 
@@ -930,7 +937,8 @@
 
         const url_redirection_success = window.location.href + '/payment/success';
         const url_redirection_failed = window.location.href + '/payment/failed';
-        const amount = contratInfo.prime;
+        const amount = contratInfo.fraisadhesion;
+        // const amount = "7500";
         const city = "";
         const email = contratInfo.adherent.email || "";
         const clientFirstname = contratInfo.adherent.prenom || "";
