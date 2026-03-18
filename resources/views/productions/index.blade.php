@@ -73,7 +73,7 @@
                             <td>{{ $item->id }}</td>
                             <td>{{ $item->libelleproduit ?? "" }}</td>
                             <td>{{ $item->adherent->nom ?? "" }} {{ $item->adherent->prenom ?? "" }}</td>
-                            <td>{{ \Carbon\Carbon::parse($item->adherent->datenaissance)->locale('fr')->translatedFormat('d M Y') ?? '' }}</td>
+                            {{-- <td>{{ \Carbon\Carbon::parse($item->adherent->datenaissance)->locale('fr')->translatedFormat('d M Y') ?? '' }}</td> --}}
                             <td>
                                 {{ $item->adherent && $item->adherent->datenaissance ? \Carbon\Carbon::parse($item->adherent->datenaissance)->locale('fr')->translatedFormat('d M Y') : '' }}
                             </td>
