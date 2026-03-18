@@ -181,6 +181,7 @@ Route::prefix('production')->name('prod.')->group(function(){
 
         Route::get('/show/bullettin/{id}', [BulletinController::class, 'show'])->name('bullettin.show');
         Route::get('/generate-bulletin/{id}', [BulletinController::class, 'generate'])->name('generate.bulletin');
+        Route::get('/dowloadYkeBulletinEtCGU/{produit}', [BulletinController::class, 'dowloadYkeBulletinEtCGU'])->name('dowloadYkeBulletinEtCGU');
 
         // Validation route
 

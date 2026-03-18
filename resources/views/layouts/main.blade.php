@@ -260,10 +260,22 @@
 
             @include('layouts.sidebar')
 
-            <div class="page-wrapper">
+            {{-- <div class="page-wrapper">
                 <div class="page-content" id="app">
                     @yield('content')
                 </div>
+
+            </div> --}}
+
+            <div class="page-wrapper">
+                <div class="page-content" id="app">
+                    @yield('content')
+
+                    @include('productions.components.dowloadBullModal')
+                </div>
+
+                <audio id="notify-sound" src="{{ asset('assets/root/sounds/notification.mp3') }}" preload="auto"></audio>
+
 
             </div>
 
@@ -367,9 +379,6 @@
         </script>
 
 
-
-
-
         <script>
             $(document).ready(function() {
 
@@ -434,8 +443,6 @@
             });
         </script>
 
-
-
         <script src="{{ asset('assets/js/script.js')}}"></script>
         <script src="{{ asset('assets/js/app.js')}}"></script>
         <script src="{{ asset('assets/js/main.js')}}"></script>
@@ -464,8 +471,6 @@
                 });
             });
         </script>
-
-
 
 
         <script>
@@ -510,10 +515,6 @@
             });
 
         </script>
-
-
-
-
 
 
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
