@@ -506,7 +506,7 @@
                                 padding: 5px;
                                 font-size: 14px;
                                 border-radius: 3px;
-                                background-color: #ffffff;" id="nom" name="nom" value="{{ $prestation->membre->typ_membre !== 3 ? $membre->zone->libellezone : $prestation->lieuresidence ?? '.' }}" />
+                                background-color: #ffffff;" id="nom" name="nom" value="{{ $prestation->membre->typ_membre !== 3 ? $membre->zone->libellezone ?? $prestation->lieuresidence ?? '.' : $prestation->lieuresidence ?? '.' }}" />
                         </div>
                         <div class="form-group">
                             <label for="prenom">Le &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</label>&nbsp;
