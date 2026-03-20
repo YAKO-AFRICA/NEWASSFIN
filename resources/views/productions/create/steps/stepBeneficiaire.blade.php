@@ -216,7 +216,7 @@
         }
 
         // Function to add a beneficiary from the modal form
-        function addBeneficiary() {
+        {{-- function addBeneficiary() {
 
             const lienParenteSelect = document.getElementById('lienParenteBenef');
             const lienParenteValue = lienParenteSelect.value;
@@ -289,6 +289,71 @@
             const beneficiariesInput = document.getElementById('beneficiariesInput').value = JSON.stringify(beneficiaries);
             console.log("Beneficiaries input :", beneficiariesInput);
             document.getElementById('beneficiariesTable').getElementsByTagName('tbody')[0].deleteRow(index);
+        } --}}
+        function addBeneficiary() {
+
+            const lienParenteSelect = document.getElementById('lienParenteBenef');
+            const lienParenteValue = lienParenteSelect.value;
+
+            if (!lienParenteValue) {
+                alert("Veuillez sélectionner un lien de parenté");
+                lienParenteSelect.focus();
+                lienParenteSelect.style.borderColor = "red";
+                return;
+            }
+
+            const nomBenefInput = document.getElementById('nomBenef');
+            const prenomBenefInput = document.getElementById('prenomBenef');
+            const mobileBenefInput = document.getElementById('mobileBenef');
+
+            const beneficiary = {
+                nom: nomBenefInput.value,
+                prenom: prenomBenefInput.value,
+                dateNaissance: document.getElementById('datenaissanceBenef').value,
+                lieuNaissance: document.getElementById('lieunaissanceBenef').value,
+                lieuResidence: document.getElementById('lieuresidenceBenef').value,
+                lienParente: lienParenteValue,
+                telephone: mobileBenefInput.value,
+                email: document.getElementById('emailBenef').value,
+                part: null
+                // part: document.getElementById('partBenef').value
+            };
+
+            if (!validateField(nomBenefInput, beneficiary.nom) ||
+                !validateField(prenomBenefInput, beneficiary.prenom) ||
+                !validateField(mobileBenefInput, beneficiary.telephone)) {
+                return;
+            }
+
+            beneficiaries.push(beneficiary);
+
+            document.getElementById('beneficiariesInput').value = JSON.stringify(beneficiaries);
+
+            const table = document.getElementById('beneficiariesTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            newRow.innerHTML = `
+                <td>${beneficiary.nom} ${beneficiary.prenom}</td>
+                <td>${beneficiary.dateNaissance}</td>
+                <td>${beneficiary.lieuNaissance}</td>
+                <td>${beneficiary.lieuResidence}</td>
+                <td>${beneficiary.lienParente}</td>
+                <td>${beneficiary.telephone}</td>
+                <td>${beneficiary.email}</td>
+                <td>${beneficiary.part}%</td>
+                <td>
+                    <a href="#" class="text-danger" onclick="removeBeneficiary(${beneficiaries.length - 1})">
+                        <i class="fadeIn animated bx bx-x fs-4"></i>
+                    </a>
+                </td>
+            `;
+
+            document.getElementById('beneficiaryForm').reset();
+            removeBorderColor(nomBenefInput, prenomBenefInput, mobileBenefInput);
+
+            const modal = document.getElementById('addBenefModal');
+            const bootstrapModal = bootstrap.Modal.getInstance(modal);
+            bootstrapModal.hide();
         }
     </script>
 
