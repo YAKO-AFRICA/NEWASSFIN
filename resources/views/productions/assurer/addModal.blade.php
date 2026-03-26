@@ -9,7 +9,6 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-header">
-                        {{-- {{ $product->MonLibelle }} --}}
                     </div>
                     <div class="card-body">
                         <form action="" method="" id="AddAssureForm">
@@ -65,7 +64,7 @@
                                         <option value="" selected>Sélectionner le lieu</option> <!-- Option vide pour le placeholder -->
 
                                         @foreach($villes as $ville)
-                                            <option value="{{ $ville->IdTblVille }}">{{ $ville->MonLibelle }}</option>
+                                            <option value="{{ $ville['MonLibelle'] }}">{{ $ville['MonLibelle'] }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -110,7 +109,7 @@
                                         <option selected value="">Sélectionner le lieu</option> <!-- Option vide pour le placeholder -->
 
                                         @foreach($villes as $ville)
-                                            <option value="{{ $ville->IdTblVille }}">{{ $ville->MonLibelle }}</option>
+                                            <option value="{{ $ville['MonLibelle'] }}">{{ $ville['MonLibelle'] ?? ''}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -122,14 +121,14 @@
                                         <option selected value="" disabled>Sélectionner le lien de Parenté</option>
 
                                         @foreach ($filliations as $item)
-                                            <option value="{{ $item->CodeFiliation }}">{{ $item->MonLibelle }}</option>
+                                            <option value="{{ $item->CodeFiliation }}">{{ $item->MonLibelle ?? ''}}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="row g-3 mb-3">
                                 <div class="col-12 col-lg-6">
-                                    <label class="form-label">Telephone</label><br>
+                                    <label class="form-label">Télephone</label><br>
                                     <div class="input-group mb-3">
                                         <input type="tel" name="mobileAssur" id="mobileAssur" class="form-control" placeholder="ex: +225 0701020304" minlength="10" maxlength="15" >
                                     </div>

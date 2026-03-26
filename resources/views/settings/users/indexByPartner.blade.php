@@ -34,13 +34,10 @@
             </div>
         </div>
         <div class="card-body">
-
-
-
             <div class="table-responsive">
                 @php
                     // Colonnes par défaut
-                    $defaultColumns = ['#', 'Nom complet', 'Email', 'Code', 'Type'];
+                    $defaultColumns = ['#', 'Nom complet', 'Email', 'Code','Nom agence', 'Type'];
 
                     $additionalColumns = [
                         'Session ID' => 'id_session',
@@ -107,15 +104,11 @@
                             @foreach ($defaultColumns as $defaultColumn)
                                 <th>{{ $defaultColumn }}</th>
                             @endforeach
-
                             <!-- Affiche les colonnes dynamiques activées -->
                             @foreach ($activeColumns as $colKey)
                                 <th>{{ array_search($colKey, $additionalColumns) }}</th>
                             @endforeach
-
                             <th>Actions</th>
-
-
                         </tr>
                     </thead>
                     <tbody>
@@ -132,7 +125,6 @@
                             @foreach ($activeColumns as $colKey)
                                 <td>{{ $item->$colKey ?? '' }}</td>
                             @endforeach
-
                             <td>
                                 <div class="d-flex order-actions">
                                     <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#EditUsers{{ $item->idmembre }}">

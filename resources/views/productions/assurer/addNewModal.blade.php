@@ -1,55 +1,30 @@
 <!-- Modal -->
 
 <div class="modal fade" id="addAssureModal" tabindex="-1" aria-hidden="true">
-
     <div class="modal-dialog modal-xl">
-
         <div class="modal-content">
-
             <div class="modal-header">
-
                 <h5 class="modal-title">Ajouter un Assuré</h5>
-
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-
             </div>
-
             <div class="modal-body">
-
                 <div class="card">
-
                     <div class="card-header">
-
                     </div>
-
                     <div class="card-body">
-
                         <form method="POST" action="{{ route('prod.store.assurer') }}"  class="submitForm">
-
                             @csrf
-
                             <fieldset class="border p-3">
-
                                 <legend class="float-none w-auto px-2"><small>Information personnelle</small></legend>
-
                                 <div class="col-12 col-lg-6">
-
                                     <label for="civiliteAssur" class="form-label">Civilité <span class="text-danger">*</span></label>
-
                                     <div class="form-check form-check-inline">
-
                                         <input class="form-check-input" type="radio" name="civiliteAssur" id="inlineRadio1" value="Madame" autocomplete="off" required>
-
                                         <label class="form-check-label" for="inlineRadio1">Madame</label>
-
                                     </div>
-
                                     <div class="form-check form-check-inline">
-
                                         <input class="form-check-input" type="radio" name="civiliteAssur" id="inlineRadio2" value="Mademoiselle" autocomplete="off">
-
                                         <label class="form-check-label" for="inlineRadio2">Mademoiselle</label>
-
                                     </div>
 
                                     <div class="form-check form-check-inline">
@@ -83,27 +58,16 @@
                                             <span class="text-danger"> Veuillez remplir le champ nom</span>
 
                                         @enderror
-
                                     </div>
-
                                     <div class="col-12 col-lg-6">
-
                                         <label for="prenomAssur" class="form-label">Prénoms de l'assuré <span class="text-danger">*</span></label>
-
                                         <input type="text" name="prenomAssur" class="form-control" id="prenomAssur"
-
                                             placeholder="Prénoms" required>
-
                                         @error('prenomAssur')
-
                                             <span class="text-danger"> Veuillez remplir le champ prenom </span>
-
                                         @enderror
-
                                     </div>
-
                                 </div><!---end row-->
-
                                 <div class="row g-3 mb-3">
                                     <div class="col-12 col-lg-6">
                                         <label for="datenaissanceAssur" class="form-label">Date de naissance <span class="text-danger">*</span></label>
@@ -118,7 +82,7 @@
                                         <select class="form-select" name="lieunaissanceAssur" id="lieunaissanceAssur" data-placeholder="Sélectionner le lieu">
                                             <option value="" selected>Sélectionner le lieu</option> <!-- Option vide pour le placeholder -->
                                             @foreach($villes as $ville)
-                                                <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option> 
+                                                <option value="{{ $ville['MonLibelle'] }}">{{ $ville['MonLibelle'] ?? '' }}</option> 
                                             @endforeach 
                                         </select>
                                     </div>
@@ -174,7 +138,7 @@
 
                                             <option selected value="">Sélectionner le lieu</option>
                                             @foreach($villes as $ville)
-                                                <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option> 
+                                                <option value="{{ $ville['MonLibelle'] }}">{{ $ville['MonLibelle'] ?? '' }}</option> 
                                             @endforeach 
                                         </select>
                                     </div>
@@ -189,11 +153,9 @@
 
                                             <option selected value="">Sélectionner le lien de Parenté</option>
 
-                                            <option value="Conjoint">Conjoint</option>
-
-                                            <option value="Enfant">Enfant</option>
-
-                                            <option value="Autre">Autre</option> 
+                                            @foreach ($filliations as $item)
+                                                <option value="{{ $item->CodeFiliation }}">{{ $item->MonLibelle ?? ''}}</option>
+                                            @endforeach
 
                                         </select>
 

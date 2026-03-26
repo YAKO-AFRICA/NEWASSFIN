@@ -27,7 +27,7 @@
                             <select id="lieunaissanceBenef" class="form-select">
                                 <option selected value="">Sélectionner le lieu</option>
                                 @foreach($villes as $ville)
-                                    <option value="{{ $ville->IdTblVille }}">{{ $ville->MonLibelle }}</option>
+                                    <option value="{{ $ville->MonLibelle }}" data-naissance-libelle="{{ $ville->MonLibelle }}">{{ $ville->MonLibelle ?? '' }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -38,19 +38,19 @@
                             <select id="lieuresidenceBenef" class="form-select">
                                 <option selected value="">Sélectionner le lieu</option>
                                 @foreach($villes as $ville)
-                                    <option value="{{ $ville->IdTblVille }}">{{ $ville->MonLibelle }}</option>
+                                    <option value="{{ $ville->MonLibelle }}" data-residence-libelle="{{ $ville->MonLibelle }}">{{ $ville->MonLibelle ?? ''}}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-12 col-lg-6">
-                            <label for="lienParente" class="form-label">Lien de Parenté</label>
+                            <label for="lienParente" class="form-label">Filiation</label>
                             <select id="lienParenteBenef" class="form-select" name="lienParenteBenef">
 
-                            <option selected value="" disabled>Sélectionner le lien de Parenté</option>
+                            <option selected value="" disabled>Sélectionner la filiation</option>
 
                             @foreach ($filliations as $item)
                                 @if(!empty($item->MonLibelle))
-                                    <option value="{{ $item->MonLibelle }}">{{ $item->MonLibelle }}</option>
+                                    <option value="{{ $item->CodeFiliation }}">{{ $item->MonLibelle ?? ''}}</option>
                                 @endif
                             @endforeach
                         </select>
@@ -67,12 +67,12 @@
                             <input type="email" id="emailBenef" class="form-control" placeholder="Email">
                         </div>
                     </div>
-                    {{-- <div class="row g-3 mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12">
                             <label for="partBenef" class="form-label">Part en %</label>
                             <input type="number" id="partBenef" class="form-control" placeholder="Part du bénéficiaire" min="0" max="100">
                         </div>
-                    </div> --}}
+                    </div>
                     <input type="hidden" id="beneficiariesInput" name="beneficiaires">
                     <div class="modal-footer d-flex justify-content-between">
                         <button type="button" class="btn border-btn" data-bs-dismiss="modal">Annuler</button>

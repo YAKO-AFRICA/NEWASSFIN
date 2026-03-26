@@ -10,15 +10,8 @@
                     <label for="" class="form-label">Je souhaite payer mes primes par : <span class="text-danger">*</span></label>
                     <div class="mb-3">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" name="modepaiement" type="radio" value="VIR"
-                                id="Virement_bancaire" required>
-                            <label class="form-check-label" for="Virement_bancaire">
-                                Virement bancaire
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline">
                             <input class="form-check-input" name="modepaiement" type="radio" value="ESP"
-                                id="Espece">
+                                id="Espece" disabled>
                             <label class="form-check-label" for="Espece">
                                 Espèce
                             </label>
@@ -31,24 +24,45 @@
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" name="modepaiement" type="radio" value="EBANK"
-                                id="EBANK">
-                            <label class="form-check-label" for="EBANK">
-                                Mobile money
+                            <input class="form-check-input" name="modepaiement" type="radio" value="VIR"
+                                id="Virement_bancaire" required>
+                            <label class="form-check-label" for="Virement_bancaire">
+                                Virement bancaire
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" name="modepaiement" type="radio"
                                 value="SOURCE" id="Prelevement_source">
                             <label class="form-check-label" for="Prelevement_source">
-                                Prélèvement à la source
+                                Solde
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" name="modepaiement" type="radio"
-                                value="BANK" id="Prelevement_bank">
-                            <label class="form-check-label" for="Prelevement_bank">
-                                Prélèvement bancaire
+                                value="SOCIETE" id="Prelevement_societe">
+                            <label class="form-check-label" for="Prelevement_societe">
+                                SOCIETE
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" name="modepaiement" type="radio" value="EBANK"
+                                id="EBANK">
+                            <label class="form-check-label" for="EBANK">
+                                Electronique Banking
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" name="modepaiement" type="radio" value="DEF"
+                                id="DEF">
+                            <label class="form-check-label" for="DEF">
+                                Defense
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" name="modepaiement" type="radio"
+                                value="ADF" id="Prelevement_ADF">
+                            <label class="form-check-label" for="Prelevement_ADF">
+                                A definir
                             </label>
                         </div>
                     </div>
@@ -107,14 +121,14 @@
                         </div>
                     </div>
 
-                    <div class="mb-3" id="mode_mobile" style="display: none;">
+                    <div class="mb-3" id="mode_ebank" style="display: none;">
                         <div class="col-12 mb-3">
                             <label for="numMobile" class="form-label">Mon N° Mobile</label>
                             <input type="text" class="form-control" id="numMobile" name="numMobile">
                         </div>
                     </div>
 
-                    <div class="mb-3" id="mode_source" style="display: none;">
+                    <div class="mb-3" id="mode_defense" style="display: none;">
                         <div class="col-12 mb-3">
                             <label for="matricule" class="form-label">N° Mecano / N° Matricule</label>
                             <input type="text" class="form-control" id="matricule" name="matricule">
@@ -382,33 +396,68 @@
     document.addEventListener('DOMContentLoaded', function() {
     // ==================== GESTION MODES DE PAIEMENT ====================
     const modePaiementRadios = document.querySelectorAll('input[name="modepaiement"]');
+
     const modeBancaire = document.getElementById('mode_bancaire');
-    const modeMobile = document.getElementById('mode_mobile');
-    const modeSource = document.getElementById('mode_source');
+    const modeEbank = document.getElementById('mode_ebank');
+    const modeDefense = document.getElementById('mode_defense');
 
-    if (modeBancaire) modeBancaire.style.display = 'none';
-    if (modeMobile) modeMobile.style.display = 'none';
-    if (modeSource) modeSource.style.display = 'none';
+    // Inputs bancaires
+    const inputsBancaire = document.querySelectorAll('#mode_bancaire input, #mode_bancaire select');
 
-    document.querySelectorAll('input[name="modepaiement"]').forEach(radio => {
+    // Inputs ebank
+    const inputsEbank = document.querySelectorAll('#mode_ebank input');
+
+    // Inputs défense
+    const inputsDefense = document.querySelectorAll('#mode_defense input');
+
+    function resetAll() {
+
+        // cacher les blocs
+        modeBancaire.style.display = 'none';
+        modeEbank.style.display = 'none';
+        modeDefense.style.display = 'none';
+
+        // enlever required partout
+        [...inputsBancaire, ...inputsEbank, ...inputsDefense].forEach(input => {
+            input.required = false;
+            input.value = '';
+        });
+    }
+
+    modePaiementRadios.forEach(radio => {
 
         radio.addEventListener('change', function () {
 
-            document.getElementById('mode_bancaire').style.display = 'none';
-            document.getElementById('mode_mobile').style.display = 'none';
-            document.getElementById('mode_source').style.display = 'none';
+            resetAll();
 
-            if (this.value === 'VIR' || this.value === 'BANK' || this.value === 'CHK') {
-                document.getElementById('mode_bancaire').style.display = 'block';
+            // 👉 VIREMENT
+            if (this.value === 'VIR' || this.value === 'BANK') {
+                modeBancaire.style.display = 'block';
+
+                inputsBancaire.forEach(input => {
+                    input.required = true;
+                });
             }
 
+            // 👉 EBANK
             if (this.value === 'EBANK' || this.value === 'Mobile_money') {
-                document.getElementById('mode_mobile').style.display = 'block';
+                modeEbank.style.display = 'block';
+
+                inputsEbank.forEach(input => {
+                    input.required = true;
+                });
             }
 
-            if (this.value === 'SOURCE') {
-                document.getElementById('mode_source').style.display = 'block';
+            // 👉 DEFENSE
+            if (this.value === 'DEF') {
+                modeDefense.style.display = 'block';
+
+                inputsDefense.forEach(input => {
+                    input.required = true;
+                });
             }
+
+            // 👉 ADF, CHK, SOCIETE, ESP → rien (pas de required)
 
         });
 
@@ -435,7 +484,7 @@
         });
     }
 
-     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     // ==================== VARIABLES GLOBALES ====================
     let banquesData = [];

@@ -133,7 +133,7 @@
 
                                             @foreach($villes as $ville)
 
-                                                <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option> 
+                                                <option value="{{ $ville['MonLibelle'] }}">{{ $ville['MonLibelle'] }}</option> 
 
                                             @endforeach 
 
@@ -176,10 +176,6 @@
 
                                             placeholder="numero de la pièce d'identité">
 
-                                            
-
-                                        
-
                                     </div> 
 
                                 </div><!---end row-->
@@ -198,7 +194,7 @@
 
                                             @foreach($villes as $ville)
 
-                                                <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option> 
+                                                <option value="{{ $ville['MonLibelle'] }}">{{ $ville['MonLibelle'] }}</option> 
 
                                             @endforeach 
 
@@ -216,14 +212,11 @@
 
                                             <option value="{{ $assure->lienParente ?? ''}}">{{ $assure->lienParente ?? ''}}</option>
 
-                                            <option value="Conjoint">Conjoint</option>
-
-                                            <option value="Enfant">Enfant</option>
-
-                                            <option value="Autre">Autre</option> 
+                                            @foreach ($filliations as $item)
+                                                <option value="{{ $item->CodeFiliation }}">{{ $item->MonLibelle ?? ''}}</option>
+                                            @endforeach
 
                                         </select>
-
                                     </div> 
 
                                 </div>
@@ -233,11 +226,8 @@
                                     <div class="col-12 col-lg-6">
 
                                         <label class="form-label">Telephone</label><br>
-
                                         <div class="input-group mb-3">
-
                                             <input type="text" name="mobileAssur" class="form-control" id="mobileAssur" value="{{ $assure->mobile ?? ''}}">
-
                                         </div>
 
                                         
@@ -274,129 +264,7 @@
 
                                 </div>
                             </fieldset>
-
-                            {{-- @if ($contrat->codeproduit === "LFFUN")
-                            <fieldset class="border p-4 rounded-3 shadow-sm">
-                                <legend class="float-none w-auto px-2 mb-3"><small><strong>État de santé de l'assuré</strong></small></legend>
                             
-                                <div class="row g-3 mb-4">
-                                    <div class="col-12 col-lg-8">
-                                        <label for="nomAssur" class="form-label">L'assuré déclare être en bon état de santé <span class="text-danger">*</span></label>
-                                    </div>
-                                
-                                    <div class="col-12 col-lg-4">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="EtatSante" id="EtatAssurSain" value="Sain"
-                                                {{ $assure->sante->EtatSante == 'Sain' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="EtatAssurSain">Sain</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="EtatSante" id="EtatAssurMalade" value="Malade"
-                                                {{ $assure->sante->EtatSante == 'Malade' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="EtatAssurMalade">Malade</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row g-3 mb-4">
-                                    <div class="col-12 col-lg-4">
-                                        <div class="card shadow-sm border-light">
-                                            <div class="card-body">
-                                                <label for="diabete" class="form-label"><strong>Diabète</strong></label>
-                                                <div class="form-check">
-                                                    <input type="radio" name="diabete" id="diabeteOui" value="true" class="form-check-input"
-                                                        {{ $assure->sante->diabete == 'true' ? 'checked' : '' }}>
-                                                    <label for="diabeteOui" class="form-check-label">Oui</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input type="radio" name="diabete" id="diabeteNon" value="false" class="form-check-input"
-                                                        {{ $assure->sante->diabete == 'false' ? 'checked' : '' }}>
-                                                    <label for="diabeteNon" class="form-check-label">Non</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-                                    <div class="col-12 col-lg-3">
-                                        <div class="card shadow-sm border-light">
-                                            <div class="card-body">
-                                                <label for="cancer" class="form-label"><strong>Cancer</strong></label>
-                                                <div class="form-check">
-                                                    <input type="radio" name="cancer" id="cancerOui" value="true" class="form-check-input"
-                                                        {{ $assure->sante->cancer == 'true' ? 'checked' : '' }}>
-                                                    <label for="cancerOui" class="form-check-label">Oui</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input type="radio" name="cancer" id="cancerNon" value="false" class="form-check-input"
-                                                        {{ $assure->sante->cancer == 'false' ? 'checked' : '' }}>
-                                                    <label for="cancerNon" class="form-check-label">Non</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-                                    <div class="col-12 col-lg-4">
-                                        <div class="card shadow-sm border-light">
-                                            <div class="card-body">
-                                                <label for="avc" class="form-label"><strong>AVC</strong></label>
-                                                <div class="form-check">
-                                                    <input type="radio" name="avc" id="avcOui" value="true" class="form-check-input"
-                                                        {{ $assure->sante->avc == 'true' ? 'checked' : '' }}>
-                                                    <label for="avcOui" class="form-check-label">Oui</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input type="radio" name="avc" id="avcNon" value="false" class="form-check-input"
-                                                        {{ $assure->sante->avc == 'false' ? 'checked' : '' }}>
-                                                    <label for="avcNon" class="form-check-label">Non</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row g-3 mb-4">
-                                    <div class="col-12 col-lg-4">
-                                        <div class="card shadow-sm border-light">
-                                            <div class="card-body">
-                                                <label for="tension" class="form-label"><strong>Hypertension</strong></label>
-                                                <div class="form-check">
-                                                    <input type="radio" name="hypertension" id="tensionOui" value="true" class="form-check-input"
-                                                        {{ $assure->sante->hypertension == 'true' ? 'checked' : '' }}>
-                                                    <label for="tensionOui" class="form-check-label">Oui</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input type="radio" name="hypertension" id="tensionNon" value="false" class="form-check-input"
-                                                        {{ $assure->sante->hypertension == 'false' ? 'checked' : '' }}>
-                                                    <label for="tensionNon" class="form-check-label">Non</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-                                    <div class="col-12 col-lg-4">
-                                        <div class="card shadow-sm border-light">
-                                            <div class="card-body">
-                                                <label for="renalInsuff" class="form-label"><strong>Insuffisance rénale</strong></label>
-                                                <div class="form-check">
-                                                    <input type="radio" name="insuffRenal" id="renalInsuffOui" value="true" class="form-check-input"
-                                                        {{ $assure->sante->insuffrenale == 'true' ? 'checked' : '' }}>
-                                                    <label for="renalInsuffOui" class="form-check-label">Oui</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input type="radio" name="insuffRenal" id="renalInsuffNon" value="false" class="form-check-input"
-                                                        {{ $assure->sante->insuffrenale == 'false' ? 'checked' : '' }}>
-                                                    <label for="renalInsuffNon" class="form-check-label">Non</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                            
-                            </fieldset>
-                            @endif --}}
-                            
-
                             <div class="col-12">
 
                                 <div class="d-flex align-items-center justify-content-between gap-3">

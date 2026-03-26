@@ -172,9 +172,6 @@
             }
         });
 
-
-
-
         // Ajoutez un event listener sur le champ "Adherent"
         document.getElementById('addBeneficiary').addEventListener('change', function () {
             if (this.checked) {
@@ -192,9 +189,6 @@
                 row.remove();
             }
         }
-
-
-        
 
         function validateField(element, value) {
             if (!value) {
@@ -251,6 +245,17 @@
                 return;
             }
 
+            const lieuNaissanceSelect = document.getElementById('lieunaissanceBenef');
+            const lieuResidenceSelect = document.getElementById('lieuresidenceBenef');
+
+            const lieuNaissanceLibelle = lieuNaissanceSelect.selectedIndex > 0 
+                ? lieuNaissanceSelect.options[lieuNaissanceSelect.selectedIndex].dataset.naissanceLibelle 
+                : '';
+
+            const lieuResidenceLibelle = lieuResidenceSelect.selectedIndex > 0 
+                ? lieuResidenceSelect.options[lieuResidenceSelect.selectedIndex].dataset.residenceLibelle 
+                : '';
+
 
             // Add to beneficiaries array
             beneficiaries.push(beneficiary);
@@ -263,8 +268,8 @@
             newRow.innerHTML = `
                 <td>${beneficiary.nom} ${beneficiary.prenom}</td>
                 <td>${beneficiary.dateNaissance}</td>
-                <td>${beneficiary.lieuNaissance}</td>
-                <td>${beneficiary.lieuResidence}</td>
+                <td>${lieuNaissanceLibelle}</td>
+                <td>${lieuResidenceLibelle}</td>
                 <td>${beneficiary.lienParente}</td>
                 <td>${beneficiary.telephone}</td>
                 <td>${beneficiary.email}</td>

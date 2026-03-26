@@ -1,104 +1,72 @@
 {{-- <form action="" method="post"> --}}
-
     <div style="font-size: 12px !important">
-
         <h5 class="mb-1">Informations sur les assuré(e) </h5>
-
-    
-
         <div class="row g-3 mb-3">
-
-            
-
             <div class="col-12 col-lg-6 d-flex justify-content-end align-items-end">
-
                 <!-- Button trigger modal -->
-
+                {{-- @if ($contrat->assures->count() == 0) --}}
                 <button type="button" class="btn btn-outline-warning float-end" data-bs-toggle="modal"
-
-                    data-bs-target="#addAssureModal"><i class="fadeIn animated bx bx-plus"></i>Ajouter un(e) autre
-
-                    assuré(e)</button>
-
-                <!-- Modal -->
-
+                    data-bs-target="#addAssureModal"><i class="fadeIn animated bx bx-plus"></i>Ajouter un(e) autre assuré(e)
+                </button>
+                {{-- @endif --}}
             </div>
-
         </div>
 
-        
-
         <table class="table mb-0 table-striped" style="font-size: 12px !important">
-
             <thead>
-
                 <tr>
-
                     <th scope="col">Assuré(e)</th>
-
                     <th scope="col">Garanties</th>
-
                     <th scope="col">Garanties complementaires</th>
-
                     <th scope="col">Action</th>
-
                 </tr>
-
             </thead>
-
-
             <tbody>
-
                 @if ($contrat->assures->count() > 0)
+                    @foreach ($contrat->assures as $assure)
+                        <tr>
 
-                @foreach ($contrat->assures as $assure)
+                            <td>{{ $assure->nom ?? '-'}} {{ $assure->prenom ?? '-'}}</td>
 
-                <tr>
+                            <td>
 
-                    <td>{{ $assure->nom ?? '-'}} {{ $assure->prenom ?? '-'}}</td>
+                                <ul>
+                                    @foreach ($assure->garanties as $item)
+                                        <li>{{ $item->monlibelle ?? 'Aucune garantie'}}</li>
+                                    @endforeach
+                                </ul>
+                            </td>
 
-                    <td>
+                            <td><center>Pas de garantie complementaires</center></td>
 
-                        <ul>
-                            @foreach ($assure->garanties as $item)
-                                <li>{{ $item->monlibelle ?? 'Aucune garantie'}}</li>
-                            @endforeach
-                        </ul>
-                    </td>
+                            <td style="font-size: 10px !important">
 
-                    <td><center>Pas de garantie complementaires</center></td>
+                                <a class="border-0 btn bg-none p-0" href="" data-bs-target="#showAssureModal{{ $assure->id }}" data-bs-toggle="modal"><i class="fadeIn animated bx bx-show mx-auto"></i></a>
 
-                    <td style="font-size: 10px !important">
+                                <a class="mx-2 border-0 btn p-0" href="" data-bs-target="#editAssureModal{{ $assure->id }}" data-bs-toggle="modal"><i class="fadeIn animated bx bx-edit  mx-auto"></i></a>
 
-                        <a class="border-0 btn bg-none p-0" href="" data-bs-target="#showAssureModal{{ $assure->id }}" data-bs-toggle="modal"><i class="fadeIn animated bx bx-show mx-auto"></i></a>
+                                <a class="deleteConfirmation btn border-0 p-0" data-uuid="{{ $assure->id }}"
 
-                        <a class="mx-2 border-0 btn p-0" href="" data-bs-target="#editAssureModal{{ $assure->id }}" data-bs-toggle="modal"><i class="fadeIn animated bx bx-edit  mx-auto"></i></a>
+                                    data-type="confirmation_redirect" data-placement="top"
 
-                        <a class="deleteConfirmation btn border-0 p-0" data-uuid="{{ $assure->id }}"
+                                    data-token="{{ csrf_token() }}" data-url="{{ route('prod.delete.assure', $assure->id) }}"
 
-                            data-type="confirmation_redirect" data-placement="top"
+                                    data-title="Vous êtes sur le point de supprimer {{ $assure->nom }} {{ $assure->prenom }}"
 
-                            data-token="{{ csrf_token() }}" data-url="{{ route('prod.delete.assure', $assure->id) }}"
+                                    data-id="{{ $assure->id }}" data-param="0"
 
-                            data-title="Vous êtes sur le point de supprimer {{ $assure->nom }} {{ $assure->prenom }}"
+                                    data-route="{{ route('prod.delete.assure', $assure->id) }}">
 
-                            data-id="{{ $assure->id }}" data-param="0"
+                                    <i class='bx bxs-trash mx-auto'></i>
 
-                            data-route="{{ route('prod.delete.assure', $assure->id) }}">
+                                    </a>
 
-                            <i class='bx bxs-trash mx-auto'></i>
+                            </td>
 
-                            </a>
-
-                    </td>
-
-                </tr>
-                    @include('productions.assurer.show')
-                    @include('productions.assurer.update')
-                    
-
-                @endforeach
-
+                        </tr>
+                        @include('productions.assurer.show')
+                        @include('productions.assurer.update')
+                    @endforeach
                 @endif
 
                 

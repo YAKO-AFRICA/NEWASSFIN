@@ -1,70 +1,41 @@
 @extends('layouts.main')
-
 @section('content')
-
-
-
-<!--breadcrumb-->
-
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-
     <div class="breadcrumb-title pe-3">eSouscription</div>
-
     <div class="ps-3">
-
         <nav aria-label="breadcrumb">
-
             <ol class="breadcrumb mb-0 p-0">
-
                 <li class="breadcrumb-item"><a href="javascript:;">
                     <i class="bx bx-home-alt"></i></a>
                 </li>
-
                 <li class="breadcrumb-item active" aria-current="page">Modifier une proposition</li>
-
             </ol>
-
         </nav>
-
     </div>
-
-
-
 </div>
 
 <div class="ms-auto">
     <div class="d-flex justify-content-end my-4">
         <div class="btn-group gap-1 gap-md-2 gap-lg-3">
-
             @if ($contrat->etape != 2)
             <form action="{{ route('prod.transmettreContrat', $contrat->id)}}" method="post" class="submitForm">
                 @csrf
                 <button type="submit" class="btn btn-primary p-1 px-3 border-0 text-center"> Transmettre</button>
             </form>
             @endif
-
             <button class="btn btn-primary mx-4 border-0 text-center" style="font-size: 12px">
                 <a class="text-decoration-none" href="{{ route('prod.generate.bulletin', $contrat->id) }}" target="_blank">
                     <i class="bx bx-download" title="Telecharger le bulletin"></i> Imprimer le Bulletin
                 </a>
             </button>
-
-
-            {{-- <input type=button onclick='calltouchpay("{{ $contrat->id }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer ma première prime" /> --}}
-
-
+            <input type=button onclick='calltouchpay("{{ $contrat->numBullettin }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer les frais d'adhesion" />
         </div>
     </div>
 </div>
-
 <!--end breadcrumb-->
-
 <div class="row">
-
     <div class="col-12 col-lg-3">
-
         <div class="card">
-
             <center>
                 <div class="card-header">
                     <p>
@@ -116,19 +87,16 @@
                             <i class='bx bx-analyse me-2'></i><span>Assurés</span>
 
                         </a>
+                        <a href="javascript:;" class="list-group-item py-2 btn border-0" data-target="edit-sante">
+
+                            <i class='bx bx-analyse me-2'></i><span>Etat de santé</span>
+
+                        </a>
 
                         <a href="javascript:;" class="list-group-item py-1 btn" data-target="edit-beneficiaire">
 
                             <i class='bx bx-plug me-2'></i><span>Beneficiaire</span>
-
                         </a>
-
-                        {{-- <a href="javascript:;" class="list-group-item py-1" data-target="edit-info">
-
-                            <i class='bx bx-analyse me-2'></i><span>Informations</span>
-
-                        </a> --}}
-
                     </div>
 
                 </div>
@@ -162,104 +130,58 @@
                             </a>
                             {{-- <a class="btn btn-sm btn-outline-secondary" href=""> <i class="bx bx-trash"></i></a> --}}
                         </h6>
-
-
-
                         <div class="modal fade" id="view-bulletin{{$doc->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-
                             <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-
                                 <div class="modal-content">
-
                                     <div class="modal-header">
-
                                         <h5 class="modal-title" id="exampleModalLabel">Aperçu {{$doc->libelle ?? ''}}</h5>
-
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="x">x</button>
-
                                     </div>
-
                                     <div class="modal-body" style="width: 100%; height: 80vh">
                                         <iframe style="width: 100%; height: 100%" src="{{ url('storage/documents/' . $doc->filename) }}" frameborder="0"></iframe>
-
                                     </div>
-
                                     <div class="modal-footer">
-
                                         <form action="{{ route('prod.destroy.document', $doc->id)}}" method="post" class="submitForm">
                                             @csrf
-
                                             <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">
                                                Supprimer
                                             </button>
                                         </form>
-
-
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-
                                     </div>
-
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
-
                     @endforeach
-
                 @else
-
-
-
                 @endif
-
-
-
-
-
             </div>
-
         </div>
-
     </div>
 
     <div class="col-12 col-lg-9">
-
         <div class="card">
-
             <div class="card-body">
-
                 <section id="info-contrat" class="section-content">
-
                     <h5>Modifier les Détails du Contrat</h5>
-
                     @include('productions.components.editContrat')
-
                 </section>
-
                 <section id="edit-adherent" class="section-content d-none">
-
                     <h5>Adhérent</h5>
-
                     @include('productions.components.editAdherent')
-
                 </section>
-
                 <section id="edit-assurer" class="section-content d-none">
                     <h5>Assurés</h5>
-
                     @include('productions.assurer.editAssure' , ['codecontrat' => $contrat->id])
-
                 </section>
-
+                <section id="edit-sante" class="section-content d-none">
+                    <h5>Etat de Santé</h5>
+                    @include('productions.sante.editSante' , ['codecontrat' => $contrat->id])
+                </section>
                 <section id="edit-beneficiaire" class="section-content d-none">
-
                     <h5>Bénéficiaire</h5>
-
                     @include('productions.beneficiaires.info' , ['codecontrat' => $contrat->id])
-
                 </section>
             </div>
         </div>
@@ -312,48 +234,55 @@
     </script>
 
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
 
-        const contratInfo = {!! json_encode($contrat) !!};
+            const contratInfo = {!! json_encode($contrat) !!};
 
-        console.log(contratInfo.adherent);
+            console.log(contratInfo.adherent);
 
-        const modeBancaire = document.getElementById('mode_bancaire');
-        const modeMobile = document.getElementById('mode_mobile');
-        const modeSource = document.getElementById('mode_source');
+            const modeBancaire = document.getElementById('mode_bancaire');
+            const modeMobile = document.getElementById('mode_mobile');
+            const modeSource = document.getElementById('mode_source');
+            const modeSociete = document.getElementById('mode_societe');
 
-        if (modeBancaire) modeBancaire.style.display = 'none';
-        if (modeMobile) modeMobile.style.display = 'none';
-        if (modeSource) modeSource.style.display = 'none';
+            if (modeBancaire) modeBancaire.style.display = 'none';
+            if (modeMobile) modeMobile.style.display = 'none';
+            if (modeSource) modeSource.style.display = 'none';
+            if (modeSociete) modeSociete.style.display = 'none';
 
-        document.querySelectorAll('input[name="modepaiement"]').forEach(radio => {
+            document.querySelectorAll('input[name="modepaiement"]').forEach(radio => {
 
-            radio.addEventListener('change', function () {
+                radio.addEventListener('change', function () {
 
-                document.getElementById('mode_bancaire').style.display = 'none';
-                document.getElementById('mode_mobile').style.display = 'none';
-                document.getElementById('mode_source').style.display = 'none';
+                    document.getElementById('mode_bancaire').style.display = 'none';
+                    document.getElementById('mode_mobile').style.display = 'none';
+                    document.getElementById('mode_source').style.display = 'none';
+                    document.getElementById('mode_societe').style.display = 'none';
 
-                if (this.value === 'VIR' || this.value === 'BANK' || this.value === 'CHK') {
-                    document.getElementById('mode_bancaire').style.display = 'block';
-                }
+                    if (this.value === 'VIR' || this.value === 'BANK' || this.value === 'CHK') {
+                        document.getElementById('mode_bancaire').style.display = 'block';
+                    }
 
-                if (this.value === 'EBANK' || this.value === 'Mobile_money') {
-                    document.getElementById('mode_mobile').style.display = 'block';
-                }
+                    if (this.value === 'EBANK' || this.value === 'Mobile_money') {
+                        document.getElementById('mode_mobile').style.display = 'block';
+                    }
 
-                if (this.value === 'SOURCE') {
-                    document.getElementById('mode_source').style.display = 'block';
-                }
+                    if (this.value === 'SOURCE') {
+                        document.getElementById('mode_source').style.display = 'block';
+                    }
+
+                    if (this.value === 'SOCIETE' || this.value === 'DEF') {
+                        document.getElementById('mode_defense').style.display = 'block';
+                    }
+
+                });
 
             });
 
-        });
-
-    })
-</script>
+        })
+    </script>
 
 
 

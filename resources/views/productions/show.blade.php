@@ -104,7 +104,6 @@
     <div class="col-12 col-lg-3">
         <div class="card">
             <div class="card-body">
-                
                 <div class="fm-menu">
                     <div class="list-group list-group-flush">
                         <a href="javascript:;" class="list-group-item py-1 btn border-0" data-target="info-contrat">
@@ -116,6 +115,10 @@
                         <a href="javascript:;" class="list-group-item py-1 btn border-0" data-target="edit-assurer">
                             <i class='bx bx-analyse me-2'></i><span>Assurés</span>
                         </a>
+                        <a href="javascript:;" class="list-group-item py-1 btn border-0" data-target="edit-etat-sante">
+                            <i class="fadeIn animated bx bx-book-heart"></i><span>Etat de santé</span>
+                        </a>
+                        
                         <a href="javascript:;" class="list-group-item py-1 btn border-0" data-target="edit-beneficiaire">
                             <i class='bx bx-plug me-2'></i><span>Bénéficiaires</span>
                         </a>
@@ -124,19 +127,13 @@
                         </a>
                     </div>
                 </div>
-
             </div>
-
         </div>
 
         <div class="card">
-
             <div class="card-body">
-
                 <h5 class="mb-0 font-weight-bold">Documents joints </h5>
-
                 <div class="mt-3"></div>
-
                 @if (count($contrat->documents) > 0)
 
                     @foreach ($contrat->documents as $doc)
@@ -217,6 +214,12 @@
                                 <dl class="mb-4">
                                     <dt>ID du contrat</dt>
                                     <dd>{{ $contrat->id ?? '--' }}</dd>
+
+                                    <dt>N° Bulletin</dt>
+                                    <dd>{{ $contrat->numBullettin ?? '--' }}</dd>
+
+                                    <dt>Formule du produit</dt>
+                                    <dd>{{ $contrat->Formule ?? '--' }}</dd>
                     
                                     <dt>Mode de paiement</dt>
                                     <dd>
@@ -226,7 +229,7 @@
                                             @case('SOLDE') Solde @break
                                             @case('CHK') Chèque @break
                                             @case('Mobile_money') Mobile money @break
-                                            @case('EBANK') EBANK @break
+                                            @case('EBANK') Paiement Eléctronique @break
                                             @case('SOURCE') Prélèvement à la source @break
                                             @default --
                                         @endswitch
@@ -235,11 +238,11 @@
                                     @if ($contrat->modepaiement === 'VIR' || $contrat->modepaiement === 'SOURCE')
                                         <dt>Banque / Organisme</dt>
                                         <dd>{{ $contrat->organisme ?? '--' }}</dd>
+
+                                        {{-- <dt>Agence</dt>
+                                        <dd>{{ $contrat->agence ?? '--' }}</dd> --}}
                     
-                                        <dt>Agence</dt>
-                                        <dd>{{ $contrat->agence ?? '--' }}</dd>
-                    
-                                        <dt>N° de compte (Matricule)</dt>
+                                        <dt>N° de compte</dt>
                                         <dd>{{ $contrat->numerocompte ?? '--' }}</dd>
                                     @endif
                     
@@ -247,9 +250,12 @@
                                         <dt>N° Mobile</dt>
                                         <dd>{{ $contrat->numerocompte ?? '--' }}</dd>
                                     @endif
+                                    @if ($contrat->modepaiement === 'SOLDE')
+                                        <dt>Mecano / Matricule</dt>
+                                        <dd>{{ $contrat->numerocompte ?? '--' }}</dd>
+                                    @endif
 
-                                    <dt>Code Banque</dt>
-                                    <dd>{{ $contrat->codebanque ?? '--' }}</dd>
+                                    
                                 </dl>
                             </div>
                     
@@ -277,12 +283,11 @@
                                     <dt>Rente</dt>
                                     <dd>{{ number_format($contrat->montantrente ?? 0, 0, ',', ' ') }} Fcfa</dd>
 
-                                    <dt>Code Guichet</dt>
-                                    <dd>{{ $contrat->codeguichet ?? '--' }}</dd>
-                    
-                                    <dt>Conseiller client</dt>
-                                    <dd>{{ $contrat->nomagent ?? ""}}</dd>
+                                    <dt>Code Banque</dt>
+                                    <dd>{{ $contrat->codebanque ?? '--' }}</dd>
 
+                                    <dt>Clé RIB</dt>
+                                    <dd>{{ $contrat->rib ?? '--' }}</dd>
                                     
                                 </dl>
                             </div>
@@ -301,15 +306,16 @@
 
                                     <dt>Frais d'adhésion</dt>
                                     <dd>{{ number_format($contrat->fraisadhesion ?? 0, 0, ',', ' ') }} FCFA</dd>
+
+                                    <dt>Code Guichet</dt>
+                                    <dd>{{ $contrat->codeguichet ?? '--' }}</dd>
+
+                                    <dt>N° de compte Complet</dt>
+                                    <dd>{{ $contrat->codebanque ?? '--' }} - {{ $contrat->codeguichet ?? '--' }} - {{ $contrat->numerocompte ?? '--' }} - {{ $contrat->rib ?? '--' }}</dd>
                     
-                                    
-                    
-                                    <dt>Clé RIB</dt>
-                                    <dd>{{ $contrat->rib ?? '--' }}</dd>
-                                    <dt>Code conseiller</dt>
-                                    <dd>{{ $contrat->codeConseiller ?? "--" }}</dd>
                                 </dl>
                             </div>
+
                         </div>
                     </div>
                 </section>
@@ -618,6 +624,10 @@
                             @endif
                         </div>
                     </fieldset>
+                </section>
+
+                <section id="edit-etat-sante" class="section-content d-none">
+                    @include('productions.sante.showSante' , ['codecontrat' => $contrat->id])
                 </section>
 
                 <section id="edit-beneficiaire" class="section-content d-none">

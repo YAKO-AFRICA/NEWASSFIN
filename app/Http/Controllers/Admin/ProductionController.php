@@ -32,6 +32,7 @@ use App\Models\TblSociete;
 use App\Models\TblVille;
 use App\Models\User;
 use App\Notifications\SystemeNotify;
+use App\Services\ApiReduce;
 use App\Services\ProduitService;
 use BaconQrCode\Encoder\QrCode;
 use BaconQrCode\Renderer\Image\ImagickImageBackEnd; // Utilisez Imagick si disponible
@@ -49,6 +50,7 @@ use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -362,23 +364,14 @@ class ProductionController extends Controller
         $societes = Banqueagence::all();
         $agences = TblAgence::select('NOM_LONG')->get();
         $filliations = Filliation::select('MonLibelle')->get();
-
         $resultData = session()->get('adherent', []);
-
-        $detailCountries = []; // Valeur par défaut
-
-        // $banqueAgence = TblBanqueAgence::all();
-
+        $detailCountries = [];
         try {
-            // $response = Http::withOptions(['timeout' => 60])->get(env('API_GET_COUNTRIES'));
             $response = Http::withOptions(['timeout' => 60])->get(config('services.API_GET_COUNTRIES'));
-
             if ($response->successful()) {
                 $data = $response->json();
-
                 // Vérifie si la clé "countries" existe
                 if (isset($data['countries'])) {
-
                     $detailCountries = $data['countries'];
                     Log::info('La clé "countries" est trouvée dans la réponse API.');
                 } else {
@@ -1490,9 +1483,6 @@ class ProductionController extends Controller
         return ($httpCode == 200) ? $response : null;
     }
 
-
-
-
     private function generateBulletin($idContrat)
     {
 
@@ -1807,30 +1797,34 @@ class ProductionController extends Controller
         $productGarantie = ProduitGarantie::where('CodeProduit', $CodeProduit)->get();
 
         $contrat = Contrat::where('id', $id)->first();
-        $filliations =  Filliation::select('MonLibelle')->get();
-        // $zone =  $contrat->user->membre->zone->libellezone;
-        // dd($zone);
-        // dd($contrat->garanties);
+        $filliations =  Filliation::select('*')->get();
+        $sante = $contrat->santes()->first();
 
-        return view('productions.show', compact('contrat', 'productGarantie','filliations'));
+        return view('productions.show', compact('contrat', 'productGarantie','filliations', 'sante'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(ApiReduce $api,string $id)
     {
-        $contrat = Contrat::where('id', $id)->with('adherent', 'assures', 'beneficiaires', 'produit')->first();
+        $contrat = Contrat::where('id', $id)->first();
+        $villes = $api->get('villes');
+
+        $agences = Cache::remember('banque_agences_all', 3600, function() {
+            return TblBanqueAgence::orderBy('sigle', 'ASC')->get();
+        });
+
         $productGarantie = ProduitGarantie::where('CodeProduit', $contrat->codeproduit)->where('branche', 'IND')->get();
+
         $product = Product::where('CodeProduit', $contrat->codeproduit)->first();
-        $villes =  TblVille::get();
-        $professions =  TblProfession::select('MonLibelle')->get();
-        $secteurActivites =  TblSecteurActivite::select('MonLibelle')->get();
-        // $societes =  TblSociete::select('MonLibelle')->get();
-        $societes = Banqueagence::all();
-        $agences =  TblAgence::select('NOM_LONG')->get();
-        $filliations =  Filliation::select('MonLibelle')->get();
-        return view('productions.edit', compact('contrat', 'product', 'villes', 'secteurActivites', 'professions', 'productGarantie', 'societes', 'agences','filliations'));
+        $professions =  TblProfession::select('*')->get();
+        $secteurActivites =  TblSecteurActivite::select('*')->get();
+        $filliations =  Filliation::select('*')->get();
+        $sante = $contrat->santes()->first();
+        // dd($sante);
+        
+        return view('productions.edit', compact('contrat','villes','agences', 'product', 'secteurActivites', 'professions', 'productGarantie', 'filliations','sante'));
     }
 
     /**
@@ -1839,18 +1833,27 @@ class ProductionController extends Controller
     public function update(Request $request, string $id)
     {
 
+        Log::info($request->all());
+
         DB::beginTransaction();
         try {
 
             if ($request->modepaiement === "EBANK") {
                 $numerocompte = $request->numMobile;
+            } else if ($request->modepaiement === "SOURCE" || $request->modepaiement === "VIR") {
+                $numerocompte = $request->numerocompte;
+            } else if ($request->modepaiement === "SOCIETE" || $request->modepaiement === "DEF") {
+                $numerocompte = $request->matricule;
+                $organisme = $request->ma_societe;
             } else {
                 $numerocompte = $request->numerocompte;
+                $organisme = $request->organisme;
             }
+
             Contrat::where('id', $id)->update([
                 // 'dateeffet' => $request->dateEffet,
                 'modepaiement' => $request->modepaiement,
-                'organisme' => $request->organisme,
+                'organisme' => $organisme,
                 'agence' => $request->agence,
                 'numerocompte' => $numerocompte,
                 'periodicite' => $request->periodicite,

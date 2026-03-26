@@ -65,42 +65,6 @@ class AssurerController extends Controller
                 'saisiepar' => Auth::user()->membre->idmembre,
             ])->save();
 
-            // // Ajouter les pathologies de santé
-            // SanteAssur::create([
-            //     'EtatSante' => $request->EtatSante,
-            //     'diabete' => $request->diabete,
-            //     'avc' => $request->avc,
-            //     'cancer' => $request->cancer,
-            //     'insuffRenal' => $request->insuffRenal,
-            //     'hypertension' => $request->hypertension,
-            //     'codeAssur' => $idAssure,
-            //     'codeContrat' => $contrat->id
-            // ])->save();
-
-            // // Calcul de la surprime
-            // $surprime = 0;
-
-            // // Chaque pathologie cochée ajoute 5000 à la surprime
-            // $pathologies = [
-            //     'diabete' => $request->diabete,
-            //     'avc' => $request->avc,
-            //     'cancer' => $request->cancer,
-            //     'insuffRenal' => $request->insuffRenal,
-            //     'hypertension' => $request->hypertension,
-            // ];
-
-            // foreach ($pathologies as $pathologie => $value) {
-            //     if ($value === 'true') {
-            //         $surprime += 5000;
-            //     }
-            // }
-
-            // // Mettre à jour la surprime sur le contrat
-            // $contrat->update([
-            //     'surprime' => $contrat->surprime + $surprime,
-            //     'prime' => $contrat->primepricipale + $surprime,
-            // ]);
-
             DB::commit();
 
             return response()->json([

@@ -38,7 +38,6 @@
 
             </div>
 
-        
 
             @error('civilite')
 
@@ -61,17 +60,11 @@
             <input type="text" name="nom" class="form-control" value="{{ $contrat->adherent->nom ?? ''}}" id="FisrtName" placeholder="Nom" autocomplete="on" required>
 
             @error('nom')
-
                 <span class="text-danger">Veuillez remplir le champ nom</span>
-
             @enderror
-
         </div>
-
         <div class="col-12 col-lg-6">
-
             <label for="LastName" class="form-label">Prénoms <span class="star">*</span></label>
-
             <input type="text" name="prenom" class="form-control" value="{{ $contrat->adherent->prenom ?? ''}}" id="LastName" placeholder="Prénoms" autocomplete="on" required>
 
             @error('prenom')
@@ -91,7 +84,6 @@
             <label for="Date_naissance" class="form-label">Date de naissance <span class="star">*</span></label>
             <input type="date" name="datenaissance" value="{{ $contrat->adherent->datenaissance ?? ''}}" class="form-control" id="Datnaissance"
                 placeholder="Date de naissance" autocomplete="on" required>
-
             @error('datenaissance')
                 <span class="text-danger"> Veuillez remplir la date de naissance </span>
             @enderror
@@ -107,18 +99,6 @@
 
                 <option selected value="{{ $contrat->adherent->lieunaissance ?? ''}}">{{ $contrat->adherent->lieunaissance ?? ''}}</option>
 
-            
-
-                {{-- @foreach($villes as $ville)
-
-                    @if($contrat->adherent->lieunaissance !== $ville->libelleVillle)
-
-                        <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option>
-
-                    @endif
-
-                @endforeach --}}
-
             </select>
 
         </div>
@@ -130,63 +110,31 @@
     <div class="row g-3 mb-3">
 
         <div class="col-12 col-lg-4">
-
             <label for="" class="form-label">Nature de la pièce <span class="star">*</span></label>
-
             <br>
-
-        
-
             @php
-
                 $naturepiece = $contrat->adherent->naturepiece ?? '';
-
             @endphp
-
-        
-
             <div class="form-check form-check-inline">
-
                 <input class="form-check-input" type="radio" name="naturepiece" id="CNI" value="CNI" 
-
                        autocomplete="on" required {{ $naturepiece === 'CNI' ? 'checked' : '' }}>
-
                 <label class="form-check-label" for="CNI">CNI</label>
-
             </div>
 
-        
-
             <div class="form-check form-check-inline">
-
                 <input class="form-check-input" type="radio" name="naturepiece" id="Atestation" value="AT" 
-
                        autocomplete="on" required {{ $naturepiece === 'AT' ? 'checked' : '' }}>
-
                 <label class="form-check-label" for="Atestation">Attestation</label>
-
             </div>
-
-        
 
             <div class="form-check form-check-inline">
-
                 <input class="form-check-input" type="radio" name="naturepiece" id="Passport" value="Passport" 
-
                        autocomplete="on" required {{ $naturepiece === 'Passport' ? 'checked' : '' }}>
-
                 <label class="form-check-label" for="Passport">Passport</label>
-
             </div>
-
-        
-
             @error('naturepiece')
-
                 <span class="text-danger">Veuillez cocher la nature de la pièce</span>
-
             @enderror
-
         </div> 
         <input type="hidden" name="contrat_id" value="{{ $contrat->id ?? ''}}">       
 
@@ -220,9 +168,9 @@
 
                 @foreach($villes as $ville)
 
-                    @if($contrat->adherent->lieuresidence !== $ville->libelleVillle)
+                    @if($contrat->adherent->lieuresidence !== $ville['MonLibelle'])
 
-                        <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option>
+                        <option value="{{ $ville['MonLibelle'] }}">{{ $ville['MonLibelle'] }}</option>
 
                     @endif
 
@@ -291,81 +239,35 @@
     </div>
 
     <div class="row g-3 mb-3">
-
         <div class="col-12">
-
             <label for="email" class="form-label">Email <span class="star">*</span></label>
-
             <input type="email" name="email" value="{{ $contrat->adherent->email ?? ''}}" class="form-control" id="email" placeholder="Email" autocomplete="on" required>
-
-
-
             @error('email')
-
-
-
                 <span class="text-danger"> Veuillez remplir votre email </span>
-
-
-
             @enderror
-
         </div>
-
     </div>
-
     <div class="row g-3 mb-3">
-
         <div class="col-12 col-lg-4">
-
             <label class="form-label">Mobile <span class="star">*</span></label><br>
-
             <div class="input-group mb-3">
-
-                <input type="text" name="mobile" value="{{ $contrat->adherent->mobile ?? ''}}" class="form-control" autocomplete="on" required>
-
+                <input type="text" name="mobile" value="{{ $contrat->adherent->mobile ?? $contrat->adherent->telephone ?? ''}}" class="form-control" autocomplete="on" required>
             </div>
-
-
-
             @error('mobile')
-
                 <span class="text-danger"> Veuillez remplir votre numéro de mobile </span>
-
             @enderror
-
-
-
-
-
         </div>
-
         <div class="col-12 col-lg-4">
-
             <label class="form-label">Mobile 2</label><br>
-
             <div class="input-group mb-3">
-
                 <input type="text" name="mobile1" value="{{ $contrat->adherent->mobile1 ?? ''}}" class="form-control" autocomplete="on">
-
             </div>
-
         </div>
-
         <div class="col-12 col-lg-4">
-
-
-
             <label class="form-label">Telephone</label><br>
-
             <div class="input-group mb-3">
-
                 <input type="text" name="telephone" value="{{ $contrat->adherent->telephone ?? ''}}" class="form-control" autocomplete="on">
-
             </div>
-
-            </select>
-
         </div>
 
     </div>

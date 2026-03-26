@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ProspectController;
 use App\Http\Controllers\Admin\ProspectionController;
 use App\Http\Controllers\Admin\RapportController;
 use App\Http\Controllers\Admin\RdvController;
+use App\Http\Controllers\Admin\SanteController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\Admin\ValidationController;
@@ -194,6 +195,9 @@ Route::prefix('production')->name('prod.')->group(function(){
 
         Route::get('/create/libre/souscription/{codeProduit}', [ProductionController::class, 'createLibreYke'])->name('createLibreYke');
         Route::post('/storeLibre', [ProductionController::class, 'storeLibre'])->name('storeLibre');
+
+        // santé assuré 
+        Route::post('/update/assure/sante/{id}', [SanteController::class, 'update'])->name('sante.update');
 
 
 

@@ -15,12 +15,24 @@
                 $partner = \App\Models\Partner::where(['code' => $codePartenaire])->first();
             @endphp
 
-            <a href="{{ route('shared.home')}}">
-                <img src="{{ asset('logos/ASSURFIN.png') }}"
-                style="min-height: 100%; min-width: 100%; background-color: #fff' : 'height: 100%; width: 100%;"
-                class="logo-icon img-fluid"
-                alt="logo default">
-            </a>
+            @if ($codePartenaire === 'ASSFIN')
+                <a href="{{ route('shared.home')}}">
+                    <img src="{{ asset('logos/ASSURFIN.png') }}"
+                    style="min-height: 100%; min-width: 100%; background-color: #fff' : 'height: 100%; width: 100%;"
+                    class="logo-icon img-fluid"
+                    alt="logo default">
+                </a>
+            @else
+                <a href="{{ route('shared.home')}}">
+                    <img src="{{ asset('logos/SIFCOM.png') }}"
+                    style="min-height: 100%; min-width: 100%; background-color: #fff' : 'height: 100%; width: 100%;"
+                    class="logo-icon img-fluid"
+                    alt="logo default">
+                </a>
+                
+            @endif
+
+            
         </div>
 
         <div class="overflow-auto " style="height: calc(90vh - 180px)">
@@ -35,14 +47,14 @@
                     <div class="menu-title">Prospection</div>
                 </a>
             </li>
-            {{-- <li>
+            <li>
                 <a href="{{ route('preSouscription.index')}}">
                     <div class="parent-icon">
                         <i class='bx bx-message-square-edit'></i>
                     </div>
                     <div class="menu-title">Pre-Souscription</div>
                 </a>
-            </li> --}}
+            </li>
             @endcan
 
             @can('Voir e-souscription')

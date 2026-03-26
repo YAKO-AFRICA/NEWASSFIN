@@ -55,6 +55,9 @@ return new class extends Migration
             
             // Source du prospect
             $table->string('reference_par')->nullable();
+
+            $table->string('etat')->nullable()->default('Actif'); // Inactif
+            $table->string('status')->nullable()->default('prospect'); // client
             
             $table->timestamps();
             $table->softDeletes();

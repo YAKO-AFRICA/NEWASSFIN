@@ -136,7 +136,7 @@
                                 </tr>
 
                                     @include('productions.beneficiaires.show')
-                                    @include('productions.beneficiaires.edit')
+                                    {{-- @include('productions.beneficiaires.edit') --}}
 
                                 @endforeach
                         </tbody>
@@ -145,7 +145,7 @@
             </div>
         </div>
 
-        @include('productions.beneficiaires.addNewBenef')
+        {{-- @include('productions.beneficiaires.addNewBenef') --}}
         @include('productions.components.addActorProposition.addAdherentBenefModal')
 
 
