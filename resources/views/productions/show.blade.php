@@ -922,12 +922,12 @@
 
 <script type="text/javascript">
     function calltouchpay(contratId) {
-        alert(contratId);
+   
         const code = Math.floor(Math.random() * 9999) + 1;
         // Construire le code paiement
         const dateCode = getDateCode();
         const codePaiement = `PAI-${dateCode}-${code}`;
-        alert(codePaiement);
+
 
         const order_number = codePaiement;
         const agency_code = "CILLV4645";
@@ -944,7 +944,7 @@
         const clientFirstname = contratInfo.adherent.prenom || "";
         const clientLastname = contratInfo.adherent.nom || "";
         const clientPhone = contratInfo.adherent.mobile || "";
-        alert(amount);
+
 
         const url = "{{ url('/cretePaiement') }}";
 
