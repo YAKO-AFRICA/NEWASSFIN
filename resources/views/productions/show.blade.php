@@ -946,12 +946,14 @@
         const clientPhone = contratInfo.adherent.mobile || "";
         alert(amount);
 
-        fetch('/cretePaiement', {
+        const url = "{{ url('/cretePaiement') }}";
+
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                // 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                // 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({
                 order_number: order_number,
