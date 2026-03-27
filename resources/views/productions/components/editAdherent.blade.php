@@ -220,33 +220,17 @@
             </select>
 
         </div>
-
         <div class="col-12 col-lg-6">
-
             <label for="employeur" class="form-label">Secteur d'activites</label>
-
             <select class="form-select selection" name="employeur" id="employeur" autocomplete="on">
-
                 <option selected value="{{ $contrat->adherent->employeur ?? ''}}">{{ $contrat->adherent->employeur ?? ''}}</option>
-
-
-
                 @foreach($secteurActivites as $secteurActivite)
-
                     @if($contrat->adherent->employeur !== $secteurActivite->MonLibelle)
-
                         <option value="{{ $secteurActivite->MonLibelle }}">{{ $secteurActivite->MonLibelle }}</option>
-
                     @endif
-
                 @endforeach
-
             </select>
-
         </div>
-
-
-
     </div>
 
     <div class="row g-3 mb-3">
@@ -286,57 +270,30 @@
     <!---end row-->
 
     <fieldset class="border p-3">
-
         <legend class="float-none w-auto px-2"><small>Personnes à contacter en cas de besoins</small></legend>
-
         <div class="row g-3 mb-3">
-
             <div class="col-12 col-lg-8">
-
                 <label for="contact_nom" class="form-label">Nom et Prénoms <span class="text-danger">*</span></label>
-
                 <input type="text" name="personneressource" value="{{ $contrat->personneressource ?? ''}}" class="form-control" id="contact_nom" placeholder="Nom et Prénoms" required>
-
             </div>
-
             <div class="col-12 col-lg-4">
-
                 <label class="form-label">Contact <span class="text-danger">*</span></label><br>
-
                 <div class="input-group mb-3">
-
                     <input type="tel" name="contactpersonneressource" value="{{ $contrat->contactpersonneressource ?? ''}}" class="form-control" minlength="10" maxlength="14" required>
-
                 </div>
-
             </div>
-
         </div>
-
-
-
         <div class="row g-3 mb-3">
-
             <div class="col-12 col-lg-8">
-
                 <label for="contact_nom" class="form-label">Nom et Prénoms</label>
-
                 <input type="text" name="personneressource2" value="{{ $contrat->personneressource2 ?? ''}}" class="form-control" id="contact_nom" placeholder="Nom et Prénoms">
-
             </div>
-
             <div class="col-12 col-lg-4">
-
                 <label class="form-label">Contact</label><br>
-
                 <div class="input-group mb-3">
-
                     <input type="text" name="contactpersonneressource2" value="{{ $contrat->contactpersonneressource2 ?? ''}}" class="form-control" aria-label="Text input with select" minlength="10" maxlength="14" >
-
                 </div>
-
             </div>
-
         </div>
     </fieldset>
 
