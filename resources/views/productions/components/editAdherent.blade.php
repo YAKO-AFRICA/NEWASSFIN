@@ -132,6 +132,23 @@
                        autocomplete="on" required {{ $naturepiece === 'Passport' ? 'checked' : '' }}>
                 <label class="form-check-label" for="Passport">Passport</label>
             </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="naturepiece" id="Passport" value="Passport"
+                       autocomplete="on" required {{ $naturepiece === 'Passport' ? 'checked' : '' }}>
+                <label class="form-check-label" for="Passport">Passport</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="naturepiece" id="CarteConsulaire" value="CarteConsulaire" autocomplete="on" required>
+                <label class="form-check-label text-uppercase"  {{ $naturepiece === 'CarteConsulaire' ? 'checked' : '' }} for="CarteConsulaire">Carte Consulaire</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="naturepiece" id="CMU" value="CMU" autocomplete="on" required>
+                <label class="form-check-label text-uppercase" {{ $naturepiece === 'CMU' ? 'checked' : '' }} for="CMU">CMU</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="naturepiece" {{ $naturepiece === 'AUTRE' ? 'checked' : '' }} id="Autre" value="AUTRE" autocomplete="on" required>
+                <label class="form-check-label text-uppercase" for="Autre">Autre</label>
+            </div>
             @error('naturepiece')
                 <span class="text-danger">Veuillez cocher la nature de la pièce</span>
             @enderror
@@ -146,14 +163,8 @@
 
                 placeholder="Nature de la pièce d'identité" autocomplete="on" required>
 
-
-
             @error('numeropiece')
-
                 <span class="text-danger"> Veuillez remplir le numéro de la pièce </span>
-
-
-
             @enderror
 
         </div>
@@ -240,8 +251,8 @@
 
     <div class="row g-3 mb-3">
         <div class="col-12">
-            <label for="email" class="form-label">Email <span class="star">*</span></label>
-            <input type="email" name="email" value="{{ $contrat->adherent->email ?? ''}}" class="form-control" id="email" placeholder="Email" autocomplete="on" required>
+            <label for="email" class="form-label">Email </label>
+            <input type="email" name="email" value="{{ $contrat->adherent->email ?? ''}}" class="form-control" id="email" placeholder="Email" autocomplete="on">
             @error('email')
                 <span class="text-danger"> Veuillez remplir votre email </span>
             @enderror
