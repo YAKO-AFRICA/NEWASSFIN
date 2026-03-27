@@ -62,4 +62,8 @@ class Adherent extends Model
             set: fn($value) => $value ? date('Y-m-d', strtotime($value)) : null,
         );
     }
+
+    protected $casts = [
+        'datenaissance' => 'date',
+    ];
 }

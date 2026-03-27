@@ -82,7 +82,7 @@
     <div class="row g-3 mb-3">
         <div class="col-12 col-lg-6">
             <label for="Date_naissance" class="form-label">Date de naissance <span class="star">*</span></label>
-            <input type="date" name="datenaissance" value="{{ $contrat->adherent->datenaissance ?? ''}}" class="form-control" id="Datnaissance"
+            <input type="date" name="datenaissance" value="{{ optional($contrat->adherent->datenaissance)->format('Y-m-d') }}" class="form-control" id="Datnaissance"
                 placeholder="Date de naissance" autocomplete="on" required>
             @error('datenaissance')
                 <span class="text-danger"> Veuillez remplir la date de naissance </span>
