@@ -28,7 +28,7 @@
                     <i class="bx bx-download" title="Telecharger le bulletin"></i> Imprimer le Bulletin
                 </a>
             </button>
-            <input type=button onclick='calltouchpay("{{ $contrat->numBullettin }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer les frais d'adhesion" />
+            {{-- <input type=button onclick='calltouchpay("{{ $contrat->numBullettin }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer les frais d'adhesion" /> --}}
         </div>
     </div>
 </div>
