@@ -17,10 +17,10 @@
             <div class="btn-group">
                 <button type="button" class="btn btn-primary">Reglages</button>
 
-                <button type="button" class="btn btn-primary split-bg-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">	
+                <button type="button" class="btn btn-primary split-bg-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
                     <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
-                
+
                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-end">
                     <a class="dropdown-item" href="javascript:;" data-bs-toggle="modal" data-bs-target="#columnsModalPart">Personnaliser les colonnes</a>
                 </div>
@@ -28,7 +28,7 @@
         </div>
     </div>
     <!--end breadcrumb-->
-  
+
     <div class="card">
         <div class="card-body">
             <div class="d-lg-flex align-items-center mb-4 gap-3">
@@ -95,7 +95,7 @@
 									<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3"><i class='bx bxs-circle me-1'></i>Rejeté</div>
 								@endif
                             </td>
-                            
+
                             @foreach ($activeColumns as $colKey)
                                 <td>{{ $item->$colKey ?? '' }}</td>
                             @endforeach
@@ -107,11 +107,16 @@
                                     @if (!in_array($item->etape, [2, 3]))
 
                                         @can('Modifier une souscription')
-                                            <a href="{{ route('prod.edit', $item->id)}}" class="ms-3">
-                                                <i class='bx bxs-edit'></i>
-                                            </a>
+                                            @if($item->etape == '0')
+                                                <a href="javascript:;" class="ms-3">
+                                                    <i class='bx bxs-edit'></i>
+                                                </a>
+                                            @else
+                                                <a href="{{ route('prod.edit', $item->id)}}" class="ms-3 text-muted">
+                                                    <i class='bx bxs-edit'></i>
+                                                </a>
+                                            @endif
                                         @endcan
-                                    
 
                                         @can('Suprimer une souscription')
                                             <a class="deleteConfirmation ms-3" data-uuid="{{$item->id}}"
@@ -124,18 +129,18 @@
                                                     class='bx bxs-trash' style="cursor: pointer"></i>
                                             </a>
                                         @endcan
-                                    
+
                                     @else
                                     <a href="javascript:;" class="ms-3 text-muted" title="Vous ne pouvez pas modifier une proposition transmise ou migrer">
                                         <i class='bx bxs-edit'></i>
                                     </a>
                                     <a class="ms-3 text-muted" data-uuid="{{$item->id}}" title="Vous ne pouvez pas supprimer une proposition transmise ou migrer">
-                                        
+
                                         <i class='bx bxs-trash' style="cursor: pointer"></i>
                                     </a>
                                     @endif
-                                    
-                                    
+
+
                                 </div>
                             </td>
                         </tr>
@@ -161,7 +166,7 @@
                                     @foreach ($additionalColumns as $label => $key)
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="columns[]" value="{{ $key }}"
-                                                id="col-{{ $key }}" 
+                                                id="col-{{ $key }}"
                                                 {{ in_array($key, $activeColumns) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="col-{{ $key }}">{{ $label }}</label>
                                         </div>
@@ -173,7 +178,7 @@
                                 </div>
                             </form>
                         </div>
-                        
+
 
                     </div>
                 </div>
@@ -188,6 +193,6 @@
                 });
             });
         </script>
-        
+
 </div>
 @endsection

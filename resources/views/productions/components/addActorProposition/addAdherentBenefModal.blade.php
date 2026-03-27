@@ -66,7 +66,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <button type="submit" class="btn btn-success">Ajouter</button>
                 </div>
-            </form> 
+            </form>
         </div>
       </div>
     </div>

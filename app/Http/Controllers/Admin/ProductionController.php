@@ -72,8 +72,7 @@ class ProductionController extends Controller
     {
 
         set_time_limit(300);
-        $mesPropositions = Contrat::where('saisiepar', Auth::user()->idmembre)->get();
-        $allPropositionssss = Contrat::where('etape', "!=", "");
+        // $mesPropositions = Contrat::where('saisiepar', Auth::user()->idmembre)->get();
         $allPropositions = Contrat::where('saisiepar', Auth::user()->idmembre);
 
         $defaultColumns = ['#', 'Produit','Souscripteur','Age Souscripteur', 'Date Effet', 'Prime', 'Capital', 'Montant Rente', 'Saisie Par', 'Status'];
@@ -141,8 +140,8 @@ class ProductionController extends Controller
 
         $datas = collect([
             'allPropositionsFiltered' => $allPropositionsFiltered,
-            'mesPropositions' => $mesPropositions,
-            'allPropositions' => $allPropositions,
+            // 'mesPropositions' => $mesPropositions,
+            // 'allPropositions' => $allPropositions,
         ]);
         return view('productions.index', ['datas' => $datas, 'activeColumns' => $activeColumns, 'defaultColumns' => $defaultColumns, 'additionalColumns' => $additionalColumns]);
     }
@@ -1750,6 +1749,77 @@ class ProductionController extends Controller
         try {
             $contrat = Contrat::find($id);
 
+           // Mode de paiement
+            if (!$contrat->modepaiement) {
+                return response()->json([
+                    'type' => 'error',
+                    'urlback' => 'back',
+                    'message' => "Veuillez choisir le mode de paiement pour ce contrat.",
+                    'code' => 404,
+                ]);
+            }
+
+        // Assuré
+        if ($contrat->assures()->count() <= 0) {
+            return response()->json([
+                'type' => 'error',
+                'urlback' => 'back',
+                'message' => "Veuillez ajouter au moins un assuré.",
+                'code' => 404,
+            ]);
+        }
+
+        // Bénéficiaire
+        if ($contrat->beneficiaires()->count() <= 0) {
+            return response()->json([
+                'type' => 'error',
+                'urlback' => 'back',
+                'message' => "Veuillez ajouter au moins un bénéficiaire.",
+                'code' => 404,
+            ]);
+        }
+
+        // Documents joints
+        if ($contrat->documents()->count() <= 0) {
+            return response()->json([
+                'type' => 'error',
+                'urlback' => 'back',
+                'message' => "Veuillez ajouter au moins un document joint.",
+                'code' => 404,
+            ]);
+        }
+
+
+            if (in_array($contrat->modepaiement, ['VIR', 'SOURCE'])) {
+
+                $missingFields = [];
+
+                if (empty($contrat->codebanque)) {
+                    $missingFields[] = 'code banque';
+                }
+
+                if (empty($contrat->codeguichet)) {
+                    $missingFields[] = 'code guichet';
+                }
+
+                if (empty($contrat->rib)) {
+                    $missingFields[] = 'RIB';
+                }
+
+                if (empty($contrat->numerocompte)) {
+                    $missingFields[] = 'Numero de compte';
+                }
+
+                if (!empty($missingFields)) {
+                    return response()->json([
+                        'type' => 'error',
+                        'urlback' => 'back',
+                        'message' => "Champs obligatoires manquants : " . implode(', ', $missingFields),
+                        'code' => 200,
+                    ]);
+                }
+            }
+
             if ($contrat) {
                 $contrat->update(
                     [
@@ -1823,7 +1893,7 @@ class ProductionController extends Controller
         $filliations =  Filliation::select('*')->get();
         $sante = $contrat->santes()->first();
         // dd($sante);
-        
+
         return view('productions.edit', compact('contrat','villes','agences', 'product', 'secteurActivites', 'professions', 'productGarantie', 'filliations','sante'));
     }
 
@@ -1838,6 +1908,9 @@ class ProductionController extends Controller
         DB::beginTransaction();
         try {
 
+            $organisme = $request->organisme ?? null;
+            $numerocompte = $request->numerocompte ?? null;
+
             if ($request->modepaiement === "EBANK") {
                 $numerocompte = $request->numMobile;
             } else if ($request->modepaiement === "SOURCE" || $request->modepaiement === "VIR") {
@@ -1845,9 +1918,6 @@ class ProductionController extends Controller
             } else if ($request->modepaiement === "SOCIETE" || $request->modepaiement === "DEF") {
                 $numerocompte = $request->matricule;
                 $organisme = $request->ma_societe;
-            } else {
-                $numerocompte = $request->numerocompte;
-                $organisme = $request->organisme;
             }
 
             Contrat::where('id', $id)->update([
@@ -1863,11 +1933,11 @@ class ProductionController extends Controller
 
                 'fraisadhesion' => $request->fraisadhesion,
 
-                // 'surprime' => $request->surprime,
+                'surprime' => $request->surprime,
 
                 'capital' => number_format($request->capital, 2, ".", ""),
 
-                // 'duree' => $request->duree,
+                'duree' => $request->duree,
 
                 // 'codeproduit' => $request->codeproduit,
 

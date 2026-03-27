@@ -14,7 +14,7 @@
         <div class="row g-3 mt-3">
             <div class="card col" style="min-height: 60px">
                 <div class="card-header">
-                    <p>Au terme du contrat 
+                    <p>Au terme du contrat
                         <span class="float-end">
                             <button id="editBtnBeneficiaireauterme" type="button" class="btn btn-sm btn-outline-primary border-0 fs-6">
                                 <i class="bx bx-edit"></i>
@@ -37,7 +37,7 @@
                     </form>
                 </div>
             </div>
-            
+
             <div class="card col" style="min-height: 60px">
                 <div class="card-header">
                     <p>En cas de décès avant le terme
@@ -48,7 +48,7 @@
                         </span>
                     </p>
                 </div>
-                    
+
                 <div class="card-body text-uppercase">
                     <div class="col" id="auDecesText">{{ $contrat->beneficiaireaudeces ?? 'Non renseigné' }}</div>
                     <form style="display: none;" id="auDecesForm">
@@ -76,15 +76,8 @@
                         <thead>
 
                             <tr style="font-size: 12px">
-
                                 <th scope="col">Nom & Prénoms</th>
-
                                 <th scope="col">Né(e) le</th>
-
-                                {{-- <th scope="col">Lieu de naissance</th>
-
-                                <th scope="col">Lieu de residence</th> --}}
-
                                 <th scope="col">Filiation</th>
                                 <th scope="col">Téléphone</th>
                                 <th scope="col">Email</th>
@@ -93,51 +86,42 @@
                             </tr>
                         </thead>
                         <tbody style="font-size: 12px">
-                            {{-- @dd($contrat->beneficiaires) --}}
                                 @foreach ($contrat->beneficiaires as $beneficiaire)
+                                    <tr id="beneficiaire-row-{{ $beneficiaire->id }}">
 
-                                <tr id="beneficiaire-row-{{ $beneficiaire->id }}">
+                                        <td>{{ $beneficiaire->nom ?? '--'}} {{ $beneficiaire->prenom ?? '--'}}</td>
 
-                                    <td>{{ $beneficiaire->nom ?? '--'}} {{ $beneficiaire->prenom ?? '--'}}</td>
+                                        <td>{{ $beneficiaire->datenaissance ?? '--'}}</td>
 
-                                    <td>{{ $beneficiaire->datenaissance ?? '--'}}</td>
+                                        <td>{{ $beneficiaire->filiation ?? '--'}}</td>
 
-                                    {{-- <td>{{ $beneficiaire->lieunaissance ?? '--'}}</td>
+                                        <td>{{ $beneficiaire->mobile ?? '--'}}</td>
 
-                                    <td>{{ $beneficiaire->lieuresidence ?? '--'}}</td> --}}
+                                        <td>{{ $beneficiaire->email ?? '--'}}</td>
 
-                                    <td>{{ $beneficiaire->filiation ?? '--'}}</td>
+                                        <td>{{ $beneficiaire->part ?? '--' }}</td>
 
-                                    <td>{{ $beneficiaire->mobile ?? '--'}}</td>
+                                        <td>
+                                            <a href="" data-bs-target="#showBenefModal{{ $beneficiaire->id }}" data-bs-toggle="modal"><i class="fadeIn animated bx bx-show fs-4"></i></a>
 
-                                    <td>{{ $beneficiaire->email ?? '--'}}</td>
+                                                <a class="mx-2" href="" data-bs-target="#editBenefModal{{ $beneficiaire->id }}" data-bs-toggle="modal"><i class="fadeIn animated bx bx-edit fs-4"></i></a>
 
-                                    <td>{{ $beneficiaire->part ?? '--' }}</td>
 
-                                    <td>
-                                        <a href="" data-bs-target="#showBenefModal{{ $beneficiaire->id }}" data-bs-toggle="modal"><i class="fadeIn animated bx bx-show fs-4"></i></a>
 
-                                        @if ($beneficiaire->filiation !== "moi-meme")
-                                            <a class="mx-2" href="" data-bs-target="#editBenefModal{{ $beneficiaire->id }}" data-bs-toggle="modal"><i class="fadeIn animated bx bx-edit fs-4"></i></a>
-                                        @endif
 
-                                        
+                                            <a class="deleteConfirmation" data-uuid="{{ $beneficiaire->id }}"
+                                                data-type="confirmation_redirect" data-placement="top"
+                                                data-token="{{ csrf_token() }}" data-url="{{ route('prod.delete.beneficiaire', $beneficiaire->id) }}"
+                                                data-title="Vous êtes sur le point de supprimer {{ $beneficiaire->nom }} {{ $beneficiaire->prenom }}"
+                                                data-id="{{ $beneficiaire->id }}" data-param="0"
+                                                data-route="{{ route('prod.delete.beneficiaire', $beneficiaire->id) }}">
+                                                    <i class='bx bxs-trash fs-4'></i>
+                                            </a>
+                                        </td>
 
-                                        <a class="deleteConfirmation" data-uuid="{{ $beneficiaire->id }}"
-                                            data-type="confirmation_redirect" data-placement="top"
-                                            data-token="{{ csrf_token() }}" data-url="{{ route('prod.delete.beneficiaire', $beneficiaire->id) }}"
-                                            data-title="Vous êtes sur le point de supprimer {{ $beneficiaire->nom }} {{ $beneficiaire->prenom }}"
-                                            data-id="{{ $beneficiaire->id }}" data-param="0"
-                                            data-route="{{ route('prod.delete.beneficiaire', $beneficiaire->id) }}">
-                                                <i class='bx bxs-trash fs-4'></i>
-                                        </a>
-                                    </td>
-
-                                </tr>
-
+                                    </tr>
                                     @include('productions.beneficiaires.show')
-                                    {{-- @include('productions.beneficiaires.edit') --}}
-
+                                    @include('productions.beneficiaires.edit' , ['beneficiaire' => $beneficiaire])
                                 @endforeach
                         </tbody>
                     </table>
@@ -145,7 +129,7 @@
             </div>
         </div>
 
-        {{-- @include('productions.beneficiaires.addNewBenef') --}}
+        @include('productions.beneficiaires.addNewBenef')
         @include('productions.components.addActorProposition.addAdherentBenefModal')
 
 

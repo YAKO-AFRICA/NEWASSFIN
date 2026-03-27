@@ -10,15 +10,15 @@
             @endphp
 
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="civilite" id="inlineRadio1" value="Madame" 
-                       autocomplete="on" required data-invalid-message="Veuillez cocher la civilité" 
+                <input class="form-check-input" type="radio" name="civilite" id="inlineRadio1" value="Madame"
+                       autocomplete="on" required data-invalid-message="Veuillez cocher la civilité"
                        {{ $civilite === 'Madame' ? 'checked' : '' }}>
                 <label class="form-check-label" for="inlineRadio1">Madame</label>
             </div>
 
             <div class="form-check form-check-inline">
 
-                <input class="form-check-input" type="radio" name="civilite" id="inlineRadio2" value="Mademoiselle" 
+                <input class="form-check-input" type="radio" name="civilite" id="inlineRadio2" value="Mademoiselle"
 
                        autocomplete="on" required {{ $civilite === 'Mademoiselle' ? 'checked' : '' }}>
 
@@ -26,11 +26,11 @@
 
             </div>
 
-            
+
 
             <div class="form-check form-check-inline">
 
-                <input class="form-check-input" type="radio" name="civilite" id="inlineRadio3" value="Monsieur" 
+                <input class="form-check-input" type="radio" name="civilite" id="inlineRadio3" value="Monsieur"
 
                        autocomplete="on" required {{ $civilite === 'Monsieur' ? 'checked' : '' }}>
 
@@ -45,7 +45,7 @@
 
             @enderror
 
-        </div>        
+        </div>
 
     </div>
 
@@ -116,27 +116,27 @@
                 $naturepiece = $contrat->adherent->naturepiece ?? '';
             @endphp
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="naturepiece" id="CNI" value="CNI" 
+                <input class="form-check-input" type="radio" name="naturepiece" id="CNI" value="CNI"
                        autocomplete="on" required {{ $naturepiece === 'CNI' ? 'checked' : '' }}>
                 <label class="form-check-label" for="CNI">CNI</label>
             </div>
 
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="naturepiece" id="Atestation" value="AT" 
+                <input class="form-check-input" type="radio" name="naturepiece" id="Atestation" value="AT"
                        autocomplete="on" required {{ $naturepiece === 'AT' ? 'checked' : '' }}>
                 <label class="form-check-label" for="Atestation">Attestation</label>
             </div>
 
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="naturepiece" id="Passport" value="Passport" 
+                <input class="form-check-input" type="radio" name="naturepiece" id="Passport" value="Passport"
                        autocomplete="on" required {{ $naturepiece === 'Passport' ? 'checked' : '' }}>
                 <label class="form-check-label" for="Passport">Passport</label>
             </div>
             @error('naturepiece')
                 <span class="text-danger">Veuillez cocher la nature de la pièce</span>
             @enderror
-        </div> 
-        <input type="hidden" name="contrat_id" value="{{ $contrat->id ?? ''}}">       
+        </div>
+        <input type="hidden" name="contrat_id" value="{{ $contrat->id ?? ''}}">
 
         <div class="col-12 col-lg-4">
 
@@ -294,7 +294,7 @@
 
                 <div class="input-group mb-3">
 
-                    <input type="text" name="contactpersonneressource" value="{{ $contrat->contactpersonneressource ?? ''}}" class="form-control" aria-label="Text input with select" required>
+                    <input type="tel" name="contactpersonneressource" value="{{ $contrat->contactpersonneressource ?? ''}}" class="form-control" minlength="10" maxlength="14" required>
 
                 </div>
 
@@ -320,7 +320,7 @@
 
                 <div class="input-group mb-3">
 
-                    <input type="text" name="contactpersonneressource2" value="{{ $contrat->contactpersonneressource2 ?? ''}}" class="form-control" aria-label="Text input with select">
+                    <input type="text" name="contactpersonneressource2" value="{{ $contrat->contactpersonneressource2 ?? ''}}" class="form-control" aria-label="Text input with select" minlength="10" maxlength="14" >
 
                 </div>
 
@@ -359,14 +359,14 @@
             .then(data => {
                 const villeSelect = document.getElementById('lieuresidence');
                 const lieuSelect = document.getElementById('lieunaissance');
-                
+
                 data.forEach(ville => {
                     // Option pour lieu de résidence
                     const optionVille = document.createElement('option');
                     optionVille.value = ville.MonLibelle;
                     optionVille.textContent = ville.MonLibelle;
                     villeSelect.appendChild(optionVille);
-                    
+
                     // Option pour lieu de naissance
                     const optionLieu = document.createElement('option');
                     optionLieu.value = ville.MonLibelle;
@@ -374,13 +374,13 @@
                     lieuSelect.appendChild(optionLieu);
 
                 });
-                
+
                 // Si le code stocké n'est pas trouvé dans l'API, garder l'affichage original
                 if (!selectedVilleFound) {
-                    villeSelect.insertAdjacentHTML('afterbegin', 
+                    villeSelect.insertAdjacentHTML('afterbegin',
                         `<option selected value="${lieuResidenceCode}">${lieuResidenceCode}</option>`);
                 }
-                
+
                 if (!selectedLieuFound) {
                     lieuSelect.insertAdjacentHTML('afterbegin',
                         `<option selected value="${lieuNaissanceCode}">${lieuNaissanceCode}</option>`);
@@ -392,16 +392,16 @@
             .then(data => {
                 const professionSelect = document.getElementById('profession');
                 let selectedProfessionFound = false;
-                
+
                 data.forEach(profession => {
                     const optionProfession = document.createElement('option');
                     optionProfession.value = profession.CodeProfession;
                     optionProfession.textContent = profession.MonLibelle;
                     professionSelect.appendChild(optionProfession);
-                    
-                  
+
+
                 });
-                
+
                 if (!selectedProfessionFound) {
                     professionSelect.insertAdjacentHTML('afterbegin',
                         `<option selected value="${professionCode}">${professionCode}</option>`);

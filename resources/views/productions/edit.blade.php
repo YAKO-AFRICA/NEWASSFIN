@@ -284,6 +284,266 @@
         })
     </script>
 
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const apiUrl = 'https://api.yakoafricassur.com/enov/villes';
+    const apiProfessions = 'https://api.yakoafricassur.com/enov/professions';
+
+    // Récupérer les valeurs stockées depuis les attributs data
+    const lieuNaissanceCode = "{{ $contrat->adherent->lieunaissance ?? '' }}";
+    const lieuResidenceCode = "{{ $contrat->adherent->lieuresidence ?? '' }}";
+    const professionCode = "{{ $contrat->adherent->profession ?? '' }}";
+
+    /**
+     * Classe pour gérer le chargement des villes
+     */
+    class VilleManager {
+        constructor(apiUrl, selectedValue = null) {
+            this.apiUrl = apiUrl;
+            this.selectedValue = selectedValue;
+            this.villes = [];
+        }
+
+        async loadVilles() {
+            try {
+                const response = await fetch(this.apiUrl);
+                const data = await response.json();
+                this.villes = data;
+                return this.villes;
+            } catch (error) {
+                console.error('Erreur lors du chargement des villes:', error);
+                return [];
+            }
+        }
+
+        populateSelect(selectElement, placeholder = true) {
+            if (!selectElement) return;
+
+            // Vider le select
+            selectElement.innerHTML = '';
+
+            // Ajouter un placeholder option si demandé
+            if (placeholder) {
+                const placeholderOption = document.createElement('option');
+                placeholderOption.value = '';
+                placeholderOption.textContent = 'Sélectionnez une ville';
+                placeholderOption.disabled = true;
+                placeholderOption.selected = !this.selectedValue;
+                selectElement.appendChild(placeholderOption);
+            }
+
+            // Ajouter les options des villes
+            this.villes.forEach(ville => {
+                const option = document.createElement('option');
+                option.value = ville.MonLibelle;
+                option.textContent = ville.MonLibelle;
+
+                // Sélectionner la valeur si elle correspond
+                if (this.selectedValue && ville.MonLibelle === this.selectedValue) {
+                    option.selected = true;
+                }
+
+                selectElement.appendChild(option);
+            });
+
+            // Si la valeur sélectionnée n'est pas trouvée dans la liste, l'ajouter
+            if (this.selectedValue && !this.villes.some(ville => ville.MonLibelle === this.selectedValue)) {
+                const customOption = document.createElement('option');
+                customOption.value = this.selectedValue;
+                customOption.textContent = this.selectedValue;
+                customOption.selected = true;
+                selectElement.appendChild(customOption);
+            }
+        }
+
+        // Méthode statique pour initialiser tous les selects avec la classe 'ville'
+        static async initializeAll(apiUrl, selectedValues = {}) {
+            const villeManager = new VilleManager(apiUrl);
+            await villeManager.loadVilles();
+
+            const villeSelects = document.querySelectorAll('.ville');
+
+            villeSelects.forEach(select => {
+                const selectedValue = select.dataset.value || selectedValues[select.id] || '';
+                const manager = new VilleManager(apiUrl, selectedValue);
+                manager.populateSelect(select);
+            });
+        }
+    }
+
+    /**
+     * Classe pour gérer le chargement des professions
+     */
+    class ProfessionManager {
+        constructor(apiUrl, selectedValue = null) {
+            this.apiUrl = apiUrl;
+            this.selectedValue = selectedValue;
+            this.professions = [];
+        }
+
+        async loadProfessions() {
+            try {
+                const response = await fetch(this.apiUrl);
+                const data = await response.json();
+                this.professions = data;
+                return this.professions;
+            } catch (error) {
+                console.error('Erreur lors du chargement des professions:', error);
+                return [];
+            }
+        }
+
+        populateSelect(selectElement, placeholder = true) {
+            if (!selectElement) return;
+
+            // Vider le select
+            selectElement.innerHTML = '';
+
+            // Ajouter un placeholder option si demandé
+            if (placeholder) {
+                const placeholderOption = document.createElement('option');
+                placeholderOption.value = '';
+                placeholderOption.textContent = 'Sélectionnez une profession';
+                placeholderOption.disabled = true;
+                placeholderOption.selected = !this.selectedValue;
+                selectElement.appendChild(placeholderOption);
+            }
+
+            // Ajouter les options des professions
+            this.professions.forEach(profession => {
+                const option = document.createElement('option');
+                option.value = profession.CodeProfession;
+                option.textContent = profession.MonLibelle;
+
+                // Sélectionner la valeur si elle correspond
+                if (this.selectedValue && profession.CodeProfession === this.selectedValue) {
+                    option.selected = true;
+                }
+
+                selectElement.appendChild(option);
+            });
+
+            // Si la valeur sélectionnée n'est pas trouvée dans la liste, l'ajouter
+            if (this.selectedValue && !this.professions.some(prof => prof.CodeProfession === this.selectedValue)) {
+                const customOption = document.createElement('option');
+                customOption.value = this.selectedValue;
+                customOption.textContent = this.selectedValue;
+                customOption.selected = true;
+                selectElement.appendChild(customOption);
+            }
+        }
+
+        // Méthode statique pour initialiser tous les selects avec la classe 'profession'
+        static async initializeAll(apiUrl, selectedValues = {}) {
+            const professionManager = new ProfessionManager(apiUrl);
+            await professionManager.loadProfessions();
+
+            const professionSelects = document.querySelectorAll('.profession');
+
+            professionSelects.forEach(select => {
+                const selectedValue = select.dataset.value || selectedValues[select.id] || '';
+                const manager = new ProfessionManager(apiUrl, selectedValue);
+                manager.populateSelect(select);
+            });
+        }
+    }
+
+    /**
+     * Version simplifiée avec fonction universelle
+     */
+    class UniversalSelectLoader {
+        constructor(apiUrl, mapping = { value: 'value', text: 'text' }) {
+            this.apiUrl = apiUrl;
+            this.mapping = mapping;
+            this.data = [];
+        }
+
+        async loadData() {
+            try {
+                const response = await fetch(this.apiUrl);
+                this.data = await response.json();
+                return this.data;
+            } catch (error) {
+                console.error('Erreur lors du chargement des données:', error);
+                return [];
+            }
+        }
+
+        populateSelect(selectElement, selectedValue = null, placeholder = true) {
+            if (!selectElement) return;
+
+            selectElement.innerHTML = '';
+
+            if (placeholder) {
+                const placeholderOption = document.createElement('option');
+                placeholderOption.value = '';
+                placeholderOption.textContent = selectElement.getAttribute('data-placeholder') || 'Sélectionnez une option';
+                placeholderOption.disabled = true;
+                placeholderOption.selected = !selectedValue;
+                selectElement.appendChild(placeholderOption);
+            }
+
+            this.data.forEach(item => {
+                const option = document.createElement('option');
+                const value = this.mapping.value ? item[this.mapping.value] : item;
+                const text = this.mapping.text ? item[this.mapping.text] : item;
+
+                option.value = value;
+                option.textContent = text;
+
+                if (selectedValue && value === selectedValue) {
+                    option.selected = true;
+                }
+
+                selectElement.appendChild(option);
+            });
+
+            // Ajouter la valeur personnalisée si non trouvée
+            if (selectedValue && !this.data.some(item => {
+                const itemValue = this.mapping.value ? item[this.mapping.value] : item;
+                return itemValue === selectedValue;
+            })) {
+                const customOption = document.createElement('option');
+                customOption.value = selectedValue;
+                customOption.textContent = selectedValue;
+                customOption.selected = true;
+                selectElement.appendChild(customOption);
+            }
+        }
+
+        // Initialiser tous les selects avec une classe spécifique
+        static async initializeSelects(className, apiUrl, mapping, selectedValues = {}) {
+            const loader = new UniversalSelectLoader(apiUrl, mapping);
+            await loader.loadData();
+
+            const selects = document.querySelectorAll(`.${className}`);
+
+            selects.forEach(select => {
+                const selectedValue = select.dataset.value || selectedValues[select.id] || '';
+                loader.populateSelect(select, selectedValue);
+            });
+        }
+    }
+
+    // Utilisation avec la classe UniversalSelectLoader (recommandée)
+    const selectedValues = {
+        'lieunaissance': lieuNaissanceCode,
+        'lieuresidence': lieuResidenceCode,
+        'profession': professionCode
+    };
+
+    // Initialisation des villes
+    UniversalSelectLoader.initializeSelects('ville', apiUrl, { value: 'MonLibelle', text: 'MonLibelle' }, selectedValues);
+
+    // Initialisation des professions
+    UniversalSelectLoader.initializeSelects('profession', apiProfessions, { value: 'CodeProfession', text: 'MonLibelle' }, selectedValues);
+
+    // Alternative avec les classes spécifiques si vous préférez
+    // VilleManager.initializeAll(apiUrl, selectedValues);
+    // ProfessionManager.initializeAll(apiProfessions, selectedValues);
+});
+</script>
+
 
 
 </div>

@@ -337,7 +337,7 @@
 
         <script type="module" src="{{ asset('api/request.js') }}"></script>
 
-        {{-- <script src=https://touchpay.gutouch.com/touchpay/script/prod_touchpay-0.0.1.js type="text/javascript"></script> --}}
+        <script src=https://touchpay.gutouch.com/touchpay/script/prod_touchpay-0.0.1.js type="text/javascript"></script>
 
 
         <script>
@@ -375,7 +375,7 @@
             }
 
             // Vérifie toutes les 40 secondes
-            setInterval(checkNotifications, 40000);
+            setInterval(checkNotifications, 400000);
         </script>
 
 
