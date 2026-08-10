@@ -45,7 +45,10 @@
             <span class="d-none d-sm-inline">Bulletin</span>
         </a>
 
-        <input type=button onclick='calltouchpay("{{ $contrat->id }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer Ma Prime" />
+        <!-- <input type=button onclick='calltouchpay("{{ $contrat->id }}")' class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3" value="Payer Ma Prime" /> -->
+         
+        <input type="hidden" id="contractIdFirstPayment" value="{{ $contrat->id }}"/>
+        <button type=button class="btn btn-primary btn-sm text-decoration-none px-2 px-md-3 {{ $contrat->estpaye == '1' || !in_array($contrat->modepaiement, ['ESP', 'EBANK', 'ADF' ]) ? 'd-none' : '' }}" id="btnFirstPayment">Payer la première prime</button>
     </div>
 </div>
 <div id="stepper1" class="bs-stepper">
@@ -63,6 +66,7 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="bs-stepper-line"></div>
                 <div class="step" data-target="#test-l-2">
                     <div class="step-trigger" role="tab" id="stepper1trigger2" aria-controls="test-l-2">
@@ -1043,5 +1047,89 @@
         // })
     }
 </script>
+
+<script src="https://apimain.yakoafricassur.com/api/paiements/jeko/jeko-payment-widget.js"></script>
+<script>
+    (function () {
+      const widget = new JekoWidget({
+        backendEndpoint: 'https://apimain.yakoafricassur.com/api/paiements/jeko/init',
+        contractCheckEndpoint: 'https://apimain.yakoafricassur.com/api/paiements/jeko/contrat/verifier',
+        currency: 'XOF',
+        timeout: 30000,
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+        },
+        callbacks: {
+          onSuccess: (redirectUrl, data) => console.log('✅ Paiement initialisé', { redirectUrl, data }),
+          onError: (message, data) => console.error('❌ Erreur de paiement', { message, data }),
+          onOpen: (data) => console.log('🔄 Widget ouvert', data),
+          onClose: () => console.log('❌ Widget fermé'),
+        },
+      });
+
+      function newReference() {
+        const code = Math.floor(Math.random() * 9999) + 1;
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+
+        return `PAI-${year}${month}${day}${hours}${minutes}${seconds}-${code}`;
+      }
+
+      // 1) Premier paiement — le contrat vient d'être validé, on connaît déjà
+      //    la prime principale et les frais d'adhésion (ex: renvoyés par l'écran
+      //    de souscription juste avant), donc pas besoin de contractId ici.
+      document.getElementById('btnFirstPayment').addEventListener('click', () => {
+        widget.open({
+          //   reference: '{{ $contrat->id }}',
+          reference: newReference(),
+          paymentType: 'firstPayment',
+          contractId: document.getElementById('contractIdFirstPayment').value || undefined,
+          description: "Souscription au contrat {{ $contrat->libelleproduit ?? '' }} — Payer la première prime",
+          customerEmail: '{{ $contrat->adherent->email ?? '' }}',
+          customerName: "{{$contrat->adherent->nom ?? ''}} {{ $contrat->adherent->prenom ?? '' }}",
+          successUrl: window.location.origin + '/production/show/{{ $contrat->id }}',
+          errorUrl: window.location.origin + '/production/show/{{ $contrat->id }}',
+          metadata: { source: 'web_demo', scenario: 'firstPayment' },
+        });
+      });
+
+    //   // 2) Paiement anticipé — le widget demandera/vérifiera le contractId
+    //   //    lui-même si on ne le fournit pas ici.
+    //   document.getElementById('btnEarlyPayment').addEventListener('click', () => {
+    //     widget.open({
+    //       reference: newReference(),
+    //       paymentType: 'earlyPayment',
+    //       contractId: document.getElementById('contractIdEarly').value || undefined,
+    //       description: 'Paiement anticipé de primes',
+    //       customerEmail: 'client@example.com',
+    //       customerName: 'Jean Dupont',
+    //       successUrl: window.location.origin + '/paiements/jeko/success',
+    //       errorUrl: window.location.origin + '/paiements/jeko/error',
+    //       metadata: { source: 'web_demo', scenario: 'earlyPayment' },
+    //     });
+    //   });
+
+    //   // 3) Régularisation d'impayés — le widget liste les factures en attente
+    //   //    une fois le contrat vérifié, et laisse le client les sélectionner.
+    //   document.getElementById('btnRecoveryPrime').addEventListener('click', () => {
+    //     widget.open({
+    //       reference: newReference(),
+    //       paymentType: 'recoveryPrime',
+    //       contractId: document.getElementById('contractIdRecovery').value || undefined,
+    //       description: 'Régularisation de primes impayées',
+    //       customerEmail: '',
+    //       customerName: '',
+    //       successUrl: window.location.origin + '/paiements/jeko/success',
+    //       errorUrl: window.location.origin + '/paiements/jeko/error',
+    //       metadata: { source: 'web_demo', scenario: 'recoveryPrime' },
+    //     });
+    //   });
+    })();
+  </script>
 
 @endsection

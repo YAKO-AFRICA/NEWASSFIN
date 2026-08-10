@@ -5485,6 +5485,8 @@ return array(
     'Psy\\Readline\\Interactive\\Input\\InputQueue' => $vendorDir . '/psy/psysh/src/Readline/Interactive/Input/InputQueue.php',
     'Psy\\Readline\\Interactive\\Input\\Key' => $vendorDir . '/psy/psysh/src/Readline/Interactive/Input/Key.php',
     'Psy\\Readline\\Interactive\\Input\\KeyBindings' => $vendorDir . '/psy/psysh/src/Readline/Interactive/Input/KeyBindings.php',
+    'Psy\\Readline\\Interactive\\Input\\ParseSnapshot' => $vendorDir . '/psy/psysh/src/Readline/Interactive/Input/ParseSnapshot.php',
+    'Psy\\Readline\\Interactive\\Input\\ParseSnapshotCache' => $vendorDir . '/psy/psysh/src/Readline/Interactive/Input/ParseSnapshotCache.php',
     'Psy\\Readline\\Interactive\\Input\\StatementCompletenessPolicy' => $vendorDir . '/psy/psysh/src/Readline/Interactive/Input/StatementCompletenessPolicy.php',
     'Psy\\Readline\\Interactive\\Input\\StdinReader' => $vendorDir . '/psy/psysh/src/Readline/Interactive/Input/StdinReader.php',
     'Psy\\Readline\\Interactive\\Input\\TokenNavigationPolicy' => $vendorDir . '/psy/psysh/src/Readline/Interactive/Input/TokenNavigationPolicy.php',

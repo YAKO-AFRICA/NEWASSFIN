@@ -1788,6 +1788,14 @@ class ProductionController extends Controller
                 'code' => 404,
             ]);
         }
+        if ( (int) $contrat->estpaye == 0 && in_array($contrat->modepaiement, ['ESP', 'EBANK', 'ADF' ])) {
+            return response()->json([
+                'type' => 'error',
+                'urlback' => '',
+                'message' => "Veuillez éffectuer le paiement de la prime avant de transmettre la proposition.",
+                'code' => 404,
+            ]);
+        }
 
 
             if (in_array($contrat->modepaiement, ['VIR', 'SOURCE'])) {
