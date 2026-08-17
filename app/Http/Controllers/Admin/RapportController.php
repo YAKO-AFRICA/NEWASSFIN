@@ -448,8 +448,20 @@ class RapportController extends Controller
 
     public function dashboardJeko(Request $request)
     {
-        $dateDebut = $request->input('date_debut', Carbon::now()->subDays(30)->toDateString());
-        $dateFin   = $request->input('date_fin', Carbon::now()->toDateString());
+        // $dateDebut = $request->input('date_debut', Carbon::now()->subDays(30)->toDateString());
+        // $dateFin   = $request->input('date_fin', Carbon::now()->toDateString());
+        $dateDebut = Carbon::parse(
+            $request->input('date_debut', Carbon::now()->subDays(30)->toDateString())
+        )->startOfDay()->format('Y-m-d H:i:s');
+
+        $dateFin = Carbon::parse(
+            $request->input('date_fin', Carbon::now()->toDateString())
+        )->endOfDay()->format('Y-m-d H:i:s');
+
+        Log::info('Dashboard JEKO - période', [
+            'date_debut' => $dateDebut,
+            'date_fin'   => $dateFin,
+        ]);
  
         return response()->json([
             'kpis'                  => $this->kpis($dateDebut, $dateFin),
@@ -466,15 +478,22 @@ class RapportController extends Controller
      */
     protected function kpis(string $dateDebut, string $dateFin): array
     {
+        Log::info('dateDebut :'. $dateDebut);
+        Log::info('dateFin :'. $dateFin);
         $base = Paiement::whereBetween('datepaiement', [$dateDebut, $dateFin])->where('reglementSource', 'JEKO');
  
         $totalPaiements = (clone $base)->count();
+        Log::info('totalPaiements :'. $totalPaiements);
  
         $succes = (clone $base)->where('payment_status', $this->statutSucces)->count();
+        Log::info('succes :'. $succes);
         $echecs = (clone $base)->where('payment_status', $this->statutEchec)->count();
+        Log::info('echecs :'. $echecs);
         $attente = (clone $base)->where('payment_status', $this->statutAttente)->count();
+        Log::info('attente :'. $attente);
  
         $montantSucces = (clone $base)->where('payment_status', $this->statutSucces)->sum('montant');
+        Log::info('montantSucces :'. $montantSucces);
  
         $propositionsAvecPaiement = (clone $base)
             ->whereNotNull('idContrat')
@@ -547,13 +566,16 @@ class RapportController extends Controller
      */
     protected function evolutionJournaliere(string $dateDebut, string $dateFin)
     {
-        return Paiement::whereBetween('datepaiement', [$dateDebut, $dateFin])
+        $paiements = Paiement::whereBetween('datepaiement', [$dateDebut, $dateFin])
             ->where('reglementSource', 'JEKO')
             ->selectRaw('DATE(datepaiement) as jour, payment_status, COUNT(*) as nb, SUM(montant) as montant')
             ->groupBy('jour', 'payment_status')
             ->orderBy('jour')
             ->get()
             ->groupBy('jour');
+
+            Log::info($paiements);
+        return $paiements;
     }
  
     /**
@@ -568,14 +590,26 @@ class RapportController extends Controller
  
         $propositionIds = $paiements->pluck('idContrat')->filter()->unique()->values();
  
+        // $contrats = Contrat::whereIn('id', $propositionIds)
+        //     ->get(['id', 'etape', 'estpaye', 'saisiepar'])
+        //     ->keyBy('id');
+
         $contrats = Contrat::whereIn('id', $propositionIds)
-            ->get(['id', 'etape', 'estpaye', 'saisiepar'])
+            ->with([
+                'membre:idmembre,nom,prenom,codeagent'
+            ])
+            ->get([
+                'id',
+                'etape',
+                'estpaye',
+                'saisiepar'
+            ])
             ->keyBy('id');
  
         return $paiements->map(function ($p) use ($contrats) {
             $contrat = $contrats->get($p->idContrat);
-            // $contrat->user->membre->prenom . ' '. $contrat->user->membre->nom .' ('.$contrat->user->membre->codeagent.')'  ?? null,
-            // Log::info($contrat);
+            
+            
             return [
                 'codePaiement'      => $p->codePaiement,
                 'idproposition'  => $p->idContrat,
@@ -585,9 +619,20 @@ class RapportController extends Controller
                 'contrat_trouve' => $contrat !== null,
                 'etape_contrat'  => $contrat->etape ?? null,
                 'contrat_estpaye'=> $contrat->estpaye ?? null,
-                // 'saisiepar'       => null,
-                // 'saisiepar'       => $contrat->membre->prenom . ' '. $contrat->membre->nom .' ('.$contrat->user->membre->codeagent.')'  ?? null,
-                // 'anomalie'       => !$p->estMigre && $contrat && $contrat->estpaye,
+                'saisiepar'          => $contrat->saisiepar ?? null,
+
+                'agent' => $contrat && $contrat->membre
+                    ? [
+                        'idmembre'  => $contrat->membre->idmembre,
+                        'nom'       => $contrat->membre->nom,
+                        'prenom'    => $contrat->membre->prenom,
+                        'nom_complet' => trim(
+                            $contrat->membre->prenom . ' ' . $contrat->membre->nom
+                        ),
+                        'codeagent' => $contrat->membre->codeagent,
+                    ]
+                    : null,
+                
             ];
         });
     }

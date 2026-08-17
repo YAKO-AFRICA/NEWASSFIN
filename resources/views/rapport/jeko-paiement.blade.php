@@ -482,7 +482,7 @@ table.jeko-table code {
                             <th>Migration</th>
                             <th>Contrat</th>
                             <th>Étape</th>
-                            <!-- <th>Conseiller </th> -->
+                            <th>Conseiller </th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -500,8 +500,8 @@ table.jeko-table code {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const CHART_COLORS = ['#2a5f74', '#c98a3e', '#7a5c99', '#3f8f6f', '#b3382c'];
-    const STATUT_LABELS = { seccess: 'Succès', error: 'Échec', pending: 'En attente' };
-    const STATUT_COLORS = { seccess: '#1f7a4d', error: '#b3382c', pending: '#a4720a' };
+    const STATUT_LABELS = { success: 'Succès', error: 'Échec', pending: 'En attente' };
+    const STATUT_COLORS = { success: '#1f7a4d', error: '#b3382c', pending: '#a4720a' };
 
     let chartStatuts, chartOperateurs, chartEvolution;
     let currentData = null;
@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: jours.map(fmtDate),
                 datasets: [
-                    { label: 'Succès', data: byStatus('seccess'), borderColor: STATUT_COLORS.seccess, backgroundColor: 'rgba(31,122,77,0.08)', fill: true, tension: 0.35, pointRadius: 2, pointHoverRadius: 5 },
+                    { label: 'Succès', data: byStatus('success'), borderColor: STATUT_COLORS.success, backgroundColor: 'rgba(31,122,77,0.08)', fill: true, tension: 0.35, pointRadius: 2, pointHoverRadius: 5 },
                     { label: 'Échec', data: byStatus('error'), borderColor: STATUT_COLORS.error, backgroundColor: 'rgba(179,56,44,0.06)', fill: true, tension: 0.35, pointRadius: 2, pointHoverRadius: 5 },
                     { label: 'En attente', data: byStatus('pending'), borderColor: STATUT_COLORS.pending, backgroundColor: 'rgba(164,114,10,0.06)', fill: true, tension: 0.35, pointRadius: 2, pointHoverRadius: 5 }
                 ]
@@ -648,6 +648,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         rows.forEach(row => {
             const etape = etapeLabel(row.etape_contrat);
+            const agent = row.agent
+            ? `${row.agent.nom_complet ?? `${row.agent.prenom ?? ''} ${row.agent.nom ?? ''}`.trim()}
+               ${row.agent.codeagent ? `(${row.agent.codeagent})` : ''}`
+            : '—';
             tbody.innerHTML += `
                 <tr class="${row.anomalie ? 'row-anomalie' : ''}">
                     <td><code>${row.codePaiement ?? row.idPaiment}</code></td>
@@ -661,6 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         ? `<span class="pill pill-success"><span class="pill-dot"></span>Trouvé</span>`
                         : `<span class="pill pill-error"><span class="pill-dot"></span>Introuvable</span>`}</td>
                     <td>${etape ? `<span class="pill pill-neutral">${etape}</span>` : '—'}</td>
+                    <td> ${agent} </td>
                     
                 </tr>`;
         });
