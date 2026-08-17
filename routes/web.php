@@ -636,6 +636,19 @@ Route::prefix('site')->name('site.')->group(function(){
 });
 
 
+Route::prefix('jeko/dashboard')->name('jeko.dashboard.')->middleware(['auth'])->group(function () {
+ 
+    // Vue HTML du dashboard
+    Route::get('/', function () {
+        return view('rapport/jeko-paiement');
+    })->name('index');
+ 
+    // Endpoint JSON consommé par le fetch() de la vue
+    Route::get('/data', [RapportController::class, 'dashboardJeko'])->name('data');
+ 
+});
+
+
 
 Route::get('/payment/success', function () {
     return view('payment.success');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Contrat;
 use App\Models\Membre;
 use App\Models\MotifRejet;
+use App\Models\Paiement;
 use App\Models\Partner;
 use App\Models\Pret;
 use App\Models\Product;
@@ -18,212 +19,129 @@ use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use PDF;
 
 class RapportController extends Controller
 {
-    // public function eSouscription(Request $request)
-    // {
-    //     $userPartner = Auth::user()->codepartenaire;
+    /**
+     * payment_status : 'pending' | 'seccess' | 'error' (valeurs réelles en base).
+     */
+    protected string $statutSucces = 'success';
+    protected string $statutEchec  = 'error';
+    protected string $statutAttente = 'pending';
 
-    //     $agents = Membre::where('codepartenaire', $userPartner)->get();
-    //     $partenaire = Partner::all();
+    public function eSouscription(Request $request)
+    {
+        $userPartner = Auth::user()->codepartenaire;
 
-    //     $query = Contrat::where("saisiele", "!=", null);
+        $agents = Membre::where('codepartenaire', $userPartner)->get();
+        $partenaire = Partner::where('code', $userPartner)->first();
 
-    //     // Filtrer par date (de et à)
-    //     if ($request->filled('dateFrom') && $request->filled('dateTo')) {
-    //         $query->whereBetween('saisiele', [$request->dateFrom, $request->dateTo]);
-    //     }
-    //     // Filtrer par partenaire (de et à)
-    //     if ($request->filled('partenaire')) {
-    //         $query->where('partenaire', $request->partenaire);
-    //     }
+        // dd($partenaire);
 
-    //     // Filtrer par agent
-    //     if ($request->filled('agent')) {
-    //         $query->where('saisiepar', $request->agent);
-    //     }
+        $query = Contrat::where("partenaire", $userPartner);
 
-    //     // Filtrer par étape
-    //     if ($request->filled('etape')) {
-    //         $query->where('etape', $request->etape);
-    //     }
+        // Gestion des dates : par défaut année en cours si aucune date n'est spécifiée
+        if ($request->filled('dateFrom') && $request->filled('dateTo')) {
+            // Si les deux dates sont fournies, on filtre entre ces dates
+            $query->whereBetween('saisiele', [$request->dateFrom, $request->dateTo]);
+        } else {
+            // Sinon, on filtre sur l'année en cours par défaut
+            $currentYear = date('Y');
+            $query->whereYear('saisiele', $currentYear);
+            
+            // Optionnel : vous pouvez aussi définir des dates par défaut dans la requête
+            // pour les afficher dans le formulaire
+            $request->merge([
+                'dateFrom' => $currentYear . '-01-01',
+                'dateTo' => $currentYear . '-12-31'
+            ]);
+        }
 
-    //     // Exécuter la requête
-    //     $contrats = $query->get();
+        // Filtrer par partenaire
+        if ($request->filled('partenaire')) {
+            $query->where('partenaire', $request->partenaire);
+        }
 
+        // Filtrer par agent
+        if ($request->filled('agent')) {
+            $query->where('saisiepar', $request->agent);
+        }
 
-    //     $defaultColumns = ['#', 'Produit', 'Date Effet', 'Prime', 'Capital', 'Saisir Par', 'Status'];
+        // Filtrer par étape
+        if ($request->filled('etape')) {
+            $query->where('etape', $request->etape);
+        }
 
-    //     $additionalColumns = [
-    //         'Mode de Paiement' => 'modepaiement',
-    //         'Organisme' => 'organisme',
-    //         'Prime' => 'prime',
-    //         'Prime Principale' => 'primepricipale',
-    //         'Capital' => 'capital',
-    //         'Surprime' => 'surprime',
-    //         'Date Effet' => 'dateeffet',
-    //         'N° Compte' => 'numerocompte',
-    //         'Agence' => 'agence',
-    //         'Saisie Le' => 'saisiele',
-    //         'Code Conseiller' => 'codeConseiller',
-    //         'Nom Agent' => 'nomagent',
-    //         'Duree' => 'duree',
-    //         'Periodicite' => 'periodicite',
-    //         'Code Adherent' => 'codeadherent',
-    //         'Est Migre' => 'estMigre',
-    //         'Transmis Le' => 'transmisle',
-    //         'Annuler Le' => 'annulerle',
-    //         'Accepter Le' => 'accepterle',
-    //         'Modifier Le' => 'modifierle',
-    //         'Modifier Par' => 'modifierpar',
-    //         'Libelle Produit' => 'libelleproduit',
-    //         'Personne Ressourource' => 'personneressource',
-    //         'Contact Ressourource' => 'contactpersonneressource',
-    //         'Beneficiaire Auterme' => 'beneficiaireauterme',
-    //         'Beneficiaire Audeces' => 'beneficiaireaudeces',
-    //         'Accepter Par' => 'accepterpar',
-    //         'Rejeter Par' => 'rejeterpar',
-    //         'Transmis Par' => 'transmispar',
-    //         'Personne Ressource 2' => 'personneressource2',
-    //         'Contact Ressource 2' => 'contactpersonneressource2',
-    //         'Code Banque' => 'codebanque',
-    //         'Code Guichet' => 'codeguichet',
-    //         'Rib' => 'rib',
-    //         'Id Proposition' => 'idproposition',
-    //         'Code Proposition' => 'codeproposition',
-    //         'Branche' => 'branche',
-    //         'Partenaire' => 'partenaire',
-    //         'Nom Accepter Par' => 'nomaccepterpar',
-    //         'Ref Contrat Source' => 'refcontratsource',
-    //         'Cle Integration' => 'cleintegration',
-    //         'Code Operation' => 'codeoperation',
-    //         'N° Police' => 'numeropolice',
-    //         'Frais Adhesion' => 'fraisadhesion',
-    //         'Est Paye' => 'estpaye',
-    //         'Pret Connexe' => 'pretconnexe',
-    //         'Details' => 'details',
-    //     ];
-    //     $activeColumns = session('activeColumns', []);
+        // Exécuter la requête
+        $contrats = $query->get();
 
-    //     $selectedStatus = $request->input('etape');
+        $defaultColumns = ['#', 'Produit', 'Date Effet', 'Prime', 'Capital', 'Saisir Par', 'Status'];
 
-    //     // Retourner la vue avec les données
-    //     return view('rapport.eSouscription', compact('contrats', 'agents', 'activeColumns', 'defaultColumns', 'additionalColumns','partenaire'));
-    // }
-
-public function eSouscription(Request $request)
-{
-    $userPartner = Auth::user()->codepartenaire;
-
-    $agents = Membre::where('codepartenaire', $userPartner)->get();
-    $partenaire = Partner::where('code', $userPartner)->first();
-
-    // dd($partenaire);
-
-    $query = Contrat::where("partenaire", $userPartner);
-
-    // Gestion des dates : par défaut année en cours si aucune date n'est spécifiée
-    if ($request->filled('dateFrom') && $request->filled('dateTo')) {
-        // Si les deux dates sont fournies, on filtre entre ces dates
-        $query->whereBetween('saisiele', [$request->dateFrom, $request->dateTo]);
-    } else {
-        // Sinon, on filtre sur l'année en cours par défaut
-        $currentYear = date('Y');
-        $query->whereYear('saisiele', $currentYear);
+        $additionalColumns = [
+            'Mode de Paiement' => 'modepaiement',
+            'Organisme' => 'organisme',
+            'Prime' => 'prime',
+            'Prime Principale' => 'primepricipale',
+            'Capital' => 'capital',
+            'Surprime' => 'surprime',
+            'Date Effet' => 'dateeffet',
+            'N° Compte' => 'numerocompte',
+            'Agence' => 'agence',
+            'Saisie Le' => 'saisiele',
+            'Code Conseiller' => 'codeConseiller',
+            'Nom Agent' => 'nomagent',
+            'Duree' => 'duree',
+            'Periodicite' => 'periodicite',
+            'Code Adherent' => 'codeadherent',
+            'Est Migre' => 'estMigre',
+            'Transmis Le' => 'transmisle',
+            'Annuler Le' => 'annulerle',
+            'Accepter Le' => 'accepterle',
+            'Modifier Le' => 'modifierle',
+            'Modifier Par' => 'modifierpar',
+            'Libelle Produit' => 'libelleproduit',
+            'Personne Ressource' => 'personneressource',
+            'Contact Ressource' => 'contactpersonneressource',
+            'Beneficiaire Auterme' => 'beneficiaireauterme',
+            'Beneficiaire Audeces' => 'beneficiaireaudeces',
+            'Accepter Par' => 'accepterpar',
+            'Rejeter Par' => 'rejeterpar',
+            'Transmis Par' => 'transmispar',
+            'Personne Ressource 2' => 'personneressource2',
+            'Contact Ressource 2' => 'contactpersonneressource2',
+            'Code Banque' => 'codebanque',
+            'Code Guichet' => 'codeguichet',
+            'Rib' => 'rib',
+            'Id Proposition' => 'idproposition',
+            'Code Proposition' => 'codeproposition',
+            'Branche' => 'branche',
+            'Partenaire' => 'partenaire',
+            'Nom Accepter Par' => 'nomaccepterpar',
+            'Ref Contrat Source' => 'refcontratsource',
+            'Cle Integration' => 'cleintegration',
+            'Code Operation' => 'codeoperation',
+            'N° Police' => 'numeropolice',
+            'Frais Adhesion' => 'fraisadhesion',
+            'Est Paye' => 'estpaye',
+            'Pret Connexe' => 'pretconnexe',
+            'Details' => 'details',
+        ];
         
-        // Optionnel : vous pouvez aussi définir des dates par défaut dans la requête
-        // pour les afficher dans le formulaire
-        $request->merge([
-            'dateFrom' => $currentYear . '-01-01',
-            'dateTo' => $currentYear . '-12-31'
-        ]);
+        $activeColumns = session('activeColumns', []);
+        $selectedStatus = $request->input('etape');
+
+        // Retourner la vue avec les données
+        return view('rapport.eSouscription', compact(
+            'contrats', 
+            'agents', 
+            'activeColumns', 
+            'defaultColumns', 
+            'additionalColumns',
+            'partenaire'
+        ));
     }
-
-    // Filtrer par partenaire
-    if ($request->filled('partenaire')) {
-        $query->where('partenaire', $request->partenaire);
-    }
-
-    // Filtrer par agent
-    if ($request->filled('agent')) {
-        $query->where('saisiepar', $request->agent);
-    }
-
-    // Filtrer par étape
-    if ($request->filled('etape')) {
-        $query->where('etape', $request->etape);
-    }
-
-    // Exécuter la requête
-    $contrats = $query->get();
-
-    $defaultColumns = ['#', 'Produit', 'Date Effet', 'Prime', 'Capital', 'Saisir Par', 'Status'];
-
-    $additionalColumns = [
-        'Mode de Paiement' => 'modepaiement',
-        'Organisme' => 'organisme',
-        'Prime' => 'prime',
-        'Prime Principale' => 'primepricipale',
-        'Capital' => 'capital',
-        'Surprime' => 'surprime',
-        'Date Effet' => 'dateeffet',
-        'N° Compte' => 'numerocompte',
-        'Agence' => 'agence',
-        'Saisie Le' => 'saisiele',
-        'Code Conseiller' => 'codeConseiller',
-        'Nom Agent' => 'nomagent',
-        'Duree' => 'duree',
-        'Periodicite' => 'periodicite',
-        'Code Adherent' => 'codeadherent',
-        'Est Migre' => 'estMigre',
-        'Transmis Le' => 'transmisle',
-        'Annuler Le' => 'annulerle',
-        'Accepter Le' => 'accepterle',
-        'Modifier Le' => 'modifierle',
-        'Modifier Par' => 'modifierpar',
-        'Libelle Produit' => 'libelleproduit',
-        'Personne Ressource' => 'personneressource',
-        'Contact Ressource' => 'contactpersonneressource',
-        'Beneficiaire Auterme' => 'beneficiaireauterme',
-        'Beneficiaire Audeces' => 'beneficiaireaudeces',
-        'Accepter Par' => 'accepterpar',
-        'Rejeter Par' => 'rejeterpar',
-        'Transmis Par' => 'transmispar',
-        'Personne Ressource 2' => 'personneressource2',
-        'Contact Ressource 2' => 'contactpersonneressource2',
-        'Code Banque' => 'codebanque',
-        'Code Guichet' => 'codeguichet',
-        'Rib' => 'rib',
-        'Id Proposition' => 'idproposition',
-        'Code Proposition' => 'codeproposition',
-        'Branche' => 'branche',
-        'Partenaire' => 'partenaire',
-        'Nom Accepter Par' => 'nomaccepterpar',
-        'Ref Contrat Source' => 'refcontratsource',
-        'Cle Integration' => 'cleintegration',
-        'Code Operation' => 'codeoperation',
-        'N° Police' => 'numeropolice',
-        'Frais Adhesion' => 'fraisadhesion',
-        'Est Paye' => 'estpaye',
-        'Pret Connexe' => 'pretconnexe',
-        'Details' => 'details',
-    ];
-    
-    $activeColumns = session('activeColumns', []);
-    $selectedStatus = $request->input('etape');
-
-    // Retourner la vue avec les données
-    return view('rapport.eSouscription', compact(
-        'contrats', 
-        'agents', 
-        'activeColumns', 
-        'defaultColumns', 
-        'additionalColumns',
-        'partenaire'
-    ));
-}
 
     public function ePrestation(Request $request)
     {
@@ -526,6 +444,152 @@ public function eSouscription(Request $request)
         }
 
         return view('rapport.prospection', compact('allPropects', 'villes', 'professions', 'secteurActivites', 'product', 'activeColumns', 'defaultColumns', 'additionalColumns'));
+    }
+
+    public function dashboardJeko(Request $request)
+    {
+        $dateDebut = $request->input('date_debut', Carbon::now()->subDays(30)->toDateString());
+        $dateFin   = $request->input('date_fin', Carbon::now()->toDateString());
+ 
+        return response()->json([
+            'kpis'                  => $this->kpis($dateDebut, $dateFin),
+            'repartition_statuts'   => $this->repartitionParStatut($dateDebut, $dateFin),
+            'repartition_operateur' => $this->repartitionParOperateur($dateDebut, $dateFin),
+            'evolution_journaliere' => $this->evolutionJournaliere($dateDebut, $dateFin),
+            'migration'             => $this->suiviMigration($dateDebut, $dateFin),
+        ]);
+    }
+
+
+    /**
+     * Indicateurs clés (cartes en haut du dashboard)
+     */
+    protected function kpis(string $dateDebut, string $dateFin): array
+    {
+        $base = Paiement::whereBetween('datepaiement', [$dateDebut, $dateFin])->where('reglementSource', 'JEKO');
+ 
+        $totalPaiements = (clone $base)->count();
+ 
+        $succes = (clone $base)->where('payment_status', $this->statutSucces)->count();
+        $echecs = (clone $base)->where('payment_status', $this->statutEchec)->count();
+        $attente = (clone $base)->where('payment_status', $this->statutAttente)->count();
+ 
+        $montantSucces = (clone $base)->where('payment_status', $this->statutSucces)->sum('montant');
+ 
+        $propositionsAvecPaiement = (clone $base)
+            ->whereNotNull('idContrat')
+            ->distinct('idContrat')
+            ->count('idContrat');
+
+        // Log::info('propositionsAvecPaiement :'. $propositionsAvecPaiement);
+
+
+ 
+        $succesMigres = (clone $base)
+            ->where('payment_status', $this->statutSucces)
+            ->where('estMigre', 1)
+            ->count();
+
+        // Log::info('succesMigres :'. $succesMigres);
+ 
+        $succesNonMigres = (clone $base)
+            ->where('payment_status', $this->statutSucces)
+            ->where(function ($q) {
+                $q->where('estMigre', 0)->orWhereNull('estMigre');
+            })
+            ->count();
+
+        // Log::info('succesNonMigres :'. $succesNonMigres);
+ 
+        return [
+            'total_paiements'            => $totalPaiements,
+            'paiements_succes'           => $succes,
+            'paiements_echec'            => $echecs,
+            'paiements_en_attente'       => $attente,
+            'taux_succes_pct'            => $totalPaiements > 0 ? round($succes / $totalPaiements * 100, 2) : 0,
+            'montant_total_succes'       => (float) $montantSucces,
+            'propositions_avec_paiement' => $propositionsAvecPaiement,
+            'paiements_succes_migres'    => $succesMigres,
+            'paiements_succes_non_migres'=> $succesNonMigres,
+            'taux_migration_pct'         => $succes > 0 ? round($succesMigres / $succes * 100, 2) : 0,
+        ];
+    }
+ 
+    /**
+     * Répartition succès / échec / attente (pour un donut chart)
+     */
+    protected function repartitionParStatut(string $dateDebut, string $dateFin)
+    {
+        return Paiement::whereBetween('datepaiement', [$dateDebut, $dateFin])
+            ->where('reglementSource', 'JEKO')
+            ->selectRaw('payment_status, COUNT(*) as nb, SUM(montant) as montant')
+            ->groupBy('payment_status')
+            ->get();
+    }
+ 
+    /**
+     * Répartition par opérateur mobile money (Wave, Orange, Moov, MTN, Djamo)
+     * Champ opérateur : payment_mode.
+     */
+    protected function repartitionParOperateur(string $dateDebut, string $dateFin)
+    {
+        return Paiement::whereBetween('datepaiement', [$dateDebut, $dateFin])
+            ->where('reglementSource', 'JEKO')
+            ->selectRaw('payment_mode as operateur, payment_status, COUNT(*) as nb, SUM(montant) as montant')
+            ->groupBy('payment_mode', 'payment_status')
+            ->orderBy('payment_mode')
+            ->get()
+            ->groupBy('operateur');
+    }
+ 
+    /**
+     * Courbe d'évolution journalière (pour line/bar chart Chart.js)
+     */
+    protected function evolutionJournaliere(string $dateDebut, string $dateFin)
+    {
+        return Paiement::whereBetween('datepaiement', [$dateDebut, $dateFin])
+            ->where('reglementSource', 'JEKO')
+            ->selectRaw('DATE(datepaiement) as jour, payment_status, COUNT(*) as nb, SUM(montant) as montant')
+            ->groupBy('jour', 'payment_status')
+            ->orderBy('jour')
+            ->get()
+            ->groupBy('jour');
+    }
+ 
+    /**
+     * Suivi de la migration vers le système métier
+     */
+    protected function suiviMigration(string $dateDebut, string $dateFin)
+    {
+        $paiements = Paiement::whereBetween('datepaiement', [$dateDebut, $dateFin])
+            ->where('payment_status', $this->statutSucces)
+            ->where('reglementSource', 'JEKO')
+            ->get(['codePaiement', 'idContrat', 'montant', 'estMigre', 'datepaiement']);
+ 
+        $propositionIds = $paiements->pluck('idContrat')->filter()->unique()->values();
+ 
+        $contrats = Contrat::whereIn('id', $propositionIds)
+            ->get(['id', 'etape', 'estpaye', 'saisiepar'])
+            ->keyBy('id');
+ 
+        return $paiements->map(function ($p) use ($contrats) {
+            $contrat = $contrats->get($p->idContrat);
+            // $contrat->user->membre->prenom . ' '. $contrat->user->membre->nom .' ('.$contrat->user->membre->codeagent.')'  ?? null,
+            Log::info($contrat);
+            return [
+                'codePaiement'      => $p->codePaiement,
+                'idproposition'  => $p->idContrat,
+                'montant'        => $p->montant,
+                'estMigre'       => (bool) $p->estMigre,
+                'datepaiement'   => $p->datepaiement,
+                'contrat_trouve' => $contrat !== null,
+                'etape_contrat'  => $contrat->etape ?? null,
+                'contrat_estpaye'=> $contrat->estpaye ?? null,
+                // 'saisiepar'       => null,
+                // 'saisiepar'       => $contrat->membre->prenom . ' '. $contrat->membre->nom .' ('.$contrat->user->membre->codeagent.')'  ?? null,
+                // 'anomalie'       => !$p->estMigre && $contrat && $contrat->estpaye,
+            ];
+        });
     }
 
 }

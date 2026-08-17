@@ -150,6 +150,16 @@
                     </li>
                 @endcan
 
+                <!-- @can('Voir le rapport des pret') -->
+                    <li>
+                        <a href="{{ route('jeko.dashboard.index')}}">
+                            <div class="parent-icon"><i class="fadeIn animated bx bx-user-voice"></i>
+                            </div>
+                            <div class="menu-title">Rapport paiement Jeko </div>
+                        </a>
+                    </li>
+                <!-- @endcan -->
+
             @endcan
 
            @can('Voir les paramettres')

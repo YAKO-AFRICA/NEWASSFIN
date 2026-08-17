@@ -100,6 +100,11 @@ class Contrat extends Model
         return $this->belongsTo(User::class, 'saisiepar', 'idmembre');
     }
 
+    public function membre()
+    {
+        return $this->hasOne(Membre::class, 'saisiepar', 'idmembre');
+    }
+
     public function adherent()
     {
         return $this->belongsTo(Adherent::class, 'codeadherent', 'id');
