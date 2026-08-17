@@ -482,7 +482,7 @@ table.jeko-table code {
                             <th>Migration</th>
                             <th>Contrat</th>
                             <th>Étape</th>
-                            <th>Conseiller </th>
+                            <!-- <th>Conseiller </th> -->
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -661,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         ? `<span class="pill pill-success"><span class="pill-dot"></span>Trouvé</span>`
                         : `<span class="pill pill-error"><span class="pill-dot"></span>Introuvable</span>`}</td>
                     <td>${etape ? `<span class="pill pill-neutral">${etape}</span>` : '—'}</td>
-                    <!--td>${saisiepar ?? '—'}</td-->
+                    
                 </tr>`;
         });
     }

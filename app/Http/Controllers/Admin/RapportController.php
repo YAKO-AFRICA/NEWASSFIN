@@ -575,7 +575,7 @@ class RapportController extends Controller
         return $paiements->map(function ($p) use ($contrats) {
             $contrat = $contrats->get($p->idContrat);
             // $contrat->user->membre->prenom . ' '. $contrat->user->membre->nom .' ('.$contrat->user->membre->codeagent.')'  ?? null,
-            Log::info($contrat);
+            // Log::info($contrat);
             return [
                 'codePaiement'      => $p->codePaiement,
                 'idproposition'  => $p->idContrat,
